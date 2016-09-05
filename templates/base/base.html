@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+{% from "_macro.html" import render_field %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% if title %}
+		<title>{{title}}</title>
+	{% else %}
+		<title>Tittle not found</title>
+	{% endif %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='Style/bootstrap-material-design.css', media='screen' ) }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='Style/ripples.css', media='screen' ) }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='Style/General.css', media='screen' ) }}"/>
+    <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='JavaScript/material.js', media='screen' ) }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='JavaScript/ripples.js', media='screen' ) }}"/>
+
+</head>
+<body>
+<header class="container">
+  <div class="text-info">
+  <h1>Coursesita</h1>
+  </div>
+</header>
+  <div class="container">
+      <div class="row-content">
+
+<form class="form-horizontal" action="index.html" method="POST">
+
+        <div class="form-group label-static">
+          <label for="i2" class="control-label">Name</label>
+          {{ render_field(form.username, class='form-control' ) }}
+
+        </div>
+
+        <div class="form-group label-floating">
+          <label for="i5" class="control-label">Password</label>
+          {{ render_field(form.username, class='form-control' ) }}
+        </div>
+
+        <div class="form-group label-floating">
+          <label for="i5" class="control-label">Email</label>
+          {{ render_field(form.username, class='form-control' ) }}
+        </div>
+        <button class="btn btn-danger btn-raised">Go!</button>
+      </form>
+
+
+    </div>
+  </div>
+
+<div class="container">
+    <br>
+    {% block lorem1%}
+    {% endblock %}
+    <br>
+    {% block lorem2%}
+    {% endblock %}
+    <br>
+    {% block lorem3%}
+    {% endblock %}
+    <br>
+  </div>
+</div>
+
+
+  <!--Footer-->
+<footer class="page-footer center-on-small-only mdb-color darken-4">
+
+<div class="container">
+
+    <div class="call-to-action">
+        <h4 class="text-primary">Material Design for Bootstrap</h4>
+    </div>
+    <!--/.Call to action-->
+
+
+        © 2015 Copyright: <a href="http://www.MDBootstrap.com"> MDBootstrap.com </a>
+
+    </div>
+    <!--/.Copyright-->
+</footer>
+<!--/.Footer-->
+
+
+<script type="text/javascript">$.material.init();</script>
+
+</body>
+</html>

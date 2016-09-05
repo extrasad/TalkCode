@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div>
+<h1>{{nameUser}}</h1>
+<p>I system engineer, programing is my favorite job!</p>
+</div>
+<div>
+    <ul>
+    {%if skillOn%}
+    {%for skill in skillUser%}
+    <li> <h2>{{skill}}</h2></li>
+    {% endfor %}
+    {% endif %}
+    </ul>
+</div>
+</body>
+</html>
