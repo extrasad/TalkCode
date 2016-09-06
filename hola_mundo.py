@@ -1,22 +1,40 @@
 # coding=utf-8
-from flask import Flask, request, render_template, make_response
+from flask import Flask, request, render_template, make_response, session, redirect, url_for
 import form
 
 app = Flask(__name__)
 
+app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
+
 @app.route('/', methods=['GET','POST'])
 def index():
+    if 'username' in session:
+        username = session['username']
+        print username
+    return 'Error: You are not logged in'
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
     GeneralForm = form.GeneralForm(request.form)
     if request.method == 'POST' and GeneralForm.validate():
-        print GeneralForm.username.data
-        print GeneralForm.password.data
-        print GeneralForm.email.data
+        session['username'] = GeneralForm.username.data
+        return render_template('user.html')
+    else:
+        return render_template('index.html', form=GeneralForm)
 
+@app.route('/logout')
+def logout():
+    # remove the username from the session if it's there
+    if 'username' in session:
+        session.pop('username', None)
+        return redirect(url_for('index'))
 
-    custome_cookies = request.cookies.get('custome_cookie', 'Undefined')
-    print custome_cookies
-    return render_template('index.html', form=GeneralForm)
-
+@app.route('/cookie')
+def cookie():
+    reponse = make_response(render_template('cookie.html'))
+    reponse.set_cookie('custome_cookies', 'default_value')
+    render_template('cookie.html')
 
 @app.route('/params')#Control de parametros con '?' y '&'
 def params():
@@ -37,15 +55,7 @@ def users(name='default'):
     lenguage = ['C/C++', 'Javascript', 'Python']
     skill = ['Game Developer', 'Web Developer']
     skillOn = True
-    return render_template('user.html', nameUser=name, lenguagesUser=lenguage, skillUser=skill, skillOn=skillOn)
-
-
-
-@app.route('/cookie')
-def cookie():
-    reponse = make_response(render_template('cookie.html'))
-    reponse.set_cookie('custome_cookies', 'default_value')
-    return reponse
+    pass
 
 
 if __name__ == '__main__':

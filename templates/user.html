@@ -1,22 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-<div>
-<h1>{{nameUser}}</h1>
-<p>I system engineer, programing is my favorite job!</p>
-</div>
-<div>
-    <ul>
-    {%if skillOn%}
-    {%for skill in skillUser%}
-    <li> <h2>{{skill}}</h2></li>
-    {% endfor %}
-    {% endif %}
-    </ul>
-</div>
-</body>
-</html>
+{% extends 'layout_user/layout_user.html' %}
+
+{% set litle = 'Course' %}
+{% set user = name_user%}
+
+{{ block link }}
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.0/css/font-awesome.min.css">
+    <!-- Bootstrap core CSS -->
+    <link href="static/Style/bootstrap.min.css" rel="stylesheet">
+    <!-- Material Design Bootstrap -->
+    <link href="static/Style/bootstrap-material-design.css" rel="stylesheet">
+    <!-- Template styles -->
+    <style rel="stylesheet">
+        /* TEMPLATE STYLES */
+
+        main {
+            padding-top: 3rem;
+            padding-bottom: 2rem;
+        }
+
+        .widget-wrapper {
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 2rem;
+        }
+    </style>
+
+    {{ endblock }}
