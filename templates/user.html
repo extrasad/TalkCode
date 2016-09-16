@@ -1,30 +1,41 @@
 {% extends 'layout_user/layout_user.html' %}
 
-{% set litle = 'Course' %}
-{% set user = name_user%}
+{% set litle = home %}
+{% set name = name_user %}
 
-{{ block link }}
 
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.0/css/font-awesome.min.css">
-    <!-- Bootstrap core CSS -->
-    <link href="static/Style/bootstrap.min.css" rel="stylesheet">
-    <!-- Material Design Bootstrap -->
-    <link href="static/Style/bootstrap-material-design.css" rel="stylesheet">
-    <!-- Template styles -->
-    <style rel="stylesheet">
-        /* TEMPLATE STYLES */
+{% block skill %}
 
-        main {
-            padding-top: 3rem;
-            padding-bottom: 2rem;
-        }
+    <ul class="">
+    {% for item in skill %}
 
-        .widget-wrapper {
-            padding-bottom: 2rem;
-            border-bottom: 1px solid #e0e0e0;
-            margin-bottom: 2rem;
-        }
-    </style>
+        {% if item in skill%}
+        <li class="list-group-item h6">{{ item }}</li>
 
-    {{ endblock }}
+        {% else %}
+        <li class="list-group-item h6">Escribe tus habilidades!</li>
+
+        {% endif %}
+
+
+    {% endfor %}
+    </ul>
+
+{% endblock  %}
+
+
+{% block status %}
+
+<div>
+  <select class="form-control" id="select-status">
+    <option style="background-color: green;">Available</option>
+    <option style="background-color: pink;">Studing</option>
+    <option style="background-color: chocolate;">Sleep</option>
+    <option style="background-color: red;">Not Available</option>
+    <option style="background-color: black; color:red;">Off</option>
+  </select>
+</div>
+
+
+{% endblock %}
+

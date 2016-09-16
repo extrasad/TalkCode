@@ -4,25 +4,26 @@
 <head>
     <meta charset="UTF-8">
     {% if title %}
-		<title>{{title}}</title>
+		<title>{{ title }}</title>
 	{% else %}
 		<title>Tittle not found</title>
 	{% endif %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='Style/bootstrap.css', media='screen' ) }}"/>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='Style/bootstrap-material-design.css', media='screen' ) }}"/>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='Style/ripples.css', media='screen' ) }}"/>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='Style/General.css', media='screen' ) }}"/>
-    <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='JavaScript/material.js', media='screen' ) }}"/>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='JavaScript/ripples.js', media='screen' ) }}"/>
-
+    <script src="{{ url_for('static', filename='JavaScript/jquery-2.2.4.min.js') }}"/></script>
+    <script src="{{ url_for('static', filename='JavaScript/bootstrap.min.js') }}"/></script>
+    <script src="{{ url_for('static', filename='JavaScript/material.js') }}"/></script>
+    <script src="{{ url_for('static', filename='JavaScript/ripples.js') }}"/></script>
 </head>
 <body>
 <header class="container">
-  <div class="jumbotron">
+  <div class="jumbotron " id="backg1">
       <div class="page-header">
-  <h1>Coursesita</h1>
+  <h1 class="text-info">Coursesita</h1>
       </div>
-      <h3 class="text-sucess blockquote-reverse">La mejor web de cursos gratis! </h3>
+      <h3 class="text-sucess"><br> Listo para <span class="text-info">explorar</span>?</h3>
       <br>
   </div>
 </header>
@@ -34,7 +35,7 @@
           <legend>Registrate</legend>
 
       <form class="form-horizontal" action="" method="POST">
-
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
         <div class="form-group label-static">
           <label for="i2" class="control-label">Name</label>
           {{ render_field(form.username, class='form-control' ) }}
@@ -43,12 +44,12 @@
 
         <div class="form-group label-floating">
           <label for="i5" class="control-label">Password</label>
-          {{ render_field(form.username, class='form-control' ) }}
+          {{ render_field(form.password, class='form-control' ) }}
         </div>
 
         <div class="form-group label-floating">
           <label for="i5" class="control-label">Email</label>
-          {{ render_field(form.username, class='form-control' ) }}
+          {{ render_field(form.email, class='form-control' ) }}
         </div>
         <button class="btn btn-danger btn-raised">Go!</button>
       </form>
@@ -72,9 +73,8 @@
 
 
   <!--Footer-->
-<footer class="page-footer center-on-small-only mdb-color darken-4">
-
-<div class="container">
+<footer>
+<div class="container alert-danger" id="footer-base">
 
     <div class="call-to-action">
         <h4 class="text-primary">Material Design for Bootstrap</h4>
@@ -82,15 +82,16 @@
     <!--/.Call to action-->
 
 
-        © 2015 Copyright: <a href="http://www.MDBootstrap.com"> MDBootstrap.com </a>
-
+    <p>© 2015 Copyright: <a href="http://www.MDBootstrap.com"> MDBootstrap.com </a></p>
     </div>
     <!--/.Copyright-->
 </footer>
 <!--/.Footer-->
 
 
-<script type="text/javascript">$.material.init();</script>
+<script type="text/javascript">
+$.material.init();
+</script>
 
 </body>
 </html>
