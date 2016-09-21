@@ -4,12 +4,15 @@ from flask_wtf import CsrfProtect
 import form
 from config import DevelopmentConfig
 from models import User, db
+from flask_mysqldb import MySQL
 
 app = Flask(__name__)
 app.config.from_object(DevelopmentConfig)
 csrf = CsrfProtect()
 global skill
 skill = []
+mysql = MySQL(app)
+
 
 
 #Crear index que sustituya a users como pagina de inicio
@@ -47,10 +50,20 @@ def user():
 def login():
     GeneralForm = form.GeneralForm(request.form)
     if request.method == 'POST' and not GeneralForm.validate():
-        session['username'] = GeneralForm.username.data
-        session['password'] = GeneralForm.password.data
-        session['email'] = GeneralForm.email.data
-        print session['username'], session['password'], session['email']
+        username = GeneralForm.username.data
+        password = GeneralForm.password.data
+        email = GeneralForm.email.data
+
+        session['username'] = username
+        session['password'] = password
+        session['email'] = email
+
+        user_new = User(username=GeneralForm.username.data,
+                        email=GeneralForm.email.data,
+                        password=GeneralForm.password.data)
+
+        db.session.add(user_new)
+        db.session.commit()
         return redirect(url_for('user'))
     else:
         return render_template('index.html', form=GeneralForm)
@@ -69,6 +82,12 @@ def cookie():
     reponse.set_cookie('custome_cookies', 'default_value')
     return render_template('cookie.html')
 
+@app.route('/query')
+def query():
+    cur = mysql.connection.cursor()
+    cur.execute('''SELECT email FROM user WHERE id > 0''')
+    rv = cur.fetchall()
+    return str(rv)
 
 """
 @app.route('/params')#Control de parametros con '?' y '&'
@@ -98,7 +117,7 @@ if __name__ == '__main__':
     """"run the SQLAlchemy.create_all() method to create the tables and database:"""
     db.init_app(app)
     """"Sincronizar la database con la aplicacion"""
-    with  app.app_context():
+    with app.app_context():
         db.create_all()
 
     db.init_app(app)
