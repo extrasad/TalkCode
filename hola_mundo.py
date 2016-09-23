@@ -52,19 +52,16 @@ def login():
     if request.method == 'POST' and not GeneralForm.validate():
         username = GeneralForm.username.data
         password = GeneralForm.password.data
-        email = GeneralForm.email.data
 
         session['username'] = username
         session['password'] = password
-        session['email'] = email
 
         user_new = User(username=GeneralForm.username.data,
-                        email=GeneralForm.email.data,
-                        password=GeneralForm.password.data)
-
+                        password=GeneralForm.password.data,
+                        )
         db.session.add(user_new)
         db.session.commit()
-        return redirect(url_for('user'))
+        return redirect(url_for('user', name=username))
     else:
         return render_template('index.html', form=GeneralForm)
 

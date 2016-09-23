@@ -1,22 +1,9 @@
-<!DOCTYPE html>
-{% from "_macro.html" import render_field %}
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-		<title> Home | {{ name }} </title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='Style/bootstrap-material-design.css', media='screen' ) }}"/>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='Style/ripples.css', media='screen' ) }}"/>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='Style/General.css', media='screen' ) }}"/>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='Style/bootstrap.css', media='screen' ) }}"/>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='Style/style_user.css', media='screen' ) }}"/>
-    <script src="{{ url_for('static', filename='JavaScript/jquery-2.2.4.min.js') }}"/></script>
-    <script src="{{ url_for('static', filename='JavaScript/bootstrap.min.js') }}"/></script>
-    <script src="{{ url_for('static', filename='JavaScript/material.js') }}"/></script>
-    <script src="{{ url_for('static', filename='JavaScript/ripples.js') }}"/></script>
+{% extends 'base/base.html' %}
+    {% set title = 'Home' %}
 
-</head>
-<body>
-<header class="container" >
+
+{% block content %}
+<div class="container" >
   <div class="jumbotron" id="backg1">
       <div class="page-header">
   <h1>{{ name }}</h1>
@@ -24,19 +11,15 @@
         {% block status %}
         {% endblock %}
   </div>
-</header>
+</div>
 <br>
 <br>
-
-
-
-
-
 
   <div class="container">
         <div class="row">
             <div class="col-md-2 ">
       <form action="" method="POST" class="form-inline">
+          {% from "_macro.html" import render_field %}
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
 
           <div class="form-group label-static">
@@ -53,27 +36,7 @@
             </div>
 
       </div>
+      <br>
   </div>
+{% endblock %}
 
-<div class="container">
-  <!--Footer-->
-<div class="container alert-danger" id="footer-user">
-    <footer class="footer">
-    <div class="call-to-action">
-        <h4 class="text-primary">Material Design for Bootstrap</h4>
-    </div>
-    <!--/.Call to action-->
-
-
-    <p>© 2015 Copyright: <a href="http://www.MDBootstrap.com"> MDBootstrap.com </a></p>
-    </footer>
-</div>
-    <!--/.Copyright-->
-<!--/.Footer-->
-</div>
-<script type="text/javascript">
-  $.material.init();
-</script>
-
-</body>
-</html>

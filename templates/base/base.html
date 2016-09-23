@@ -3,10 +3,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    {% if title %}
-		<title>{{ title }}</title>
-	{% else %}
-		<title>Tittle not found</title>
+    {% if title and name %}
+		<title>{{ title }} | {{ name }}</title>
+	{% elif title %}
+		<title>{{ title }} </title>
+    {% else %}
+    <title>Cursesita</title>
+
 	{% endif %}
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='Style/bootstrap.css', media='screen' ) }}"/>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='Style/bootstrap-material-design.css', media='screen' ) }}"/>
@@ -23,56 +26,16 @@
       <div class="page-header">
   <h1 class="text-info">Coursesita</h1>
       </div>
-      <h3 class="text-sucess"><br> Listo para <span class="text-info">explorar</span>?</h3>
+      <h3 class="text-sucess"><br> Listo para <span class="text-info">Explorar</span>?</h3>
       <br>
   </div>
 </header>
-<br>
-<br>
-  <div class="container">
-      <div class="row-content">
-      <fieldset>
-          <legend>Registrate</legend>
 
-      <form class="form-horizontal" action="" method="POST">
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-        <div class="form-group label-static">
-          <label for="i2" class="control-label">Name</label>
-          {{ render_field(form.username, class='form-control' ) }}
+        {% block content%}
 
-        </div>
+        {% endblock %}
 
-        <div class="form-group label-floating">
-          <label for="i5" class="control-label">Password</label>
-          {{ render_field(form.password, class='form-control' ) }}
-        </div>
-
-        <div class="form-group label-floating">
-          <label for="i5" class="control-label">Email</label>
-          {{ render_field(form.email, class='form-control' ) }}
-        </div>
-        <button class="btn btn-danger btn-raised">Go!</button>
-      </form>
-    </fieldset>
-    </div>
-  </div>
-
-<div class="container">
-    <br>
-    {% block lorem1%}
-    {% endblock %}
-    <br>
-    {% block lorem2%}
-    {% endblock %}
-    <br>
-    {% block lorem3%}
-    {% endblock %}
-    <br>
-  </div>
-</div>
-
-
-  <!--Footer-->
+    <!--Footer-->
 <footer>
 <div class="container alert-danger" id="footer-base">
 
@@ -82,7 +45,7 @@
     <!--/.Call to action-->
 
 
-    <p>© 2015 Copyright: <a href="http://www.MDBootstrap.com"> MDBootstrap.com </a></p>
+    <p>© 2016 Copyright: <a href="http://www.MDBootstrap.com"> Esta pagina esta creada con Flask</a></p>
     </div>
     <!--/.Copyright-->
 </footer>
@@ -90,8 +53,9 @@
 
 
 <script type="text/javascript">
-$.material.init();
+  $.material.init();
 </script>
 
 </body>
 </html>
+

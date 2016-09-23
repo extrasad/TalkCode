@@ -1,7 +1,7 @@
 {% extends 'layout_user/layout_user.html' %}
 
-{% set litle = home %}
 {% set name = name_user %}
+
 
 
 {% block skill %}
@@ -34,7 +34,13 @@
     <option style="background-color: red;">Not Available</option>
     <option style="background-color: black; color:red;">Off</option>
   </select>
+    <button style="position:relative;" class="btn btn-danger btn-raised"><a href="http://127.0.0.1:8000/logout">Exit</a></button>
+
 </div>
+
+</div>
+
+
 
 
 {% endblock %}
