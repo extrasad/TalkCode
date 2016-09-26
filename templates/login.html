@@ -5,14 +5,14 @@
 {% block content %}
   <div class="container">
       <div class="row-content">
-        <br>
+          <br>
               <div class="col-md-4">
-                  <h2 class="h2">Ya tienes cuenta?</h2>
+                  <h2 class="h2">No te has registrado?</h2>
 
-                  <button class="btn btn-success btn-raised"><a href="http://127.0.0.1:8000/login">Conectate</a></button>
+                  <button class="btn btn-success btn-raised"><a href="http://127.0.0.1:8000/register">Unete</a></button>
               </div>
-      <fieldset>
-          <legend>Registrate</legend>
+          <fieldset>
+          <legend class="h2">Login</legend>
 
       <form class="form-horizontal" action="" method="POST">
             {% from "_macro.html" import render_field %}
@@ -27,11 +27,6 @@
         <div class="form-group label-floating">
           <label for="i5" class="control-label">Password</label>
           {{ render_field(form.password, class='form-control' ) }}
-        </div>
-
-        <div class="form-group label-floating">
-          <label for="i5" class="control-label">Email</label>
-          {{ render_field(form.email, class='form-control' ) }}
         </div>
 
         <button class="btn btn-danger btn-raised">Go!</button>

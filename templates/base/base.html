@@ -31,8 +31,23 @@
   </div>
 </header>
 
-        {% block content%}
+        {% with message = get_flashed_messages() %}
+            {% if messages %}
+                <div class="contaier">
+                    <div class="row">
+                        <div class="col-md-6">
+                              <ul>
+                                {% for message in messages %}
+                                <li style="font-size:10px"><em>{{ message }}</em></li>
 
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            {% endif%}
+        {% endwith %}
+        {% block content%}
         {% endblock %}
 
     <!--Footer-->
@@ -45,7 +60,7 @@
     <!--/.Call to action-->
 
 
-    <p>© 2016 Copyright: <a href="http://www.MDBootstrap.com"> Esta pagina esta creada con Flask</a></p>
+    <p class="text-info">© 2016 Copyright: <a href="http://flask.pocoo.org"> Esta pagina esta creada con Flask</a></p>
     </div>
     <!--/.Copyright-->
 </footer>
