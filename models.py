@@ -6,6 +6,7 @@ import datetime
 db = SQLAlchemy()
 
 class User(db.Model):
+    __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True)
     email = db.Column(db.String(120))
@@ -43,5 +44,52 @@ class User(db.Model):
             return str(self.id)  # python 3
 
     def __repr__(self):
-        return "<User(name='%s', email='%s', password='%s')>" % (
-            self.username, self.email, self.password)
+        return "<User(name='%s', email='%s', password='%s')>" % \
+               (self.username, self.email, self.password)
+
+class Personal_User(db.Model):
+    __tablename__ = 'user_personal_info'
+    id_personal_user = db.Column(db.Integer, primary_key=True)
+    id_user = db.Column(db.Integer, db.ForeignKey('user.id'))
+    name = db.Column(db.String(100))
+    last_name = db.Column(db.String(100))
+    sex = db.Column(db.String(1))
+    country = db.Column(db.String(45))
+    city = db.Column(db.String(45))
+    dob = db.Column(db.Date)
+    repository = db.Column(db.String(120))
+    social_red = db.Column(db.String(150))
+    create_date_personal = db.Column(db.DateTime, default=datetime.datetime.now)
+
+    def __init__(self, name, last_name, sex, country, city, dob, repository, social_red):
+        self.name = name
+        self.last_name = last_name
+        self.sex = sex
+        self.country = country
+        self.city = city
+        self.dob = dob
+        self.repository = repository
+        self.social_red = social_red
+
+
+class Curriculum_User(db.Model):
+    __tablename__ = 'user_curriculum_info'
+    id_curriculum = db.Column(db.Integer, primary_key=True)
+    id_user = db.Column(db.Integer, db.ForeignKey('user.id'))
+    tittle = db.Column(db.String(100))
+    first_skill = db.Column(db.String(100))
+    second_skill = db.Column(db.String(100))
+    other_skill = db.Column(db.String(100))
+    university = db.Column(db.String(200))
+    years = db.Column(db.SmallInteger)
+    description = db.Column(db.String(260))
+    create_date_curriculum = db.Column(db.DateTime, default=datetime.datetime.now)
+
+    def __init__(self, tittle, first_skill, second_skill, other_skill, university, years, description):
+        self.tittle = tittle
+        self.first_skill = first_skill
+        self.second_skill = second_skill
+        self.other_skill = other_skill
+        self.university = university
+        self.years = years
+        self.description = description

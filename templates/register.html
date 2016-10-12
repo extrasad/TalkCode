@@ -1,34 +1,38 @@
   {% extends 'base/base.html' %}
 
-    {% set title = 'Prog Prog' %}
+    {% set title = 'Course' %}
 
 {% block content %}
   <div class="container">
       <div class="row-content">
-          <br>
+        <br>
               <div class="col-md-4">
-                  <h2 class="h2">No te has registrado?</h2>
+                  <h2 class="h2">Ya tienes cuenta?</h2>
 
-                  <button class="btn btn-success btn-raised"><a href="http://127.0.0.1:8000/register">Unete</a></button>
+                  <button class="btn btn-success btn-raised"><a href="http://127.0.0.1:8000/login">Conectate</a></button>
               </div>
-          <fieldset>
-          <legend class="h2">Login</legend>
+      <fieldset>
+          <legend>Registrate</legend>
 
       <form class="form-horizontal" action="" method="POST">
             {% from "_macro.html" import render_field %}
 
+
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-
-
-        <div class="form-group label-static">
-          <label for="i2" class="control-label  label-floating ">Name</label>
-          {{ render_field(form.username, class='form-control', style="color:white; letter-spacing:1px;" ) }}
+        <div class="form-group  label-floating">
+          <label for="i2" class="control-label text-form">Name</label>
+          {{ render_field(form.username, class='form-control' , style="color:white; letter-spacing:1px;" ) }}
 
         </div>
 
         <div class="form-group label-floating">
-          <label for="i5" class="control-label  label-floating">Password</label>
-          {{ render_field(form.password, class='form-control', style="color:white; letter-spacing:1px;"  ) }}
+          <label for="i5" class="control-label">Password</label>
+          {{ render_field(form.password, class='form-control ' , style="color:white; letter-spacing:1px;" ) }}
+        </div>
+
+        <div class="form-group label-floating">
+          <label for="i5" class="control-label ">Email</label>
+          {{ render_field(form.email, class='form-control ' , style="color:white; letter-spacing:1px;" ) }}
         </div>
 
         <button class="btn btn-danger btn-raised">Go!</button>

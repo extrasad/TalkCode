@@ -1,0 +1,52 @@
+{% extends 'base/base.html' %}
+    {% set title = 'Curriculum' %}
+
+    {% block content %}
+    <div class="container">
+      <div class="row">
+      <div class="col-md-6">
+        <div class="well bs-component">
+          <form class="form-horizontal" method="POST">
+            {% from "_macro.html" import render_field %}
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            <fieldset>
+              <legend>CV Information</legend>
+              <div class="form-group">
+                {{ render_field(form.tittle, class='form-control text-info' , style="color:white; letter-spacing:1px;" ) }}
+              </div>
+              <div class="form-group">
+                {{ render_field(form.first_skill, class='form-control text-info' , style="color:white; letter-spacing:1px;" ) }}
+              </div>
+              <div class="form-group" >
+                {{ render_field(form.second_skill, class='form-control text-warning' , style="color:white; letter-spacing:1px;" ) }}
+              </div>
+              <div class="form-group">
+
+                {{ render_field(form.other_skill, class='form-control text-info' , style="color:white; letter-spacing:1px;" ) }}
+
+              </div>
+              <div class="form-group">
+                {{ render_field(form.university, class='form-control text-info' , style="color:white; letter-spacing:1px;" ) }}
+              </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="well bs-component">
+          <legend>Network Data</legend>
+          <div class="form-group">
+            {{ render_field(form.years, class='form-control text-info' , style="color:white; letter-spacing:1px;" ) }}
+          </div>
+          <div class="form-group">
+            {{ render_field(form.description, class='form-control text-info' , style="color:white; letter-spacing:1px;" ) }}
+          </div>
+            <hr>
+          <button type="submit" class="btn btn-primary btn-sm">Submit</button>
+
+        </div>
+      </div>
+    </fieldset>
+  </form>
+    </div>
+
+
+    {% endblock %}

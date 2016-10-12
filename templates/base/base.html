@@ -3,74 +3,69 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    {% if title and name %}
-		<title>{{ title }} | {{ name }}</title>
-	{% elif title %}
-		<title>{{ title }} </title>
-    {% else %}
-    <title>Cursesita</title>
+    {% if name %}
+		  <title>{{ title }} | {{ name.split(' ')[0].capitalize() }}</title>
+  	{% elif not name%}
+      <title>Progressive Programming</title>
+	  {% endif %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.css', media='screen' ) }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap-material-design.css', media='screen' ) }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/ripples.css', media='screen' ) }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/General.css', media='screen' ) }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
+    <script src="{{ url_for('static', filename='js/jquery-2.2.4.min.js') }}"/></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.js') }}"/></script>
+    <script src="{{ url_for('static', filename='js/ripples.min.js') }}"/></script>
+    <script src="{{ url_for('static', filename='js/material.min.js') }}"/></script>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300" rel="stylesheet">
 
-	{% endif %}
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='Style/bootstrap.css', media='screen' ) }}"/>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='Style/bootstrap-material-design.css', media='screen' ) }}"/>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='Style/ripples.css', media='screen' ) }}"/>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='Style/General.css', media='screen' ) }}"/>
-    <script src="{{ url_for('static', filename='JavaScript/jquery-2.2.4.min.js') }}"/></script>
-    <script src="{{ url_for('static', filename='JavaScript/bootstrap.min.js') }}"/></script>
-    <script src="{{ url_for('static', filename='JavaScript/material.js') }}"/></script>
-    <script src="{{ url_for('static', filename='JavaScript/ripples.js') }}"/></script>
 </head>
 <body>
 <header class="container">
+  <div class="row">
   <div class="jumbotron " id="backg1">
-      <div class="page-header">
-  <h1 class="text-info">Coursesita</h1>
+      <div class="page-header col-md-12">
+  <h1 class="text-header">Progressive Programming</h1>
+  <h3 class="text-info h5">Some information / Good reason.</h3>
       </div>
-      <h3 class="text-sucess"><br> Listo para <span class="text-info">Explorar</span>?</h3>
+      {% if request.endpoint in 'index' %}
+        <h1 class="text-muted h5 text-xs-right">{{ date }}</h1>
+      {% endif %}
+      {% if 'username' in session and request.endpoint in 'index' %}
+      <button type="button" class="btn btn-sm" name="button"><a href="http://127.0.0.1:8000/user">Dashboard</a></button>
+      <button type="button" class="btn btn-sm" name="button"><a href="#">Write Post</a></button>
+      <button type="button" class="btn btn-sm" name="button"><a href="http://127.0.0.1:8000/logout">Logout</a></button>
+      {% elif 'username' in session and request.endpoint not in 'index' %}
+      <div class="">
+        <button type="button" class="btn btn-sm" name="button"><a href="http://127.0.0.1:8000/logout">Logout</a></button>
+        <button type="button" class="btn btn-sm" name="button"><a href="http://127.0.0.1:8000/">Home</a></button>
+      </div>
       <br>
+      {% elif not 'username' in session and request.endpoint not in 'index' %}
+      <div class="">
+        <button type="button" class="btn btn-sm" name="button"><a href="http://127.0.0.1:8000/">Home</a></button>
+      </div>
+      <br>
+
+      {% endif%}
+      </div>
   </div>
 </header>
+{% block content%}
+{% endblock %}
 
-        {% with message = get_flashed_messages() %}
-            {% if messages %}
-                <div class="contaier">
-                    <div class="row">
-                        <div class="col-md-6">
-                              <ul>
-                                {% for message in messages %}
-                                <li style="font-size:10px"><em>{{ message }}</em></li>
-
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            {% endif%}
-        {% endwith %}
-        {% block content%}
-        {% endblock %}
-
+<br>
     <!--Footer-->
-<footer>
-<div class="container alert-danger" id="footer-base">
+<div class="container footer" id="footer-base">
 
-    <div class="call-to-action">
-        <h4 class="text-primary">Material Design for Bootstrap</h4>
-    </div>
+    <div class="col-md-4  text-info text-footer"><h6 class="tooltip-inner text-xs-center text-sm-center text-md-center">Page <span style="color:rgb(49,129,30)">in</span> Flask</h6></div>
     <!--/.Call to action-->
-
-
-    <p class="text-info">© 2016 Copyright: <a href="http://flask.pocoo.org"> Esta pagina esta creada con Flask</a></p>
-    </div>
+</div>
     <!--/.Copyright-->
-</footer>
 <!--/.Footer-->
-
-
 <script type="text/javascript">
   $.material.init();
 </script>
 
 </body>
 </html>
-

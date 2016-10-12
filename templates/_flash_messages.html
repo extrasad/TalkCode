@@ -1,0 +1,20 @@
+{% macro flash_messages() %}
+
+  {% with message = get_flashed_messages() %}
+      {% if messages %}
+          <div class="contaier">
+              <div class="row">
+                  <div class="col-md-6">
+                        <ul>
+                          {% for message in messages %}
+                          <li style="font-size:10px"><em>{{ message }}</em></li>
+
+                          {% endfor %}
+                      </ul>
+                  </div>
+              </div>
+          </div>
+      {% endif%}
+  {% endwith
+
+{% endmacro %}

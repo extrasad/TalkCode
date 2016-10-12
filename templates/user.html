@@ -1,47 +1,9 @@
 {% extends 'layout_user/layout_user.html' %}
-
 {% set name = name_user %}
 
 
-
-{% block skill %}
-
-    <ul class="">
-    {% for item in skill %}
-
-        {% if item in skill%}
-        <li class="list-group-item h6">{{ item }}</li>
-
-        {% else %}
-        <li class="list-group-item h6">Escribe tus habilidades!</li>
-
-        {% endif %}
-
-
-    {% endfor %}
-    </ul>
-
-{% endblock  %}
-
-
-{% block status %}
-
-<div>
-  <select class="form-control" id="select-status">
-    <option style="background-color: green;">Available</option>
-    <option style="background-color: pink;">Studing</option>
-    <option style="background-color: chocolate;">Sleep</option>
-    <option style="background-color: red;">Not Available</option>
-    <option style="background-color: black; color:red;">Off</option>
-  </select>
-    <button style="position:relative;" class="btn btn-danger btn-raised"><a href="http://127.0.0.1:8000/logout">Exit</a></button>
-
-</div>
-
-</div>
-
+{% block contentuser %}
 
 
 
 {% endblock %}
-

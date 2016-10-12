@@ -1,77 +1,175 @@
-  {% extends 'base/base.html' %}
-
-    {% set title = 'Course' %}
+{% extends 'base/base.html' %}
 
 {% block content %}
-  <div class="container">
-      <div class="row-content">
-        <br>
-              <div class="col-md-4">
-                  <h2 class="h2">Ya tienes cuenta?</h2>
+<div class="container">
+    <div class="row">
 
-                  <button class="btn btn-success btn-raised"><a href="http://127.0.0.1:8000/login">Conectate</a></button>
-              </div>
-      <fieldset>
-          <legend>Registrate</legend>
+        <!--Main column-->
+        <div class="col-md-8">
 
-      <form class="form-horizontal" action="" method="POST">
-            {% from "_macro.html" import render_field %}
+            <!--Post-->
+            <div class="post-wrapper">
+                <!--Post data-->
+                <h1 class="h1-responsive">Matplotlib in <span class="text-info">Flask</span>
+                <br>
+                <small class="text-muted">Aplication with Flask and Matplotlib.</small></h1>
+                <h5>Written by <a href="">Carlos Azuaje</a>, 30.04.2016</h5>
 
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-        <div class="form-group label-static">
-          <label for="i2" class="control-label">Name</label>
-          {{ render_field(form.username, class='form-control' ) }}
+                <br>
 
+                <!--Featured image -->
+                <div class="view overlay hm-white-light z-depth-1-half">
+                    <img src="https://i.ytimg.com/vi/RQIHrHjfA3Q/maxresdefault.jpg" class="img-fluid" width="230" alt="">
+                    <div class="mask">
+                    </div>
+                </div>
+
+                <br>
+
+                <!--Post excerpt-->
+                <p>Basically,
+                  matplotlib.pyplot is a collection of command style
+                  functions that make matplotlib work like MATLAB.
+                  Each pyplot function makes some change to a figure: e.g.,
+                  creates a figure, creates a plotting area in a figure, plots
+                  some lines in a plotting area, decorates the plot with labels,
+                  etc.
+                </p>
+                <!--"Read more" button-->
+                <button class="{{ button }}">Read more</button>
+            </div>
+            <!--/.Post-->
+
+            <hr>
+
+            <!--Post-->
+            <div class="post-wrapper">
+                <!--Post data-->
+                <h1 class="h1-responsive">Don't Touch The Spike in <span class="text-info">Pygame</span>
+                <br>
+                <small class="text-muted">Classic movil game, in Python.</small></h1>
+                <h5>Written by <a href="">Carlos Azuaje</a>, 30.04.2016</h5>
+
+                <br>
+
+                <!--Featured image -->
+                <div class="view overlay hm-white-light z-depth-1-half">
+                    <img src="https://i.ytimg.com/vi/RQIHrHjfA3Q/maxresdefault.jpg"  width="235"    class="img-fluid " alt="">
+                    <div class="mask">
+                    </div>
+                </div>
+
+                <br>
+
+                <!--Post excerpt-->
+                <p>
+                  Pygame is built over the Simple DirectMedia Layer (SDL) library,
+                  with the intention of allowing real-time computer game development
+                  without the low-level mechanics of the C programming language and its derivatives.
+                  This is based on the assumption that the most expensive functions inside games (mainly the graphics part)
+                  scan be abstracted from the game logic, making it possible to use a high-level programming language, such as Python, to structure the game
+
+                </p>
+                <!--"Read more" button-->
+                <button class="{{ button }}">Read more</button>
+            </div>
+            <!--/.Post-->
+
+            <hr>
+
+            <!--Post-->
+            <div class="post-wrapper">
+                <!--Post data-->
+                <h1 class="h1-responsive">SHA256 in <span class="text-info">Python</span>
+                <br>
+                <small class="text-muted">Security encripting password</small></h1>
+                <h5>Written by <a href="">Carlos Azuaje</a>, 30.04.2016</h5>
+
+                <br>
+
+                <!--Featured image -->
+                <div class="view overlay hm-white-light z-depth-1-half">
+                    <img src="https://i.ytimg.com/vi/RQIHrHjfA3Q/maxresdefault.jpg"    width="235" class="img-fluid" alt="">
+                    <div class="mask">
+                    </div>
+                </div>
+
+                <br>
+
+                <!--Post excerpt-->
+                <p>
+                    La familia SHA (Secure Hash Algorithm, Algoritmo de Hash Seguro)
+                    es un sistema de funciones hash criptográficas relacionadas de
+                    la Agencia de Seguridad Nacional de los Estados Unidos (NSA) y
+                    publicadas por el National Institute of Standards and Technology (NIST). El primer miembro de la familia fue publicado en 1993 es oficialmente llamado SHA. Sin embargo, hoy día, no oficialmente se le llama SHA-0 para evitar confusiones con sus sucesores. Dos años más tarde el primer sucesor de SHA fue publicado con el nombre de SHA-1. Existen cuatro variantes más que se han publicado desde entonces cuyas diferencias se basan
+                    en un diseño algo modificado y rangos de salida incrementados:
+                    SHA-224, SHA-256, SHA-384, y SHA-512 (llamándose SHA-2 a todos ellos)”.
+                </p>
+                <!--"Read more" button-->
+                <button class="{{ button }}">Read more</button>
+            </div>
+<hr>
         </div>
 
-        <div class="form-group label-floating">
-          <label for="i5" class="control-label">Password</label>
-          {{ render_field(form.password, class='form-control' ) }}
-        </div>
+<br>
 
-        <div class="form-group label-floating">
-          <label for="i5" class="control-label">Email</label>
-          {{ render_field(form.email, class='form-control' ) }}
-        </div>
+                      <div class="col-md-4">
+                        <div class="widget-wrapper">
+                          <div class="card-primary btn-group">
+                          <button type="button"  class="btn btn-primary btn-reased"name="button"><a href="http://127.0.0.1:8000/register">Register</a></button>
+                          <button type="button" class="btn btn-primary btn-reased"name="button"><a href="http://127.0.0.1:8000/login">Login</a></button>
+                          <button type="button" class="btn btn-primary btn-reased"name="button"><a href="http://127.0.0.1:8000/about">About</a></button>
+                          </div>
+                        </div>
+                        <br>
+                      </div>
 
-        <button class="btn btn-danger btn-raised">Go!</button>
-      </form>
-    </fieldset>
-    </div>
+                      <div class="col-md-4"   id="newletter">
 
+                            <div class="widget-wrapper">
+                                <h4 class="text-xs-center">Newletter</h4>
+                                <hr>
+                                <div class="card">
+                                    <div class="card-block">
+                                        <p><strong>Subscribe to our newsletter</strong></p>
+                                        <p>Once a week we will send you a summary of the most useful news</p>
+                                        <div class="md-form">
+                                            <i class="fa fa-user prefix"></i>
+                                            <input type="text" id="form1" class="form-control">
+                                            <label for="form1">Your name</label>
+                                        </div>
+                                        <div class="md-form">
+                                            <i class="fa fa-envelope prefix"></i>
+                                            <input type="text" id="form2" class="form-control">
+                                            <label for="form2">Your email</label>
+                                        </div>
+                                        <button class=" {{ button }}">Submit</button>
 
+                                    </div>
+                                </div>
+                            </div>
 
-  <div class="container">
-    <br>
-  <div class="">
-  Maecenas eget interdum ante, sit amet aliquet velit.
-  Nunc vitae mauris quis turpis pulvinar auctor nec eu nulla. Donec
-  at lorem sed mauris accumsan efficitur. Quisque ultrices augue a luctus hendrerit.
-  Curabitur scelerisque felis a placerat consequat. Morbi vel erat elit.
-  Donec porttitor neque at erat pharetra, vitae malesuada dolor blandit.
-  </div>
-  <br>
-  <div class="">
-  Nulla nunc metus, elementum id rutrum nec, elementum id sem.
-  Ut mattis ex a neque auctor, id fringilla augue ultrices.
-  Pellentesque quis leo quam. Ut finibus auctor nisi, ut pulvinar mauris maximus ut.
-  Donec faucibus eleifend sem mollis ultricies.
-  Phasellus posuere nisl quam, ultrices eleifend tortor hendrerit at.
-  Phasellus lacinia vehicula est.
-  </div>
-  <br>
+                        </div>
+                        <!--/.Sidebar-->
+                    </div>
+                </div>
 
+                <script type="text/javascript">
+                $(document).ready(function(){
 
-  <div class="">
-  In hac habitasse platea dictumst. Cras ut pulvinar est. Curabitur sem enim,
-  aliquam laoreet diam ut, convallis cursus lectus. Nunc et orci pretium,
-  luctus libero a, faucibus enim. Nunc quis felis varius, consequat turpis ut,
-  commodo dui. Aliquam bibendum purus sed est sagittis placerat.
-  Etiam efficitur interdum ullamcorper. Nunc semper sagittis purus, ut fermentum
-  quam hendrerit eu.
-  </div>
+                        function fixed_newletter(z) {
+                          var s = $(window).scrollTop();
+                          if (s <=z) {
+                            $('#newletter').removeClass('fixed');
+                          }
+                          if (s >= z) {
+                            $('#newletter').addClass('fixed');
+                          }
+                        };
 
-  </div>
-  <br>
+                        fixed_newletter(300);
 
-  {% endblock %}
+                        });
+                </script>
+
+{% endblock %}

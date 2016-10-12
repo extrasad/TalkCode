@@ -1,0 +1,56 @@
+{% extends 'base/base.html' %}
+    {% set title = 'Setting' %}
+
+    {% block content %}
+    <div class="container">
+      <div class="row">
+      <div class="col-md-6">
+        <div class="well bs-component">
+          <form class="form-horizontal" method="POST">
+            {% from "_macro.html" import render_field %}
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            <fieldset>
+              <legend>General Information</legend>
+              <div class="form-group">
+                {{ render_field(form.name, class='form-control text-info' , style="color:white; letter-spacing:1px;" ) }}
+              </div>
+              <div class="form-group">
+                {{ render_field(form.last_name, class='form-control text-info' , style="color:white; letter-spacing:1px;" ) }}
+              </div>
+              <div class="form-group" >
+                {{ render_field(form.sex, class='form-control text-warning' , style="color:white; letter-spacing:1px;" ) }}
+              </div>
+              <div class="form-group">
+
+                {{ render_field(form.country, class='form-control text-info' , style="color:white; letter-spacing:1px;" ) }}
+
+              </div>
+              <div class="form-group">
+                {{ render_field(form.city, class='form-control text-info' , style="color:white; letter-spacing:1px;" ) }}
+              </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="well bs-component">
+          <legend>Network Data</legend>
+          <div class="form-group">
+            {{ render_field(form.repository, class='form-control text-info' , style="color:white; letter-spacing:1px;" ) }}
+          </div>
+          <div class="form-group">
+            {{ render_field(form.social_red, class='form-control text-info' , style="color:white; letter-spacing:1px;" ) }}
+          </div>
+          <div class="form-group">
+                {{ render_field(form.dob, type="date" ,class='form-control-wrapper text-info', id='datetimepicker1' , style="color:white; letter-spacing:1px;" ) }}
+                <span class="icon-calendar"></span>
+          </div>
+hr
+          <button type="submit" class="btn btn-primary btn-sm">Submit</button>
+
+        </div>
+      </div>
+    </fieldset>
+  </form>
+    </div>
+
+
+    {% endblock %}

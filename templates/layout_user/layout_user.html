@@ -1,42 +1,76 @@
 {% extends 'base/base.html' %}
     {% set title = 'Home' %}
 
+    <!--<button class="btn btn-info btn-raised"><a href="http://127.0.0.1:8000/logout">Exit</a></button>-->
 
 {% block content %}
-<div class="container" >
-  <div class="jumbotron" id="backg1">
-      <div class="page-header">
-  <h1>{{ name }}</h1>
-      </div>
-        {% block status %}
-        {% endblock %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+          <div class="card"  style="height:700px">
+  <!--/.Card image-->
+
+  <!--Card content-->
+  <div class="card-block">
+      <!--Title-->
+      <h4 class="card-title">Lenguages</h4>
+      <!--Text-->
+      <p class="card-text">No hay ningun lenguaje adquirido</p>
+      <hr>
+      <a href="#" class="btn btn-primary btn-sm">Configurar</a>
+      <br>
+      <br>
+      <h4>Location</h4>
   </div>
+  <!--/.Card content-->
+          </div>
+        </div>
+        <div class="col-md-6" style="">
+        <div class="card">
+          <div class="avatar">
+            <img src="" class="img-circle img-responsive">
+          </div>
+          <div class="card-block">
+            <div>
+              <h4 class="card-title">
+                 {{ name.split(' ')[0].capitalize() }} <a href="http://127.0.0.1:8000/setting/curriculum_info" class="right btn btn-info btn-sm">Curriculum</a>
+              </h4>
+            </div>
+            <i class="icon-lightbulb"> </i> Blogger
+              <hr>
+              <div class="list">
+                <ul>
+                <li class="text-primary" style=""><i class="icon-star"></i> 2</li>
+                <li class="text-primary" style=""><i class="icon-gittip"></i> 2</li>
+                </ul>
+              </div>
+              <hr class="well-primary">
+              <div class="info">
+                <a href="http://127.0.0.1:8000/setting/personal_info" class="right btn btn-info btn-sm">Setting</a>
+                    {% if personal_info %}
+                        {% for item, values in personal_info.items() %}
+                            <h6 class="text-danger">{{ item }} : {{ values }} </h6>
+                        {% endfor %}
+                    {% else %}
+                    <h6 class="text-info">Add your information in setting.</h6>
+                    {% endif %}
+              </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card" style="height:375px">
+          <div class="card-block">
+            <h2 class="h3">Activity</h2>
+            <hr>
+            <h6>Article  <span>0</span></h6>
+            <h6>Snippets <span>0</span></h6>
+            <h6>Answer   <span>0</span></h6>
+            <h6>Question <span>0</span></h6>
+          </div>
+      </div>
+      </div>
+    </div>
 </div>
 <br>
-<br>
-
-  <div class="container">
-        <div class="row">
-            <div class="col-md-2 ">
-      <form action="" method="POST" class="form-inline">
-          {% from "_macro.html" import render_field %}
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-
-          <div class="form-group label-static">
-          {{ render_field(form.skill, class='form-control' ) }}
-          </div>
-          <button class="btn btn-info btn-raised">Go!</button>
-      </form>
-        </div>
-            <div class="col-md-6" style="border-style: 2px solid black;">
-
-            {% block skill %}
-            {% endblock %}
-
-            </div>
-
-      </div>
-      <br>
-  </div>
 {% endblock %}
-
