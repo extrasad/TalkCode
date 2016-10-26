@@ -48,8 +48,8 @@
               <div class="info">
                 <a href="http://127.0.0.1:8000/setting/personal_info" class="right btn btn-info btn-sm">Setting</a>
                     {% if personal_info %}
-                        {% for item, values in personal_info.items() %}
-                            <h6 class="text-danger">{{ item }} : {{ values }} </h6>
+                        {% for item in personal_info %}
+                            <h6 style=" font-size:14px;">{{ item }}</h6>
                         {% endfor %}
                     {% else %}
                     <h6 class="text-info">Add your information in setting.</h6>

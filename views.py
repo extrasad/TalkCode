@@ -1,6 +1,6 @@
 # coding=utf-8
 from datetime import date
-from flask import Flask, request, render_template, make_response, session, redirect, url_for, flash
+from flask import Flask, request, render_template, make_response, session, redirect, url_for, flash, jsonify
 from flask_wtf import CsrfProtect
 from form import RegisterForm, LoginForm, PersonalForm, CurriculumForm
 from models import db, User, Personal_User, Curriculum_User
@@ -15,7 +15,7 @@ app = Flask(__name__)
 
 @app.errorhandler(404)
 def page_not_found(e):
-    return render_template('index.html')
+    return render_template('index.html'), 404
 
 
 @app.before_request
@@ -40,7 +40,15 @@ def index():
 @app.route('/user', methods=['GET', 'POST'])
 def user():
     if 'username' in session:
-        return render_template('user.html', name_user=session['username'])
+        user_personal_info = db.session.query(Personal_User).filter(User.id == session['id']).first()
+        if user_personal_info == None: #Si no hay informacion personal
+            return render_template('user.html', name_user=session['username'])
+        else:
+            name = str(user_personal_info.name) + ' ' + str(user_personal_info.last_name)
+            info_personal = [name, user_personal_info.sex,\
+                             user_personal_info.country, user_personal_info.city, user_personal_info.dob,\
+                             user_personal_info.repository, user_personal_info.social_red]
+            return render_template('user.html', name_user=session['username'], personal_info=info_personal)
     else:
         return redirect(url_for('login'))
 
@@ -54,19 +62,26 @@ def register():
         password = new_registerForm.password.data
         email = new_registerForm.email.data
 
-        session['username'] = username
-        session['password'] = password
-        session['email'] = email
+        jquery_validate_username = User.query.filter_by(username=username).first()
 
-        user_new = User(username=session['username'], password=session['password'], email=session['email'])
-        db.session.add(user_new)
-        db.session.commit()
-        print 'New user register!'
-        flash('New user register')
-        return redirect(url_for('user', name=username))
+        if jquery_validate_username is not None:
+            uri_parameters = 'invalid'
+            flash('That dates in use')
+            print uri_parameters
+            return redirect(url_for('register', error=uri_parameters))
+        else:
+            session['username'] = username
+            session['password'] = password
+            session['email'] = email
+            user_new = User(username=session['username'], password=session['password'], email=session['email'])
+            db.session.add(user_new)
+            db.session.commit()
+            #   user_id, quitar si redirect esta haciendo que se ejecute bien la funcion user
+            user_id = db.session.query(User.id).filter(User.username == session['username']).first()
+            session['id'] = user_id[0]
+            flash('New user register')
+            return redirect(url_for('user', name=username))
     else:
-        print "Invalid"
-        flash('Invalid Date')
         return render_template('register.html', form=new_registerForm)
 
 
@@ -83,6 +98,8 @@ def login():
             succes_message = 'Bienvenido {}'.format(username)
             flash(succes_message)
             session['username'] = username
+            user_id = db.session.query(User.id).filter(User.username == session['username']).first()
+            session['id'] = user_id[0]
             print 'Bienvenido de nuevo {}'.format(username)
             return redirect(url_for('user', name=username))
 
@@ -100,6 +117,8 @@ def login():
 def setting_personal():
     new_PersonalForm = PersonalForm(request.form)
     if request.method == 'POST' and new_PersonalForm.validate():
+        query = db.session.query(User.id).filter(User.username == session['username']).first()
+        user_id = query[0]  # long integer delete 'L'
         name = new_PersonalForm.name.data
         last_name = new_PersonalForm.last_name.data
         sex = new_PersonalForm.sex.data
@@ -109,7 +128,7 @@ def setting_personal():
         repository = new_PersonalForm.repository.data
         social_red = new_PersonalForm.social_red.data
 
-        setting_new = Personal_User(name, last_name, sex,
+        setting_new = Personal_User(user_id, name, last_name, sex,
                                     country, city, dob,
                                     repository, social_red)
 
@@ -120,6 +139,7 @@ def setting_personal():
         flash(message)
         return redirect(url_for('user'))
     return render_template('form_personal.html', form=new_PersonalForm)
+
 
 @app.route('/setting/curriculum_info', methods=['GET', 'POST'])
 @user_required
@@ -154,8 +174,6 @@ def about():
 def logout():
     # remove the username from the session if it's there
     if 'username' in session:
-        exit_message = 'User {}'.format(session['username'])
-        flash(exit_message)
         session.pop('username', None)
     return redirect(url_for('login'))
 
@@ -166,31 +184,26 @@ def cookie():
     reponse.set_cookie('custome_cookies', 'default_value')
     return render_template('cookie.html')
 
-@app.route('/query')
-def query():
+@app.route('/query/execute')
+def query_execute():
     cur = mysql.connection.cursor()
-    cur.execute('''SELECT * FROM user_personal_info''')
+    cur.execute('SELECT username FROM user where username = "carlosjazz"')
     rv = cur.fetchall()
-    return str(rv)
+    return jsonify(username=rv)
 
+@app.route('/query/sqlalchemy/user')
+def query_orm_id():
+    user = db.session.query(User).filter(User.username == session['username']).first()
+    info_user = [user.id, user.username, user.password, user.email]
+    return jsonify({session['username']: info_user})
 
-@app.route('/params')#Control de parametros con '?' y '&'
-def params():
-    param_1 = request.args.get('params1', 'Not Request')
-    param_2 = request.args.get('params2', 'Not Request') #http://127.0.0.1:8000/params?params1=Parametro&params2=Metropara
-
-    return 'Los parametros son:  {}, {}'.format(param_1, param_2)
-
-@app.route('/course/')#Si no hay nada despues de course, se retorna el valor default de name
-@app.route('/course/<name>/')#Control de parametros desde el metodo
-@app.route('/course/<name>/<int:number>')# Validar ruta con int:
-def course(name='Free Course everything!', number=' '):
-    return 'Course: {} Capitulo: {} '.format(name, number)
-"""
-#Ejemplo de listas y variables
-@app.route('/users/<name>')
-def users(name='default'):
-    lenguage = ['C/C++', 'Javascript', 'Python']
-    skill = ['Game Developer', 'Web Developer']
-    skillOn = True
-    pass"""
+@app.route('/query/sqlalchemy/personal_info')
+def query_orm_personal():
+    user_personal_info = db.session.query(Personal_User).filter(User.id == session['id']).first()
+    if user_personal_info == None:
+        return 'No have personal info'
+    else:
+        info_personal = [user_personal_info.name, user_personal_info.last_name, user_personal_info.sex,\
+                         user_personal_info.country, user_personal_info.city, user_personal_info.dob,\
+                         user_personal_info.repository, user_personal_info.social_red]
+        return jsonify({session['username']: info_personal})

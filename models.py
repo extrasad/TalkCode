@@ -1,17 +1,22 @@
 # coding=utf-8
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import UnicodeText
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
-
 db = SQLAlchemy()
 
 class User(db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True)
-    email = db.Column(db.String(120))
+    email = db.Column(db.String(120), unique=True)
     password = db.Column(db.String(66))
     create_date = db.Column(db.DateTime, default=datetime.datetime.now)
+    curriculum_date = db.relationship('Curriculum_User')
+    personal_date = db.relationship('Personal_User')
+    question = db.relationship('Question', backref='user', lazy='dynamic')
+    answer = db.relationship('Answer', backref='user', lazy='dynamic')
+
 
     def __init__(self, username, password, email):
         self.username = username
@@ -44,8 +49,8 @@ class User(db.Model):
             return str(self.id)  # python 3
 
     def __repr__(self):
-        return "<User(name='%s', email='%s', password='%s')>" % \
-               (self.username, self.email, self.password)
+        return "<User(id='%s',name='%s', email='%s', password='%s')>" % \
+               (self.id, self.username, self.email, self.password)
 
 class Personal_User(db.Model):
     __tablename__ = 'user_personal_info'
@@ -61,7 +66,8 @@ class Personal_User(db.Model):
     social_red = db.Column(db.String(150))
     create_date_personal = db.Column(db.DateTime, default=datetime.datetime.now)
 
-    def __init__(self, name, last_name, sex, country, city, dob, repository, social_red):
+    def __init__(self, id_user, name, last_name, sex, country, city, dob, repository, social_red):
+        self.id_user = id_user
         self.name = name
         self.last_name = last_name
         self.sex = sex
@@ -93,3 +99,26 @@ class Curriculum_User(db.Model):
         self.university = university
         self.years = years
         self.description = description
+
+
+class Question(db.Model):
+    __tablename__ = 'user_question'
+    id = db.Column(db.Integer, primary_key=True)
+    id_user = db.Column(db.Integer, db.ForeignKey('user.id'))
+    title = db.Column(db.String(150))
+    description = db.Column(db.String(200))
+    text_area = db.Column(UnicodeText)
+    tag = db.Column(db.String(45))
+    upvote = db.Column(db.Integer, default=0)
+    downvote = db.Column(db.Integer, default=0)
+    create_date = db.Column(db.DateTime, default=datetime.datetime.now)
+
+
+class Answer(db.Model):
+    __tablename__ = 'user_answer'
+    id = db.Column(db.Integer, primary_key=True)
+    id_user = db.Column(db.Integer, db.ForeignKey('user.id'))
+    answer = db.Column(UnicodeText)
+    upvote = db.Column(db.Integer, default=0)
+    downvote = db.Column(db.Integer, default=0)
+    create_date = db.Column(db.DateTime, default=datetime.datetime.now)

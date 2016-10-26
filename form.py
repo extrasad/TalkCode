@@ -3,15 +3,23 @@ from wtforms import Form, StringField, validators, PasswordField, SelectField, D
 from wtforms.fields.html5 import EmailField
 import pycountry
 
-class Country_dict(dict):
-    cc = {}
-    t = list(pycountry.countries)
+class Country_list(list):
+    """'create choice for html form"""
+    def __init__(self):
+        self.lista_alpha = []
+        self.lista_name = []
+        self.choice = None
 
-    for country in t:
-        cc[country.alpha2] = country.name
+    def create_choices(self):
+        t = list(pycountry.countries)
+        for country in t:
+            self.lista_alpha.append(country.alpha2)
+            self.lista_name.append(country.name)
+        self.choice = zip(self.lista_alpha, self.lista_name)
+        return self.choice
 
-countries = Country_dict()
-
+countries = Country_list()
+choices_class = countries.create_choices()
 
 class RegisterForm(Form):
     username = StringField('',   [validators.DataRequired(message='El campo esta vacio.'), validators.length(min=5, message='Min 5 letter, Try Again')])
@@ -34,9 +42,9 @@ class PersonalForm(Form):
     name = StringField('First Name..',   [validators.DataRequired(message='El campo esta vacio.')])
     last_name = StringField('Last Name..',   [validators.DataRequired(message='El campo esta vacio.')])
     sex = SelectField('Select your sex', choices=[('M', 'Male'), ('F', 'Female'), ('T', 'Transgendered')])
-    country = SelectField('Country', choices=[('VE', 'Venezuela'), ('AS', 'Australia'), ('NY', 'New York')])
+    country = SelectField('Country', choices=choices_class)
     city = StringField('City',   [validators.DataRequired(message='El campo esta vacio.')])
-    dob = DateField('DOB')
+    dob = DateField('DOB', format="%m/%d/%Y")
     repository = StringField('Repository', [validators.DataRequired(message='El campo esta vacio.')])
     social_red = StringField('Social', [validators.DataRequired(message='El campo esta vacio.')])
 
