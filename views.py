@@ -11,7 +11,7 @@ mysql = MySQL()
 app = Flask(__name__)
 
 
-
+#   Routes
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -66,7 +66,7 @@ def register():
 
         if jquery_validate_username is not None:
             uri_parameters = 'invalid'
-            flash('That dates in use')
+            flash('That dates in use', 'danger')
             print uri_parameters
             return redirect(url_for('register', error=uri_parameters))
         else:
@@ -79,7 +79,7 @@ def register():
             #   user_id, quitar si redirect esta haciendo que se ejecute bien la funcion user
             user_id = db.session.query(User.id).filter(User.username == session['username']).first()
             session['id'] = user_id[0]
-            flash('New user register')
+            flash('Your user commit!', 'success')
             return redirect(url_for('user', name=username))
     else:
         return render_template('register.html', form=new_registerForm)
@@ -95,8 +95,7 @@ def login():
         user = User.query.filter_by(username=username).first()
 
         if user is not None and user.verify_password(password):
-            succes_message = 'Bienvenido {}'.format(username)
-            flash(succes_message)
+            flash('Bienvenido {}'.format(username), 'success') #test
             session['username'] = username
             user_id = db.session.query(User.id).filter(User.username == session['username']).first()
             session['id'] = user_id[0]
@@ -104,8 +103,7 @@ def login():
             return redirect(url_for('user', name=username))
 
         else:
-            error_message = 'Username or password invalid'
-            flash(error_message)
+            flash('Username or password invalid', 'danger')
             print 'Error ', '\nusername:{}\npassword:{}'.format(username, password)
             return redirect(url_for('login',))
 
@@ -135,8 +133,7 @@ def setting_personal():
         db.session.add(setting_new)
         db.session.commit()
 
-        message = 'Your personal info is update'
-        flash(message)
+        flash('Your personal date is update', 'success')
         return redirect(url_for('user'))
     return render_template('form_personal.html', form=new_PersonalForm)
 
@@ -161,8 +158,7 @@ def setting_curriculum():
         db.session.add(setting_new)
         db.session.commit()
 
-        message = 'Your personal info is update'
-        flash(message)
+        flash('Your personal date is update', 'sucess')
         return redirect(url_for('user'))
     return render_template('form_curriculum_user.html', form=new_CurriculumForm)
 
@@ -170,19 +166,21 @@ def setting_curriculum():
 def about():
     return render_template('about.html')
 
+
 @app.route('/logout')
+@user_required
 def logout():
-    # remove the username from the session if it's there
     if 'username' in session:
         session.pop('username', None)
     return redirect(url_for('login'))
 
 
-@app.route('/cookie')
-def cookie():
-    reponse = make_response(render_template('cookie.html'))
-    reponse.set_cookie('custome_cookies', 'default_value')
-    return render_template('cookie.html')
+@app.route('/create_question/user/<string:username>', methods=['GET', 'POST'])
+@user_required
+def create_question(username):
+    username = session['username']
+    return render_template('create_question.html')
+
 
 @app.route('/query/execute')
 def query_execute():
@@ -191,11 +189,13 @@ def query_execute():
     rv = cur.fetchall()
     return jsonify(username=rv)
 
+
 @app.route('/query/sqlalchemy/user')
 def query_orm_id():
     user = db.session.query(User).filter(User.username == session['username']).first()
     info_user = [user.id, user.username, user.password, user.email]
     return jsonify({session['username']: info_user})
+
 
 @app.route('/query/sqlalchemy/personal_info')
 def query_orm_personal():

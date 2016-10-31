@@ -17,7 +17,6 @@ class User(db.Model):
     question = db.relationship('Question', backref='user', lazy='dynamic')
     answer = db.relationship('Answer', backref='user', lazy='dynamic')
 
-
     def __init__(self, username, password, email):
         self.username = username
         self.password = self.__create_password(password)

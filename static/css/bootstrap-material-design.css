@@ -3106,7 +3106,6 @@ hr.on-light {
 }
 .snackbar.snackbar-opened {
   padding: 14px 15px;
-  margin-bottom: 20px;
   height: auto;
   -webkit-transition: -webkit-transform 0.2s ease-in-out, opacity 0.2s ease-in, height 0s linear 0.2s, height 0s linear 0.2s;
        -o-transition: -o-transform 0.2s ease-in-out, opacity 0.2s ease-in, height 0s linear 0.2s, height 0s linear 0.2s;

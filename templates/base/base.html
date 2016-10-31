@@ -6,19 +6,21 @@
     {% if name %}
 		  <title>{{ title }} | {{ name.split(' ')[0].capitalize() }}</title>
   	{% elif not name%}
-      <title>Progressive Programming</title>
+      <title>TalkCode</title>
 	  {% endif %}
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.css', media='screen' ) }}"/>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap-material-design.css', media='screen' ) }}"/>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/ripples.css', media='screen' ) }}"/>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/jquery-ui.css', media='screen' ) }}"/>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/General.css', media='screen' ) }}"/>
+    <meta name="viewport" content="width=device-width, user-scalable=no">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.css') }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap-material-design.css') }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/ripples.css') }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/jquery-ui.css') }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/General.css') }}"/>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
     <script src="{{ url_for('static', filename='js/jquery-2.2.4.min.js') }}"/></script>
     <script src="{{ url_for('static', filename='js/jquery-ui.js') }}"/></script>
     <script src="{{ url_for('static', filename='js/bootstrap.js') }}"/></script>
     <script src="{{ url_for('static', filename='js/ripples.min.js') }}"/></script>
     <script src="{{ url_for('static', filename='js/material.min.js') }}"/></script>
+    <script src="{{ url_for('static', filename='js/snackbar.js') }}"/></script>
     <link href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300" rel="stylesheet">
 
 </head>
@@ -27,43 +29,43 @@
   <div class="row">
   <div class="jumbotron " id="backg1">
       <div class="page-header col-md-12">
-  <h1 class="text-header">Progressive Programming</h1>
-  <h3 class="text-info h5">Some information / Good reason.</h3>
-      </div>
-      {% if request.endpoint in 'index' %}
-        <h1 class="text-muted h5 text-xs-right">{{ date }}</h1>
-      {% endif %}
-      {% if 'username' in session and request.endpoint in 'index' %}
-      <button type="button" class="btn btn-sm" name="button"><a href="http://127.0.0.1:8000/user">Dashboard</a></button>
-      <button type="button" class="btn btn-sm" name="button"><a href="#">Write Post</a></button>
-      <button type="button" class="btn btn-sm" name="button"><a href="http://127.0.0.1:8000/logout">Logout</a></button>
-      {% elif 'username' in session and request.endpoint not in 'index' %}
-      <div class="">
-        <button type="button" class="btn btn-sm" name="button"><a href="http://127.0.0.1:8000/logout">Logout</a></button>
-        <button type="button" class="btn btn-sm" name="button"><a href="http://127.0.0.1:8000/">Home</a></button>
-      </div>
-      <br>
-      {% elif not 'username' in session and request.endpoint not in 'index' %}
-      <div class="">
-        <button type="button" class="btn btn-sm" name="button"><a href="http://127.0.0.1:8000/">Home</a></button>
-      </div>
-      <br>
+          <h1 class="text-header">TalkCode</h1>
+          <h3 class="text-slogan h5">Some information / Good reason.</h3>
 
-      {% endif%}
+              {% if 'username' in session and request.endpoint in 'index' %}
+                        </div>
+                        <button type="button" class="btn btn-sm" name="button"><a href="{{ url_for('user') }}">Dashboard</a></button>
+                        <button type="button" class="btn btn-sm" name="button"><a href="{{ url_for('create_question', username=session['username'])}}">Write Question</a></button>
+                        <button type="button" class="btn btn-sm" name="button"><a href="{{ url_for('logout') }}">Logout</a></button>
+
+              {% elif 'username' in session and request.endpoint not in 'index' %}
+                        </div>
+                        <button type="button" class="btn btn-sm" name="button"><a href="{{ url_for('logout') }}">Logout</a></button>
+                        <button type="button" class="btn btn-sm" name="button"><a href="{{ url_for('index') }}">Home</a></button>
+
+             {% elif not 'username' in session and request.endpoint not in 'index' %}
+                        </div>
+                        <button type="button" class="btn btn-sm" name="button"><a href="{{ url_for('index') }}">Home</a></button>
+
+             {% else %}
+                        </div>
+                        <button type="button" class="btn btn-sm" name="button"><a href="{{ url_for('login') }}">Login</a></button>
+
+             {% endif%}
       </div>
   </div>
 </header>
-{% with messages = get_flashed_messages() %}
-   {% if messages %}
-   <div class="flash-message alert alert-dismissible alert-warning" style="position:absolute; top:30%; right:20%; z-index:2">
+        <div class="container">
+        {% for category, message in get_flashed_messages(with_categories=true) %}
+          <div class="flash-message alert alert-dismissible alert-{{ category }}">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <strong>{{ message }}!</strong>
+          </div>
+        {% endfor %}
+        </div>
 
-      {% for message in messages %}
-         {{ message }}
-      {% endfor %}
 
-    </div>
-   {% endif %}
-{% endwith %}
+
 {% block content%}
 {% endblock %}
 

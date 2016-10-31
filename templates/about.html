@@ -4,44 +4,20 @@
 
 {% block content %}
 <div class="container">
-  <div class="row">
-    <div class="col-md-6">
-      <hr>
-      <h2 class="text-muted h5">
-        Esta pagina fue creada para que desarrolladores y estudiantes publiquen sus Snippets, Problemas algoritmicos y
-         o Articulos relacionados a la programacion.
-      </h2>
-    </div>
-<div class="col-md-6" style="">
-  <hr>
-  <blockquote class="blockquote-reverse">
-    <h2>Esta pagina fue creada con Flask</h2>
-    <p class="h6">Proyecto comenzado el 20/09/2016 con la intencion de aprender a usar una arquitectura web RESTfull.
-    <br>
-    </p>
-  </blockquote>
-  <blockquote class="blockquote">
-    <h2>Diseñada y Programada por Carlos Azuaje</h2>
-    <p class="h6">Usando como framework Bootstrap Material Design.
-    <br>
-    </p>
-  </blockquote>
-  <blockquote class="blockquote-reverse">
-    <h2>Codigo fuente en Github</h2>
-    <p class="h6">Codigo libre, para estudio y reutilizacion.
-    <br>
-    </p>
-  </blockquote>
-  <blockquote class="blockquote">
-    <h2>Desarrollo Lorem ipsum dolor</h2>
-    <p class="h6">Lorem ipsum dolor sit amet,
-       consectetur adipisicing elit. In facere, perferendis fugiat dolore.
-    <br>
-    </p>
-  </blockquote>
-  <hr>
-</div>
-</div>
+  <div class="card card-block">
+    <h4 class="card-title">Causa y Efecto</h4>
+    <p class="card-text">Esta pagina fue creada para que las personas puedan compartir y aprender codigo.</p>
+  </div>
 
+  <div class="card card-block text-center">
+    <h4 class="card-title">Comienzo y Fin</h4>
+    <p class="card-text">Proyecto comenzado el 20/09/2016</p>
+  </div>
+
+  <div class="card card-block text-right">
+    <h4 class="card-title">Creadores</h4>
+    <p class="card-text">Diseñada y Programada por <code>carlos azuaje</code></p>
+    <button type="button" class="btn btn-default" data-style="toast" data-content="Good bye" data-toggle="snackbar" data-timeout="0"><a href="https://github.com/CharlyJazz">Github</a></button>
+  </div>
 </div>
 {% endblock %}
