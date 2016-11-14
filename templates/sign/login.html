@@ -1,0 +1,75 @@
+  {% extends 'base/base.html' %}
+
+    {% set title = 'Prog Prog' %}
+
+{% block content %}
+  <div class="container">
+      <div class="row-content">
+          <br>
+              <div class="col-md-4">
+                  <h2 class="h2">No te has registrado?</h2>
+
+                  <button class="btn btn-success btn-raised"><a href="http://127.0.0.1:8000/register">Unete</a></button>
+              </div>
+          <fieldset>
+          <legend class="h2">Login</legend>
+
+      <form class="form-horizontal" action="" method="POST">
+            {% from "macros/_macro.html" import render_field %}
+
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+
+        <div class="form-group label-static">
+          <label for="i2" class="control-label  label-floating ">Username</label>
+          {{ render_field(form.username, class='form-control' ) }}
+
+        </div>
+
+        <div class="form-group label-floating">
+          <label for="i5" class="control-label  label-floating">Password</label>
+          {{ render_field(form.password, class='form-control') }}
+        </div>
+
+        <button class="btn btn-danger btn-raised">Go!</button>
+      </form>
+    </fieldset>
+    </div>
+
+
+
+  <div class="container">
+    <br>
+  <div class="">
+  Maecenas eget interdum ante, sit amet aliquet velit.
+  Nunc vitae mauris quis turpis pulvinar auctor nec eu nulla. Donec
+  at lorem sed mauris accumsan efficitur. Quisque ultrices augue a luctus hendrerit.
+  Curabitur scelerisque felis a placerat consequat. Morbi vel erat elit.
+  Donec porttitor neque at erat pharetra, vitae malesuada dolor blandit.
+  </div>
+  <br>
+  <div class="">
+  Nulla nunc metus, elementum id rutrum nec, elementum id sem.
+  Ut mattis ex a neque auctor, id fringilla augue ultrices.
+  Pellentesque quis leo quam. Ut finibus auctor nisi, ut pulvinar mauris maximus ut.
+  Donec faucibus eleifend sem mollis ultricies.
+  Phasellus posuere nisl quam, ultrices eleifend tortor hendrerit at.
+  Phasellus lacinia vehicula est.
+  </div>
+  <br>
+
+
+  <div class="">
+  In hac habitasse platea dictumst. Cras ut pulvinar est. Curabitur sem enim,
+  aliquam laoreet diam ut, convallis cursus lectus. Nunc et orci pretium,
+  luctus libero a, faucibus enim. Nunc quis felis varius, consequat turpis ut,
+  commodo dui. Aliquam bibendum purus sed est sagittis placerat.
+  Etiam efficitur interdum ullamcorper. Nunc semper sagittis purus, ut fermentum
+  quam hendrerit eu.
+  </div>
+
+  </div>
+  <br>
+  </div>
+
+  {% endblock %}

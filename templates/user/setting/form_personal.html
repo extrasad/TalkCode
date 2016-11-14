@@ -1,0 +1,59 @@
+{% extends 'base/base.html' %}
+{% set title = 'Setting' %}
+{% block content %}
+<div class="container">
+   <div class="row">
+      <div class="col-md-4">
+         <form class="form-horizontal" method="POST">
+            {% from "macros/_macro.html" import render_field %}
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            <fieldset>
+               <legend>General Information</legend>
+               <div class="form-group">
+                  {{ render_field(form.name, class='form-control text-info' ) }}
+               </div>
+               <div class="form-group">
+                  {{ render_field(form.last_name, class='form-control text-info' ) }}
+               </div>
+               <div class="form-group" >
+                  {{ render_field(form.sex, class='form-control text-warning' ) }}
+               </div>
+               <div class="form-group">
+                  {{ render_field(form.country, class='form-control text-info' ) }}
+               </div>
+               <div class="form-group">
+                  {{ render_field(form.city, class='form-control text-info' ) }}
+               </div>
+            </fieldset>
+      </div>
+      <div class="col-md-4">
+      <fieldset>
+      <legend>Network Data</legend>
+      <div class="form-group">
+      {{ render_field(form.repository, class='form-control text-info' ) }}
+      </div>
+      <div class="form-group">
+      {{ render_field(form.social_red, class='form-control text-info' ) }}
+      </div>
+      </fieldset>
+      </div>
+      <div class="col-md-3">
+      <fieldset>
+      <legend>Date</legend>
+      <span class="icon-calendar"></span>
+      {{ render_field(form.dob, class='form-control text-info', id='date') }}
+      <script>
+         $( function() {
+             $('#date').bootstrapMaterialDatePicker({ weekStart : 0, time: false });
+
+         } );
+      </script>
+      </fieldset>
+      <button type="submit" class="btn  btn-sm btn-success btn-raised">Submit</button>
+
+      </div>
+      </form>
+
+   </div>
+</div>
+{% endblock %}

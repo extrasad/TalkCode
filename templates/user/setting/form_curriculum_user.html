@@ -1,0 +1,56 @@
+  {% extends 'base/base.html' %}
+    {% set title = 'Curriculum' %}
+
+    {% block content %}
+    <div class="container">
+      <div class="row">
+          <div class="col-md-3">
+          <form class="form-horizontal" method="POST">
+            {% from "macros/_macro.html" import render_field %}
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+              <legend>CV Information</legend>
+              <div class="form-group">
+                {{ render_field(form.tittle, class='form-control text-info') }}
+              </div>
+              <div class="form-group">
+                {{ render_field(form.university, class='form-control text-info' ) }}
+              </div>
+              <div class="form-group">
+                {{ render_field(form.description, class='form-control text-info') }}
+              </div>
+              </div>
+              <div class="col-md-3">
+              <legend>Your Skills</legend>
+              <div data-toggle="fieldset" id="phone-fieldset">
+              <button type="button" data-toggle="fieldset-add-row" data-target="#phone-fieldset">+</button>
+                {% for field in form.skillform %}
+                <div data-toggle="fieldset-entry">
+                 <div class="form-group">
+                     {{ render_field(field.skill_field, class='form-control text-info') }}
+                 </div>
+                    <button type="button" data-toggle="fieldset-remove-row" id="phone-{{loop.index0}}-remove">-</button>
+                </div>
+                {% endfor %}
+              </div>
+              </div>
+          <div class="col-md-4">
+              <button type="submit" class="btn btn-sm btn-raised"><i class="icon-chevron-right"></i></button>
+                                      {% if form.errors %}
+                                         <ul class="errors">
+                                           {% for field_name, field_errors in form.errors|dictsort if field_errors %}
+                                                {% for error in field_errors %}
+                                                    <li>{{ form[field_name].label }}: {{ error }}</li>
+                                                {% endfor %}
+                                            {% endfor %}
+                                        </ul>
+                                      {% endif %}
+          </div>
+       </div>
+
+      </form>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/dynamic.form.js') }}"></script>
+
+    {% endblock %}

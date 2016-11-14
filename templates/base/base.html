@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-{% from "_macro.html" import render_field %}
+{% from "macros/_macro.html" import render_field %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -10,51 +10,102 @@
 	  {% endif %}
     <meta name="viewport" content="width=device-width, user-scalable=no">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.css') }}"/>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap-material-design.css') }}"/>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/ripples.css') }}"/>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/jquery-ui.css') }}"/>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/General.css') }}"/>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap-material-design.css') }}"/>
     <script src="{{ url_for('static', filename='js/jquery-2.2.4.min.js') }}"/></script>
-    <script src="{{ url_for('static', filename='js/jquery-ui.js') }}"/></script>
     <script src="{{ url_for('static', filename='js/bootstrap.js') }}"/></script>
     <script src="{{ url_for('static', filename='js/ripples.min.js') }}"/></script>
     <script src="{{ url_for('static', filename='js/material.min.js') }}"/></script>
     <script src="{{ url_for('static', filename='js/snackbar.js') }}"/></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='google-code-prettify/prettify.css') }}"/>
+    <script src="{{ url_for('static', filename='google-code-prettify/run_prettify.js') }}"/></script>
     <link href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap-material-datetimepicker.css') }}"/>
+    <script src="{{ url_for('static', filename='js/moment.js') }}"/></script>
+    <script src="{{ url_for('static', filename='js/bootstrap-material-datetime.js') }}"/></script>
 
 </head>
 <body>
-<header class="container">
-  <div class="row">
-  <div class="jumbotron " id="backg1">
-      <div class="page-header col-md-12">
-          <h1 class="text-header">TalkCode</h1>
-          <h3 class="text-slogan h5">Some information / Good reason.</h3>
+  <div class="bs-component">
+            <div class="navbar navbar-default">
+              <header class="container-fluid">
+                <div class="navbar-header">
+                  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                  </button>
+                  <a class="navbar-brand" href="{{ url_for('index') }}">TalkCode<div class="ripple-container"></div></a>
+                </div>
+                <div class="navbar-collapse navbar-responsive-collapse collapse" aria-expanded="false" style="height: 1px;">
+                  <ul class="nav navbar-nav">
+                    <li><a href="{{ url_for('questions_pagination') }}">Questions</a></li>
+                    <li><a href="{{ url_for('snippets_pagination') }}">Snippets</a></li>
+                    <li><a href="{{ url_for('articles_pagination') }}">Articles</a></li>
 
-              {% if 'username' in session and request.endpoint in 'index' %}
-                        </div>
-                        <button type="button" class="btn btn-sm" name="button"><a href="{{ url_for('user') }}">Dashboard</a></button>
-                        <button type="button" class="btn btn-sm" name="button"><a href="{{ url_for('create_question', username=session['username'])}}">Write Question</a></button>
-                        <button type="button" class="btn btn-sm" name="button"><a href="{{ url_for('logout') }}">Logout</a></button>
+                    <!--<li class="dropdown">
+                      <a href="bootstrap-elements.html" data-target="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Dropdown
+                        <b class="caret"></b><div class="ripple-container"></div></a>
+                      <ul class="dropdown-menu">
+                        <li><a href="javascript:void(0)">Action</a></li>
+                        <li><a href="javascript:void(0)">Another action</a></li>
+                        <li><a href="javascript:void(0)">Something else here</a></li>
+                        <li class="divider"></li>
+                        <li class="dropdown-header">Dropdown header</li>
+                        <li><a href="javascript:void(0)">Separated link</a></li>
+                        <li><a href="javascript:void(0)">One more separated link<div class="ripple-container"><div class="ripple ripple-on ripple-out" style="left: 99.7031px; top: 4px; background-color: rgb(0, 150, 136); transform: scale(25.625);"></div></div></a></li>
+                      </ul>
+                    </li>-->
+                  </ul>
+                  <form class="navbar-form navbar-left" >
+                    <div class="form-group is-empty">
+                      <input type="text" class="form-control col-md-6" placeholder="Search">
+                    </div>
+                  </form>
+                  <ul class="nav navbar-nav navbar-right">
+                    {% if not 'username' in session %}
+                    <li><a   href="{{ url_for('register') }}">Sign Up <i class="icon-hand-left"></i><div class="ripple-container"></div></a></li>
+                    <li><a   href="{{ url_for('login') }}">Sign In <i class="icon-signin"></i><div class="ripple-container"></div></a></li>
+                    <li class="dropdown">
+                      <a href="bootstrap-elements.html" data-toggle="dropdown"><i class="icon-gear"></i>
+                        </a>
+                      <ul class="dropdown-menu">
+                        <li><a href="{{ url_for('about') }}">About</a></li>
+                      </ul>
+                    </li>
+                    {% else %}
+                    <li class="dropdown">
+                      <a href="bootstrap-elements.html" data-toggle="dropdown">Write... <i class="icon-pencil"></i>
+                        </a>
+                      <ul class="dropdown-menu">
+                        <li><a href="{{ url_for('create_question', username=session['username'])}}">Write Question</a></li>
+                        <li><a href="{{ url_for('create_snippet', username=session['username'])}}">Write Snippet</a></li>
+                        <li><a href="{{ url_for('create_articles', username=session['username'])}}">Write Articles</a></li>
+                      </ul>
+                    </li>
+                    <li><a   href="{{ url_for('user', username=session['username'])}}">Dashboard <i class="icon-user"></i><div class="ripple-container"></div></a></li>
+                    <li class="dropdown">
+                      <a href="bootstrap-elements.html" data-toggle="dropdown"><i class="icon-gear"></i>
+                        </a>
+                      <ul class="dropdown-menu">
+                        <li><a href="{{ url_for('setting_personal') }}"  style="font-size:13px">Setting Personal Date</a></li>
+                        <li><a href="{{ url_for('setting_curriculum') }}" style="font-size:13px">Setting Curriculum Date</a></li>
+                        <li><a href="{{ url_for('about') }}" style="font-size:13px">About</a></li>
+                        <li class="divider"></li>
+                        <li><a href="{{ url_for('logout') }}" style="font-size:13px">Log Out</a></li>
 
-              {% elif 'username' in session and request.endpoint not in 'index' %}
-                        </div>
-                        <button type="button" class="btn btn-sm" name="button"><a href="{{ url_for('logout') }}">Logout</a></button>
-                        <button type="button" class="btn btn-sm" name="button"><a href="{{ url_for('index') }}">Home</a></button>
 
-             {% elif not 'username' in session and request.endpoint not in 'index' %}
-                        </div>
-                        <button type="button" class="btn btn-sm" name="button"><a href="{{ url_for('index') }}">Home</a></button>
+                      </ul>
+                    </li>
+                    {% endif %}
+                  </ul>
+                </div>
+              </header>
+            </div>
 
-             {% else %}
-                        </div>
-                        <button type="button" class="btn btn-sm" name="button"><a href="{{ url_for('login') }}">Login</a></button>
-
-             {% endif%}
-      </div>
-  </div>
-</header>
         <div class="container">
         {% for category, message in get_flashed_messages(with_categories=true) %}
           <div class="flash-message alert alert-dismissible alert-{{ category }}">
@@ -69,15 +120,27 @@
 {% block content%}
 {% endblock %}
 
-<br>
-    <!--Footer-->
-<div class="container footer" id="footer-base">
+<br><br><br><br>
 
-    <div class="col-md-4  text-info text-footer"><h6 class="tooltip-inner text-xs-center text-sm-center text-md-center">Page <span style="color:rgb(49,129,30)">in</span> Flask</h6></div>
-    <!--/.Call to action-->
-</div>
-    <!--/.Copyright-->
-<!--/.Footer-->
+
+      <div id="footer-base">
+        <div class="container-fluid">
+        <div class="col-md-12  text-info text-footer">
+        <h6 class="tooltip-inner text-xs-center text-sm-center text-md-center">Page
+        <span style="color:rgb(144,161,134)">in</span> Flask</h6>
+        <div class="flex-container flex space-between col-md-2 col-sm-5 ">
+              <div class="flex-item"><i class="icon-facebook icon-2x"></i></div>
+              <div class="flex-item"><i class="icon-github icon-2x"></i></div>
+              <div class="flex-item"><i class="icon-google-plus icon-2x"></i></div>
+        </div>
+        <small class="text-center right" style="color:black; font-size:1.2em;">Site Design / Logo © 2016 TalkCode Inc</small><br><br><br>
+        </div>
+
+      </div>
+      </div>
+
+
+
 <script type="text/javascript">
   $.material.init();
   const second = 2000;

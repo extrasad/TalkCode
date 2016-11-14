@@ -1,31 +1,36 @@
 # coding=utf-8
-from datetime import date
-from flask import Flask, request, render_template, make_response, session, redirect, url_for, flash, jsonify
-from flask_wtf import CsrfProtect
-from form import RegisterForm, LoginForm, PersonalForm, CurriculumForm
-from models import db, User, Personal_User, Curriculum_User
-from flask_mysqldb import MySQL
-from decorator import user_required
 
+#   ------------------------------------- Modules ------------------------------
+from datetime import date
+from flask import Flask, request, render_template, session, redirect, url_for, flash, jsonify
+from form import RegisterForm, LoginForm, PersonalForm, CurriculumForm, QuestionForm, SkillForm, AnswerlLong
+from models import db, User, Personal_User, Curriculum_User, Question, TagQuestion, Skills
+from flask_mysqldb import MySQL
+from decorator_and_utils import user_required, know_website, convert_uri_to_href
+#   ------------------------------------- Instances ----------------------------
 mysql = MySQL()
 app = Flask(__name__)
+#   -------------------------------------- Routes ------------------------------
 
+# Handling request -------------------------------------------------------------
 
-#   Routes
 
 @app.errorhandler(404)
 def page_not_found(e):
+    """"No found"""
     return render_template('index.html'), 404
 
 
 @app.before_request
 def before_request():
+    """Coment this function for debugging"""
     if 'username' not in session and request.endpoint in ['user', 'logout', 'setting']:
         redirect(url_for('login'))
 
     if 'username' in session and request.endpoint in ['register', 'login']:
         redirect(url_for('user'))
 
+# Index ------------------------------------------------------------------------
 
 @app.route('/', methods=['GET'])
 def index():
@@ -35,23 +40,35 @@ def index():
     else:
         return render_template('index.html', date=today, button='btn btn-info btn-raised')
 
+# User Page --------------------------------------------------------------------
+@app.route('/user/<string:username>', methods=['GET', 'POST'])
+def user(username):
+    """"Perfil del Usuario Logeado"""
+
+    username = session['username']
+    PersonalDate = Personal_User.query.filter_by(id_user=session['id']).first()
+    UserDate = User.query.filter_by(id=session['id']).first()
+    CurriculumDate = Curriculum_User.query.filter_by(id_curriculum=session['id']).first()
+
+    if PersonalDate is not None:
+        user_link = [know_website(PersonalDate.social_red), know_website(PersonalDate.repository)]
+        return render_template('user/user.html',
+                               name_user=session['username'],
+                               user_link=user_link,
+                               PersonalDate=PersonalDate,
+                               UserDate=UserDate,
+                               CurriculumDate=CurriculumDate)
+
+    return render_template('user/user.html',
+                           name_user=session['username'],
+                           PersonalDate=PersonalDate,
+                           UserDate=UserDate,
+                           CurriculumDate=CurriculumDate)
 
 
-@app.route('/user', methods=['GET', 'POST'])
-def user():
-    if 'username' in session:
-        user_personal_info = db.session.query(Personal_User).filter(User.id == session['id']).first()
-        if user_personal_info == None: #Si no hay informacion personal
-            return render_template('user.html', name_user=session['username'])
-        else:
-            name = str(user_personal_info.name) + ' ' + str(user_personal_info.last_name)
-            info_personal = [name, user_personal_info.sex,\
-                             user_personal_info.country, user_personal_info.city, user_personal_info.dob,\
-                             user_personal_info.repository, user_personal_info.social_red]
-            return render_template('user.html', name_user=session['username'], personal_info=info_personal)
-    else:
-        return redirect(url_for('login'))
 
+
+# Sign in, Sign On, Sign out ---------------------------------------------------
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -80,9 +97,9 @@ def register():
             user_id = db.session.query(User.id).filter(User.username == session['username']).first()
             session['id'] = user_id[0]
             flash('Your user commit!', 'success')
-            return redirect(url_for('user', name=username))
+            return redirect(url_for('user', username=username))
     else:
-        return render_template('register.html', form=new_registerForm)
+        return render_template('sign/register.html', form=new_registerForm)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -100,14 +117,25 @@ def login():
             user_id = db.session.query(User.id).filter(User.username == session['username']).first()
             session['id'] = user_id[0]
             print 'Bienvenido de nuevo {}'.format(username)
-            return redirect(url_for('user', name=username))
+            return redirect(url_for('user', username=username))
 
         else:
             flash('Username or password invalid', 'danger')
             print 'Error ', '\nusername:{}\npassword:{}'.format(username, password)
             return redirect(url_for('login',))
 
-    return render_template('login.html', form=new_Loginform)
+    return render_template('sign/login.html', form=new_Loginform)
+
+
+@app.route('/logout')
+@user_required
+def logout():
+    if 'username' in session:
+        session.pop('username', None)
+    return redirect(url_for('login'))
+
+
+# User Dates Form and More Things ----------------------------------------------
 
 
 @app.route('/setting/personal_info', methods=['GET', 'POST'])
@@ -134,52 +162,134 @@ def setting_personal():
         db.session.commit()
 
         flash('Your personal date is update', 'success')
-        return redirect(url_for('user'))
-    return render_template('form_personal.html', form=new_PersonalForm)
+        return redirect(url_for('user', username=session['username']))
+    return render_template('user/setting/form_personal.html', form=new_PersonalForm)
 
 
 @app.route('/setting/curriculum_info', methods=['GET', 'POST'])
 @user_required
 def setting_curriculum():
-    new_CurriculumForm = CurriculumForm(request.form)
+    """"Si esto da mas problemas hare dos add y ya..."""
+    user = User.query.filter_by(id=session['id']).first()
+    new_CurriculumForm = CurriculumForm(request.form, obj=user) # intentar quitar el request.form
     if request.method == 'POST' and new_CurriculumForm.validate():
         tittle = new_CurriculumForm.tittle.data
-        first_skill = new_CurriculumForm.first_skill.data
-        second_skill = new_CurriculumForm.second_skill.data
-        other_skill = new_CurriculumForm.other_skill.data
         university = new_CurriculumForm.university.data
-        years = new_CurriculumForm.years.data
         description = new_CurriculumForm.description.data
 
-        setting_new = Curriculum_User(tittle, first_skill, second_skill,
-                                      other_skill, university,
-                                      years, description)
+        setting_new = Curriculum_User(session['id'], tittle, university, description)
 
         db.session.add(setting_new)
         db.session.commit()
 
-        flash('Your personal date is update', 'sucess')
-        return redirect(url_for('user'))
-    return render_template('form_curriculum_user.html', form=new_CurriculumForm)
+        flash('Your personal date is update', 'success')
+        return redirect(url_for('user', username=session['username']))
+    return render_template('user/setting/form_curriculum_user.html', form=new_CurriculumForm)
+
+#  About -----------------------------------------------------------------------
+
 
 @app.route('/about', methods=['GET'])
 def about():
     return render_template('about.html')
 
 
-@app.route('/logout')
-@user_required
-def logout():
-    if 'username' in session:
-        session.pop('username', None)
-    return redirect(url_for('login'))
+# Question  --------------------------------------------------------------------
+
+@app.route('/questions/pagination')
+def questions_pagination():
+    return "<h1>:(</h4>"
 
 
-@app.route('/create_question/user/<string:username>', methods=['GET', 'POST'])
+@app.route('/questions/id/<int:id>', methods=['GET', 'POST'])
+def questions(id):
+    questions_data = db.session.query(Question).filter(Question.id == id).first()
+    User_data = User.query.filter_by(id=questions_data.id_user).first()
+    Tag_data = TagQuestion.query.filter_by(id_question=questions_data.id).first()
+
+    if(session['id'] == User_data.id):
+        return render_template('questions/question.html',
+                               User=User_data,
+                               Question_data=questions_data,
+                               Tag=Tag_data)
+    else:
+        new_answer_long = AnswerlLong(request.form)
+
+        if request.method == 'POST' and new_answer_long.validate():
+            User_answer = User.query.filter_by(id=session['id']).first()
+            user_id = query[0]  # long integer delete 'L'
+            return render_template('questions/question.html',
+                               answer_long=new_answer_long,
+                               User=User_data,
+                               Question_data=questions_data,
+                               Tag=Tag_data)
+
+
+
+@app.route('/questions/write/user/<string:username>', methods=['GET', 'POST'])
 @user_required
 def create_question(username):
     username = session['username']
-    return render_template('create_question.html')
+    new_QuestionForm = QuestionForm(request.form)
+    if request.method == 'GET':
+        flash('Escribe tu pregunta', 'info')
+    if request.method == 'POST' and new_QuestionForm.validate():
+        query = db.session.query(User.id).filter(User.username == session['username']).first()
+        user_id = query[0]  # long integer delete 'L'
+        tittle = new_QuestionForm.tittle.data
+        description = new_QuestionForm.description.data
+        text_area = new_QuestionForm.text_area.data
+        question_new = Question(user_id, tittle, description, text_area)
+
+        db.session.add(question_new)
+
+        id_question = db.session.query(Question.id).filter(Question.id_user == session['id'], Question.title == tittle).first()
+        id_question_for_tag = id_question[0]
+        tag_new = TagQuestion(id_question_for_tag, new_QuestionForm.tag_one.data, new_QuestionForm.tag_two.data, new_QuestionForm.tag_three.data)
+        db.session.add(tag_new)
+        db.session.commit()
+        flash('Perfect', 'info')
+        id = db.session.query(Question.id).filter(Question.id_user == session['id'], Question.title == tittle).first()
+        return redirect(url_for('questions', id=id[0]))
+    return render_template('questions/create_question.html', form=new_QuestionForm)
+
+# Snippets ---------------------------------------------------------------------
+
+
+@app.route('/snippets/pagination')
+def snippets_pagination():
+    return "<h1>:(</h4>"
+
+
+@app.route('/snippets')
+def snippets():
+    return render_template('snippets/snippets.html')
+
+
+@app.route('/snippets/write/user/<string:username>', methods=['GET', 'POST'])
+def create_snippet(username):
+    username = session['username']
+    return render_template('snippets/create_snippet.html')
+
+
+# Articles  --------------------------------------------------------------------
+
+
+@app.route('/articles/pagination')
+def articles_pagination():
+    return "<h1>:(</h4>"
+
+@app.route('/articles')
+def articles():
+    return render_template('articles/articles.html')
+
+@app.route('/articles/write/user/<string:username>', methods=['GET', 'POST'])
+def create_articles(username):
+    username = session['username']
+    return render_template('articles/create_article.html')
+
+
+# Query Debbuging  -------------------------------------------------------------
 
 
 @app.route('/query/execute')
@@ -199,7 +309,7 @@ def query_orm_id():
 
 @app.route('/query/sqlalchemy/personal_info')
 def query_orm_personal():
-    user_personal_info = db.session.query(Personal_User).filter(User.id == session['id']).first()
+    user_personal_info = db.session.query(Personal_User).filter(Personal_User.id_user == session['id']).first()
     if user_personal_info == None:
         return 'No have personal info'
     else:

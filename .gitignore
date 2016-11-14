@@ -8,3 +8,6 @@
 *.so
 *.pyc
 *.txt
+*.map
+*.png
+*.jpg

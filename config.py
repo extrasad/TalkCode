@@ -5,9 +5,11 @@ class Config(object):
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = 'mysql://root@localhost/cursoflask?charset=utf8&use_unicode=0'
+    SQLALCHEMY_DATABASE_URI = 'mysql://root@localhost/talkcode?charset=utf8&use_unicode=0'
     MYSQL_USER = 'root'
     MYSQL_PASSWORD = ''
-    MYSQL_DB = 'cursoflask'
+    MYSQL_DB = 'talkcode'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_ECHO = True
+    SQLALCHEMY_ECHO = False
+    SEND_FILE_MAX_AGE_DEFAULT = 0
+    WTF_CSRF_ENABLED = True

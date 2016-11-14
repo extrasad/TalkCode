@@ -3,29 +3,23 @@
 {% block content %}
 <div class="container">
     <div class="row">
-
         <!--Main column-->
         <div class="col-md-8">
-
             <!--Post-->
-            <div class="post-wrapper">
+            <div class="post-wrapper border-bottom-blue">
                 <!--Post data-->
                 <h1 class="h1-responsive">Matplotlib in <span class="text-info">Flask</span>
                 <br>
                 <small class="text-muted">Aplication with Flask and Matplotlib.</small></h1>
                 <h5>Written by <a href="">Carlos Azuaje</a>, 30.04.2016</h5>
-
                 <br>
-
                 <!--Featured image -->
                 <div class="view overlay hm-white-light z-depth-1-half">
                     <img src="https://i.ytimg.com/vi/RQIHrHjfA3Q/maxresdefault.jpg" class="img-fluid" width="230" alt="">
                     <div class="mask">
                     </div>
                 </div>
-
                 <br>
-
                 <!--Post excerpt-->
                 <p>Basically,
                   matplotlib.pyplot is a collection of command style
@@ -43,7 +37,7 @@
             <hr>
 
             <!--Post-->
-            <div class="post-wrapper">
+            <div class="post-wrapper border-bottom-blue">
                 <!--Post data-->
                 <h1 class="h1-responsive">Don't Touch The Spike in <span class="text-info">Pygame</span>
                 <br>
@@ -78,7 +72,7 @@
             <hr>
 
             <!--Post-->
-            <div class="post-wrapper">
+            <div class="post-wrapper border-bottom-blue">
                 <!--Post data-->
                 <h1 class="h1-responsive">SHA256 in <span class="text-info">Python</span>
                 <br>
@@ -107,52 +101,12 @@
                 </p>
                 <!--"Read more" button-->
                 <button class="{{ button }}">Read more</button>
-            </div>
-<hr>
-        </div>
+              </div>
+              <hr>
+    </div>
+  </div>
+</div>
 
-<br>
-
-                      <div class="col-md-4">
-                        <div class="widget-wrapper">
-                          <div class="card-primary btn-group">
-                          <button type="button"  class="btn btn-primary btn-reased"name="button"><a href="http://127.0.0.1:8000/register">Register</a></button>
-                          <button type="button" class="btn btn-primary btn-reased"name="button"><a href="http://127.0.0.1:8000/login">Login</a></button>
-                          <button type="button" class="btn btn-primary btn-reased"name="button"><a href="http://127.0.0.1:8000/about">About</a></button>
-                          </div>
-                        </div>
-                        <br>
-                      </div>
-
-                      <div class="col-md-4"   id="newletter">
-
-                            <div class="widget-wrapper">
-                                <h4 class="text-xs-center">Newletter</h4>
-                                <hr>
-                                <div class="card">
-                                    <div class="card-block">
-                                        <p><strong>Subscribe to our newsletter</strong></p>
-                                        <p>Once a week we will send you a summary of the most useful news</p>
-                                        <div class="md-form">
-                                            <i class="fa fa-user prefix"></i>
-                                            <input type="text" id="form1" class="form-control">
-                                            <label for="form1">Your name</label>
-                                        </div>
-                                        <div class="md-form">
-                                            <i class="fa fa-envelope prefix"></i>
-                                            <input type="text" id="form2" class="form-control">
-                                            <label for="form2">Your email</label>
-                                        </div>
-                                        <button class=" {{ button }}">Submit</button>
-
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                        <!--/.Sidebar-->
-                    </div>
-                </div>
 
                 <script type="text/javascript">
                 $(document).ready(function(){

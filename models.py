@@ -5,6 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
 db = SQLAlchemy()
 
+
 class User(db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
@@ -14,8 +15,9 @@ class User(db.Model):
     create_date = db.Column(db.DateTime, default=datetime.datetime.now)
     curriculum_date = db.relationship('Curriculum_User')
     personal_date = db.relationship('Personal_User')
+    skill = db.relationship('Skills', backref='user', lazy='dynamic')
     question = db.relationship('Question', backref='user', lazy='dynamic')
-    answer = db.relationship('Answer', backref='user', lazy='dynamic')
+    answer_longer = db.relationship('AnswerLong', backref='user', lazy='dynamic')
 
     def __init__(self, username, password, email):
         self.username = username
@@ -51,6 +53,7 @@ class User(db.Model):
         return "<User(id='%s',name='%s', email='%s', password='%s')>" % \
                (self.id, self.username, self.email, self.password)
 
+
 class Personal_User(db.Model):
     __tablename__ = 'user_personal_info'
     id_personal_user = db.Column(db.Integer, primary_key=True)
@@ -77,27 +80,40 @@ class Personal_User(db.Model):
         self.social_red = social_red
 
 
+    def get_id(self):
+        try:
+            return unicode(self.id)  # python 2
+        except NameError:
+            return str(self.id)  # python 3
+
+
 class Curriculum_User(db.Model):
     __tablename__ = 'user_curriculum_info'
     id_curriculum = db.Column(db.Integer, primary_key=True)
     id_user = db.Column(db.Integer, db.ForeignKey('user.id'))
     tittle = db.Column(db.String(100))
-    first_skill = db.Column(db.String(100))
-    second_skill = db.Column(db.String(100))
-    other_skill = db.Column(db.String(100))
     university = db.Column(db.String(200))
-    years = db.Column(db.SmallInteger)
     description = db.Column(db.String(260))
     create_date_curriculum = db.Column(db.DateTime, default=datetime.datetime.now)
 
-    def __init__(self, tittle, first_skill, second_skill, other_skill, university, years, description):
+    def __init__(self, id_user, tittle, university, description):
+        self.id_user = id_user
         self.tittle = tittle
-        self.first_skill = first_skill
-        self.second_skill = second_skill
-        self.other_skill = other_skill
         self.university = university
-        self.years = years
         self.description = description
+
+
+class Skills(db.Model):
+    __tablename__ = 'skills'
+    id = db.Column(db.Integer, primary_key=True)
+    id_user = db.Column(db.Integer, db.ForeignKey('user.id'))
+    skill_name = db.Column(db.String(30))
+
+    def get_id(self):
+        try:
+            return unicode(self.id)  # python 2
+        except NameError:
+            return str(self.id)  # python 3
 
 
 class Question(db.Model):
@@ -105,19 +121,65 @@ class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     id_user = db.Column(db.Integer, db.ForeignKey('user.id'))
     title = db.Column(db.String(150))
-    description = db.Column(db.String(200))
+    description = db.Column(db.String(1000))
     text_area = db.Column(UnicodeText)
-    tag = db.Column(db.String(45))
+    answer_long = db.relationship('AnswerLong', backref='user_question', lazy='dynamic')
+    tag_relation = db.relationship('TagQuestion', backref='user_question', lazy='dynamic')
     upvote = db.Column(db.Integer, default=0)
     downvote = db.Column(db.Integer, default=0)
     create_date = db.Column(db.DateTime, default=datetime.datetime.now)
 
+    def __init__(self, id_user, title, description, text_area):
+        self.id_user = id_user
+        self.title = title
+        self.description = description
+        self.text_area = text_area
 
-class Answer(db.Model):
-    __tablename__ = 'user_answer'
+    def get_id(self):
+        try:
+            return unicode(self.id)  # python 2
+        except NameError:
+            return str(self.id)  # python 3
+
+class TagQuestion(db.Model):
+    __tablename__ = 'tag_question'
+    id = db.Column(db.Integer, primary_key=True)
+    id_question = db.Column(db.Integer, db.ForeignKey('user_question.id'))
+    tag_one = db.Column(db.String(25),  nullable=True)
+    tag_two = db.Column(db.String(25),  nullable=True)
+    tag_three = db.Column(db.String(25), nullable=True)
+
+    def __init__(self, id_question, tag_one, tag_two, tag_three):
+        self.id_question = id_question
+        self.tag_one = tag_one
+        self.tag_two = tag_two
+        self.tag_three = tag_three
+
+    def get_id(self):
+        try:
+            return unicode(self.id)  # python 2
+        except NameError:
+            return str(self.id)  # python 3
+
+
+
+class AnswerLong(db.Model):
+    __tablename__ = 'user_answer_long'
     id = db.Column(db.Integer, primary_key=True)
     id_user = db.Column(db.Integer, db.ForeignKey('user.id'))
-    answer = db.Column(UnicodeText)
+    id_question = db.Column(db.Integer, db.ForeignKey('user_question.id'))
+    answer = db.Column(db.String(2500))
+    answer_code = db.Column(UnicodeText)
     upvote = db.Column(db.Integer, default=0)
     downvote = db.Column(db.Integer, default=0)
     create_date = db.Column(db.DateTime, default=datetime.datetime.now)
+
+    def __init__(self, answer, answer_code):
+        self.answer = answer
+        self.answer_code = answer_code
+
+    def get_id(self):
+        try:
+            return unicode(self.id)  # python 2
+        except NameError:
+            return str(self.id)  # python 3

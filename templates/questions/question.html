@@ -1,0 +1,94 @@
+{% extends 'base/base.html' %}
+    {% set title = 'Question ' %}
+
+    {% block content %}
+<div class="container">
+        <div class="col-md-8">
+          <div class="well well-sm">
+                    <div class="panel-heading"><i class="icon-user text-info"></i> {{ User.username }}</div>
+                    <div class="panel-body">{{ Question_data.title }}</div>
+                    <div class="panel-body">{{ Question_data.description }}</div>
+                    <h6 style="padding-left:15px;"><i class="icon-time"> </i> {{Question_data.create_date}}</h6> <!--datetime.datetime.now-->
+          </div>
+            <ul class="tags">
+              <li><a href="#" class="tag" style="text-decoration:none;">{{Tag.tag_one}}</a></li>
+              <li><a href="#" class="tag" style="text-decoration:none;">{{Tag.tag_two}}</a></li>
+              <li><a href="#" class="tag" style="text-decoration:none;">{{Tag.tag_three}}</a></li>
+            </ul>
+            <div class="prettyBlock">
+                <div class="prettyPrint">
+                  <?prettify?>
+                  <pre class="prettyprint lang-py">
+{{Question_data.text_area}}
+                  </pre>
+                </div>
+            </div>
+            <div class="btn-group  btn-group-raised">
+            <a type="button" class="btn btn-success">Upvote {{ Question_data.upvote}}</a>
+            <a type="button" class="btn btn-danger">Downvote {{ Question_data.downvote}}</a>
+            </div>
+      </div>
+
+{% if answer_long %}
+          <div class="col-md-8" style="background-color:rgb(223,150,64)">
+            <form class="" method="POST">
+                {% from "macros/_macro.html" import render_field %}
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+              <div class="form-group">
+                <label class="control-label" for="">Long answer with code</label>
+                    {{ render_field(answer_long.answer_long, class='form-control text-info' ) }}
+                <p class="help-block">Escribe tu respuesta</p><br>
+
+              </div>
+                <div class="area-text-question">
+                          {{ answer_long.text_area() }}
+                </div>
+              <button type="submit" class="btn btn-raised btn-sm btn-success">Submit</button>
+            </form>
+          </div>
+{% else %}
+<br>
+{% endif %}
+
+
+          <div class="col-md-8">
+            <div class="list-group-item">
+              <div class="row-picture">
+                <img class="circle" src="http://lorempixel.com/56/56/people/1" alt="icon">
+              </div>
+            <div class="row-content">
+              <h4 class="list-group-item-heading">NOMBRE USUARIO</h4>
+
+              <p class="list-group-item-text">>RESPUESTA Lorem ipsum dolor sit amet, consectetur adipisicing elit
+                  . Blanditiis expedita hic laborum nulla optio perferendis quasi quidem sapiente.
+                  aliquam deserunt ipsam ipsum nobis praesentium quia ratione tempore unde, vero?</p>
+<pre>void Zeta(int foo){
+	c = 1;
+	char str[] = {"*"};
+	int *boo =  &foo;
+	for(i = 1;i<=foo;i++){
+		printf("%c", str[0]);
+	}
+		printf("\n");
+
+	for(i = 1;i<=foo;i++){
+		for(j = 1;j<=*boo-c;j++){
+			if(j != *boo-c)
+			printf(" ");
+			else{
+			printf("%c\n", str[0]);
+			}
+		}
+		c++;
+	}
+		for(i = 1;i<=foo;i++){
+		printf("%c", str[0]);
+	}
+
+}</pre>
+            </div>
+            </div>
+          </div>
+
+</div>
+    {% endblock %}

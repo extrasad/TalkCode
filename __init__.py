@@ -10,7 +10,7 @@ from sqlalchemy_utils import database_exists, create_database
 app.config.from_object(DevelopmentConfig)
 csrf = CsrfProtect()
 mysql = MySQL(app)
-engine = create_engine("mysql://root@localhost/cursoflask?charset=utf8&use_unicode=0")
+engine = create_engine("mysql://root@localhost/talkcode?charset=utf8&use_unicode=0")
 
 
 def run_app():
@@ -24,4 +24,3 @@ def run_app():
     db.init_app(app)
     app.run(port=8000, debug=True)
     return None
-
