@@ -1,4 +1,6 @@
 import os
+basedir = os.path.abspath(os.path.dirname(__file__))
+
 
 class Config(object):
     SECRET_KEY = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
@@ -6,6 +8,7 @@ class Config(object):
 class DevelopmentConfig(Config):
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = 'mysql://root@localhost/talkcode?charset=utf8&use_unicode=0'
+    SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'migrations')
     MYSQL_USER = 'root'
     MYSQL_PASSWORD = ''
     MYSQL_DB = 'talkcode'

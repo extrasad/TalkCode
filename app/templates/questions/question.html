@@ -18,7 +18,7 @@
             <div class="prettyBlock">
                 <div class="prettyPrint">
                   <?prettify?>
-                  <pre class="prettyprint lang-py">
+                  <pre class="prettyprint">
 {{Question_data.text_area}}
                   </pre>
                 </div>
@@ -30,7 +30,9 @@
       </div>
 
 {% if answer_long %}
-          <div class="col-md-8" style="background-color:rgb(223,150,64)">
+          <div class="col-md-8">
+            <br>
+            <h4>Responde a esta pregunta</h4>
             <form class="" method="POST">
                 {% from "macros/_macro.html" import render_field %}
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
@@ -52,16 +54,12 @@
 
 
           <div class="col-md-8">
+            <br>
+            <h4>Respuestas</h4>
             <div class="list-group-item">
-              <div class="row-picture">
-                <img class="circle" src="http://lorempixel.com/56/56/people/1" alt="icon">
-              </div>
             <div class="row-content">
-              <h4 class="list-group-item-heading">NOMBRE USUARIO</h4>
-
-              <p class="list-group-item-text">>RESPUESTA Lorem ipsum dolor sit amet, consectetur adipisicing elit
-                  . Blanditiis expedita hic laborum nulla optio perferendis quasi quidem sapiente.
-                  aliquam deserunt ipsam ipsum nobis praesentium quia ratione tempore unde, vero?</p>
+            <h4><i class="icon-user text-info">nombre de usuario</i></h4>
+            <p class="list-group-item-text">respuesta y codigo</p>
 <pre>void Zeta(int foo){
 	c = 1;
 	char str[] = {"*"};

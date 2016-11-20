@@ -3,8 +3,8 @@
 #   ------------------------------------- Modules ------------------------------
 from datetime import date
 from flask import Flask, request, render_template, session, redirect, url_for, flash, jsonify
-from form import RegisterForm, LoginForm, PersonalForm, CurriculumForm, QuestionForm, SkillForm, AnswerlLong
-from models import db, User, Personal_User, Curriculum_User, Question, TagQuestion, Skills
+from form import RegisterForm, LoginForm, PersonalForm, CurriculumForm, QuestionForm, AnswerForm
+from models import db, User, Personal_User, Curriculum_User, Question, TagQuestion, AnswerLong
 from flask_mysqldb import MySQL
 from decorator_and_utils import user_required, know_website, convert_uri_to_href
 #   ------------------------------------- Instances ----------------------------
@@ -46,9 +46,9 @@ def user(username):
     """"Perfil del Usuario Logeado"""
 
     username = session['username']
-    PersonalDate = Personal_User.query.filter_by(id_user=session['id']).first()
     UserDate = User.query.filter_by(id=session['id']).first()
-    CurriculumDate = Curriculum_User.query.filter_by(id_curriculum=session['id']).first()
+    PersonalDate = Personal_User.query.filter_by(id_user=session['id']).first()
+    CurriculumDate = Curriculum_User.query.filter_by(id_user=session['id']).first()
 
     if PersonalDate is not None:
         user_link = [know_website(PersonalDate.social_red), know_website(PersonalDate.repository)]
@@ -79,9 +79,12 @@ def register():
         password = new_registerForm.password.data
         email = new_registerForm.email.data
 
-        jquery_validate_username = User.query.filter_by(username=username).first()
+        query_validate_username = User.query.filter_by(username=username).first()
+        query_validate_password = User.query.filter_by(password=password).first()
+        query_validate_email = User.query.filter_by(email=email).first()
 
-        if jquery_validate_username is not None:
+
+        if query_validate_username is not None or query_validate_password is not None or query_validate_email is not None:
             uri_parameters = 'invalid'
             flash('That dates in use', 'danger')
             print uri_parameters
@@ -203,28 +206,35 @@ def questions_pagination():
 
 @app.route('/questions/id/<int:id>', methods=['GET', 'POST'])
 def questions(id):
+    new_answer_form = AnswerForm(request.form)
+
     questions_data = db.session.query(Question).filter(Question.id == id).first()
     User_data = User.query.filter_by(id=questions_data.id_user).first()
     Tag_data = TagQuestion.query.filter_by(id_question=questions_data.id).first()
 
-    if(session['id'] == User_data.id):
+    if request.method == 'GET' and (session['id'] == User_data.id):
         return render_template('questions/question.html',
                                User=User_data,
                                Question_data=questions_data,
                                Tag=Tag_data)
+
+    elif request.method == 'POST' and new_answer_form.validate():
+        id_question = questions_data.id
+        answer_text = new_answer_form.answer_long.data
+        answer_code = new_answer_form.text_area.data
+        answer_new = AnswerLong(session['id'], id_question, answer_text, answer_code)
+
+        db.session.add(answer_new)
+        db.session.commit()
+        flash('New answer!', 'success')
+        return redirect(url_for('questions', id=id))
+
     else:
-        new_answer_long = AnswerlLong(request.form)
-
-        if request.method == 'POST' and new_answer_long.validate():
-            User_answer = User.query.filter_by(id=session['id']).first()
-            user_id = query[0]  # long integer delete 'L'
-            return render_template('questions/question.html',
-                               answer_long=new_answer_long,
-                               User=User_data,
-                               Question_data=questions_data,
-                               Tag=Tag_data)
-
-
+        return render_template('questions/question.html',
+                           answer_long=new_answer_form,
+                           User=User_data,
+                           Question_data=questions_data,
+                           Tag=Tag_data)
 
 @app.route('/questions/write/user/<string:username>', methods=['GET', 'POST'])
 @user_required

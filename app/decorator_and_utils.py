@@ -1,8 +1,9 @@
+# coding=utf-8
+import re
 from functools import wraps
 from flask import redirect, url_for, session
-
+#   usar urllib2 y quitar esta mierda
 list_website = ['github', 'facebook', 'twitter', 'plus.google', 'google']
-
 
 def user_required(f):
     @wraps(f)
@@ -25,4 +26,3 @@ def know_website(anchor):
     for site in list_website:
         if site in anchor:
             return site
-

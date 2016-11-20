@@ -3,6 +3,8 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import UnicodeText
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
+
+
 db = SQLAlchemy()
 
 
@@ -162,19 +164,20 @@ class TagQuestion(db.Model):
             return str(self.id)  # python 3
 
 
-
 class AnswerLong(db.Model):
     __tablename__ = 'user_answer_long'
     id = db.Column(db.Integer, primary_key=True)
     id_user = db.Column(db.Integer, db.ForeignKey('user.id'))
     id_question = db.Column(db.Integer, db.ForeignKey('user_question.id'))
-    answer = db.Column(db.String(2500))
+    answer = db.Column(db.String(2000))
     answer_code = db.Column(UnicodeText)
     upvote = db.Column(db.Integer, default=0)
     downvote = db.Column(db.Integer, default=0)
     create_date = db.Column(db.DateTime, default=datetime.datetime.now)
 
-    def __init__(self, answer, answer_code):
+    def __init__(self, id_user, id_question, answer, answer_code):
+        self.id_user = id_user
+        self.id_question = id_question
         self.answer = answer
         self.answer_code = answer_code
 

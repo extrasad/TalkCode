@@ -24,10 +24,9 @@ countries = Country_list()
 choices_class = countries.create_choices()
 
 class RegisterForm(Form):
-    username = StringField('',   [validators.DataRequired(message='El campo esta vacio.'), validators.length(min=5, message='Min 5 letter, Try Again')])
-    password = PasswordField('', [validators.DataRequired(message='El campo esta vacio.'), validators.length(min=8, message='Min 8 letter, Try Again')])
-    email = EmailField('',       [validators.Email('Ingrese un email valido'), validators.DataRequired(message='El campo esta vacio.'), validators.length(min=7, message='Min:5, letter, Try Again')])
-
+    username = StringField('',   [validators.Regexp('^\w+$', message="Regex: Username must contain only letters numbers or underscore"), validators.DataRequired(message='El campo esta vacio.'), validators.length(min=5, message='Min 5 letter, Try Again')])
+    password = PasswordField('', [validators.Regexp('[A-Za-z0-9@#$%^&+=]{8,}', message="Regex: At least 8 letter"), validators.DataRequired(message='El campo esta vacio.'), validators.length(min=8, message='Min 8 letter, Try Again')])
+    email = EmailField('',       [validators.Regexp('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', message="Regex: Incorrect format "), validators.Email('Ingrese un email valido'), validators.DataRequired(message='El campo esta vacio.'), validators.length(min=7, message='Min:5, letter, Try Again')])
     def __init__(self, *args, **kwargs):
         Form.__init__(self, *args, **kwargs)
         self.user = None
@@ -42,8 +41,9 @@ class LoginForm(Form):
 
 
 class PersonalForm(Form):
-    name = StringField('First Name..',   [validators.DataRequired(message='El campo esta vacio.')])
-    last_name = StringField('Last Name..',   [validators.DataRequired(message='El campo esta vacio.')])
+    """Crear Regex para que solo sean letras"""
+    name = StringField('First Name..', [validators.Regexp('^[A-z]+$', message="Regex: Username must contain only letters"), validators.DataRequired(message='El campo esta vacio.')])
+    last_name = StringField('Last Name..',  [validators.Regexp('^[A-z]+$', message="Regex: Username must contain only letters"), validators.DataRequired(message='El campo esta vacio.')])
     sex = SelectField('Select your sex', choices=[('M', 'Male'), ('F', 'Female'), ('T', 'Transgendered')])
     country = SelectField('Country', choices=choices_class)
     city = StringField('City',   [validators.DataRequired(message='El campo esta vacio.')])
@@ -72,6 +72,6 @@ class QuestionForm(Form):
     tag_three = StringField('',  [validators.length(min=2, max=25, message='Max 25')], render_kw={"placeholder": "#Databases"})
 
 
-class AnswerlLong(Form):
-    answer_long = StringField('',    [validators.DataRequired(message='El campo esta vacio.'), validators.length(min=45, message='Min 45, Max 250')])
-    text_area = StringField('',      [validators.DataRequired(message='El campo esta vacio.'), validators.length(min=50, max=2500, message='Min 50, Max 2000')], render_kw={"placeholder": "Code . . ."}, widget=TextArea())
+class AnswerForm(Form):
+    answer_long = StringField('',    [validators.DataRequired(message='El campo esta vacio.'), validators.length(min=20, message='Min 20, Max 250')])
+    text_area = StringField('',      [validators.DataRequired(message='El campo esta vacio.'), validators.length(min=8, max=2000, message='Min 8, Max 2000')], render_kw={"placeholder": "Code . . ."}, widget=TextArea())
