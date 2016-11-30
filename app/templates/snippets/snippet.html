@@ -1,0 +1,84 @@
+{% extends 'base/base.html' %}
+{% set title = 'Snippets | Title' %}
+{% block content  %}
+<script src="{{ url_for('static', filename='codemirror/mode/javascript/javascript.js') }}"/></script>
+<script src="{{ url_for('static', filename='js/counter_letter.js') }}"/></script>
+
+<div class="container">
+  <div class="">
+    <div class="col-md-3 ">
+      <h1>{{ User.username }}<i class="icon-border icon-light icon-large icon-file-text"></i></h1>
+    </div>
+    <div class="col-md-4 name-snippets">
+      <h2>{{Snippet_data.title}}</h2>
+    </div>
+    <div class="col-md-5 description-snippets">
+      <h2>{{Snippet_data.description}}</h2>
+    </div>
+    <ul class="">
+     <li>{{Tag.tag_one}}</li>
+     <li>{{Tag.tag_two}}</li>
+     <li>{{Tag.tag_three}}</li>
+    </ul>
+    <p>{{ create_date }}</p>
+  </div>
+  <hr class="style10">
+  <br>
+  <div class="col-md-9 area-code-snippets">
+    <div class="prettyBlock">
+       <div class="prettyPrint">
+          <?prettify?>
+          <pre class="prettyprint">
+{{Snippet_data.text_area}}
+</pre>
+       </div>
+    </div>
+  </div>
+    {% if comment_form %}
+    <div class="col-md-3">
+       <br>
+       <center><h4 class="text-pre-answer">Responde</h4></center>
+       <form class="" method="POST">
+          {% from "macros/_macro.html" import render_field %}
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <div class="form-group">
+             {{ render_field(comment_form.comment, class='form-control comment-area text-info' ) }}
+             <p class="help-block">Escribe tu comentario</p>
+             <br>
+          </div>
+          <button type="submit" class="btn-counter_letter right  btn btn-raised btn-sm btn-success">Submit <p class="counter"></p> </button>
+       </form>
+    </div>
+    {% else %}
+    <br>
+    {% endif %}
+    {% if Comments %}
+    {% for comment in Comments %}
+    <div class="col-md-3">
+      <h4>{{ comment.name_user }}</h4>
+      <br>
+      <p>{{ comment.comment_text }}</p>
+      <h6>{{ comment.create_date }}</h6>
+    </div>
+    {% endfor %}
+    {% else %}
+    <center>
+       <h5><i class="icon-info"></i> No hay Comentarios, responde tu!</h5>
+    </center>
+    {% endif %}
+
+</div>
+
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    var button = $('.btn-counter_letter');
+    var textCounter = $('.counter');
+    var field = $('.comment-area');
+
+    LetterCounter(5, 120, field, button, textCounter)
+  });
+</script>
+
+
+{% endblock  %}

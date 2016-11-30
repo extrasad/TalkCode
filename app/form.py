@@ -73,5 +73,17 @@ class QuestionForm(Form):
 
 
 class AnswerForm(Form):
-    answer_long = StringField('',    [validators.DataRequired(message='El campo esta vacio.'), validators.length(min=20, message='Min 20, Max 250')])
+    answer_long = StringField('',    [validators.DataRequired(message='El campo esta vacio.'), validators.length(min=20, max=250, message='Min 20, Max 250')], render_kw={"placeholder": "Answer . . .",}, widget=TextArea())
     text_area = StringField('',      [validators.DataRequired(message='El campo esta vacio.'), validators.length(min=8, max=2000, message='Min 8, Max 2000')], render_kw={"placeholder": "Code . . ."}, widget=TextArea())
+
+
+class SnippetsForm(Form):
+    tittle = StringField('',      [validators.DataRequired(message='El campo esta vacio.'), validators.length(min=5, max=45, message='Min 5, Max 45')])
+    description = StringField('', [validators.DataRequired(message='El campo esta vacio.'), validators.length(min=15, max=50, message='Min 15, Max 50')])
+    text_area = StringField('',   [validators.DataRequired(message='El campo esta vacio.'), validators.length(min=5, message='Min 5')], widget=TextArea())
+    tag_one = StringField('',    [validators.length(min=1, max=25, message='Max 25')], render_kw={"placeholder": "#Algorithm"})
+    tag_two = StringField('',    [validators.length(min=1, max=25, message='Max 25')], render_kw={"placeholder": "#Class"})
+    tag_three = StringField('',  [validators.length(min=1, max=25, message='Max 25')], render_kw={"placeholder": "#Data Structure"})
+
+class SnippetsComment(Form):
+    comment = StringField('',      [validators.DataRequired(message='El campo esta vacio.'), validators.length(min=5, max=120, message='Min 5, Max 120')])

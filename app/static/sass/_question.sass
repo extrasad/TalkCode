@@ -1,0 +1,168 @@
+$break-small: 320px
+$break-very-small: 310px
+$break-large: 1200px
+$break-medium: 970px
+
+//Write Question
+//......
+//.....
+//....
+//...
+//..
+//.
+.area-text-question > textarea
+  padding: 10px
+  border-radius: 2px
+  box-shadow:  0px 2px 11px 0px rgba(0, 0, 0, 0.3)
+  border: 1px solid #e2e6e6
+  margin: 10px 0 10px 0
+  font-family: 'Open Sans', sans-serif
+  outline: none
+  width: 100%
+  height: 30vh
+  overflow-x: hidden
+  overflow-y: scroll
+  @media screen and (max-width: $break-small)
+    width: 290px
+  @media screen and (max-width: $break-very-small)
+    width: 280px
+
+.description-area
+  width: 100%
+  height: 15vh
+  padding: 6px 10px 6px 10px
+  border-left: 5px dashed rgb(210,199,199)
+  border-right: 5px dashed rgb(196,206,218)
+
+.tag-input
+  display: inline-block
+  margin-top: 20px
+  margin-right: 8px
+  opacity: 1
+  cursor: pointer
+  position: relative
+  white-space: nowrap
+
+.tag-form
+  display: inline-block
+  font-weight: 100
+  font-size: 14px
+  line-height: 20px
+  padding: 2px 7px
+  border-radius: 4px
+  border: 1px solid #ccc
+  width: 33.333%
+  transition: border-color .4s
+  @media screen and (max-width: $break-small)
+    width: 23.333%
+  @media screen and (max-width: $break-very-small)
+    width: 16.333%
+
+.tag-form:hover
+  transition: .7s
+  box-shadow:  0px 0px 5px 0px rgb(67,226,216)
+
+.tag-form:focus
+  transition: .6s
+  box-shadow:  0px 2px 11px 0px rgba(0, 0, 0, 0.3)
+
+#button-inline
+  margin: 20px 1px 0px 50px
+  background-color: #2fb57d
+  position: relative
+  display: inline-block
+  @media screen and (max-width: $break-small)
+    margin: 16px 1px 0px 10px
+  @media screen and (max-width: $break-very-small)
+    margin: 12px 1px 0px 10px
+
+//Question Pagination
+//.....
+//....
+//...
+//..
+//.
+
+
+
+// Question view
+//......
+//.....
+//....
+//...
+//..
+//.
+.tags
+  margin: 0
+  overflow: hidden
+  padding: 0
+  li
+    float: left
+    list-style-type: none
+
+.tag-question
+  background: #61d0a1
+  border-radius: 3px 0 0 3px
+  color: #999
+  display: inline-block
+  height: 26px
+  line-height: 26px
+  padding: 0 20px 0 23px
+  position: relative
+  margin: 0 10px 10px 0
+  text-decoration: none
+  -webkit-transition: color 0.2s
+  &::before
+    background: grey
+    border-radius: 10px
+    box-shadow: inset 0 1px rgba(0, 0, 0, 0.25)
+    content: ''
+    height: 6px
+    left: 10px
+    position: absolute
+    width: 6px
+    top: 10px
+  &::after
+    background: #61d0a1
+    border-bottom: 13px solid transparent
+    border-left: 10px solid #61d0a1
+    border-top: 13px solid transparent
+    content: ''
+    position: absolute
+    right: 0
+    top: 0
+
+
+.prettyBlock
+  display: flex
+  max-height: 480px
+
+.prettyPrint
+  overflow-x: hidden
+  overflow-y: scroll
+  width: 100ch
+  background: #333 !important
+  margin-bottom: 0px !important
+
+.prettyprint
+  border: none !important
+
+// Answer Form and View
+//......
+//.....
+//....
+//...
+//..
+//.
+
+.text-pre-answer
+  font-size: Arial !important
+  opacity: 0.7
+
+.answer-area
+  margin-left: 15px
+  width: 95%
+  height: 15vh
+  padding: 6px 10px 6px 10px
+  border-left: 5px dashed rgb(210,199,199)
+  border-right: 5px dashed rgb(196,206,218)

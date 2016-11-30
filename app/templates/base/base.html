@@ -11,7 +11,7 @@
     <meta name="viewport" content="width=device-width, user-scalable=no">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.css') }}"/>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/ripples.css') }}"/>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/General.css') }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}"/>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap-material-design.css') }}"/>
     <script src="{{ url_for('static', filename='js/jquery-2.2.4.min.js') }}"/></script>
@@ -26,6 +26,10 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap-material-datetimepicker.css') }}"/>
     <script src="{{ url_for('static', filename='js/moment.js') }}"/></script>
     <script src="{{ url_for('static', filename='js/bootstrap-material-datetime.js') }}"/></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='codemirror/lib/codemirror.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='codemirror/lib/ambiance.css') }}">
+
+    <script src="{{ url_for('static', filename='codemirror/lib/codemirror.js') }}"/></script>
 
 </head>
 <body>
@@ -42,23 +46,9 @@
                 </div>
                 <div class="navbar-collapse navbar-responsive-collapse collapse" aria-expanded="false" style="height: 1px;">
                   <ul class="nav navbar-nav">
-                    <li><a href="{{ url_for('questions_pagination') }}">Questions</a></li>
+                    <li><a href="{{ url_for('questions_pagination', id=1) }}">Questions</a></li>
                     <li><a href="{{ url_for('snippets_pagination') }}">Snippets</a></li>
                     <li><a href="{{ url_for('articles_pagination') }}">Articles</a></li>
-
-                    <!--<li class="dropdown">
-                      <a href="bootstrap-elements.html" data-target="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Dropdown
-                        <b class="caret"></b><div class="ripple-container"></div></a>
-                      <ul class="dropdown-menu">
-                        <li><a href="javascript:void(0)">Action</a></li>
-                        <li><a href="javascript:void(0)">Another action</a></li>
-                        <li><a href="javascript:void(0)">Something else here</a></li>
-                        <li class="divider"></li>
-                        <li class="dropdown-header">Dropdown header</li>
-                        <li><a href="javascript:void(0)">Separated link</a></li>
-                        <li><a href="javascript:void(0)">One more separated link<div class="ripple-container"><div class="ripple ripple-on ripple-out" style="left: 99.7031px; top: 4px; background-color: rgb(0, 150, 136); transform: scale(25.625);"></div></div></a></li>
-                      </ul>
-                    </li>-->
                   </ul>
                   <form class="navbar-form navbar-left" >
                     <div class="form-group is-empty">
@@ -96,8 +86,6 @@
                         <li><a href="{{ url_for('about') }}" style="font-size:13px">About</a></li>
                         <li class="divider"></li>
                         <li><a href="{{ url_for('logout') }}" style="font-size:13px">Log Out</a></li>
-
-
                       </ul>
                     </li>
                     {% endif %}

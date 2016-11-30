@@ -16,3 +16,4 @@ class DevelopmentConfig(Config):
     SQLALCHEMY_ECHO = False
     SEND_FILE_MAX_AGE_DEFAULT = 0
     WTF_CSRF_ENABLED = True
+    POSTS_PER_PAGE = 3

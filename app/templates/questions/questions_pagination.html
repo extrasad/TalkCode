@@ -1,0 +1,44 @@
+{% extends 'base/base.html' %}
+{% set title = 'Questions ' %}
+{% block content %}
+
+<!-- posts is a Paginate object -->
+<div class="container">
+
+{% for question in questions.items %}
+    <div class="col-md-8">
+  <h1 class="text-muted h4"><a href="{{ url_for('questions', id=question.id )}}">{{ question.title }}</a></h1>
+  <p class="">{{ question.description }}</p>
+      <div class="right">
+          <div class="btn-group  btn-group-raised">
+             <a type="button" class="btn btn-success btn-xs"><i class="icon-plus"></i> {{ question.upvote}}</a>
+             <a type="button" class="btn btn-danger btn-xs"><i class="icon-minus"></i> {{ question.downvote}}</a>
+          </div>
+      </div>
+    </div>
+{% endfor %}
+
+    <div class="col-md-8">
+        <ul class="pagination pagination-lg">
+            {% if questions.has_prev %}
+          <li><a href="{{ url_for('questions_pagination', page=questions.prev_num)}}"><i class="icon-chevron-left"></i></a></li>
+            {% else %}
+            {% endif %}
+
+
+            {% if questions.has_next %}
+          <li><a href="{{ url_for('questions_pagination', page=questions.next_num) }}"><i class="icon-chevron-right"></i></a></li>
+        </ul>
+            {% else %}
+    </div>
+
+            {% endif %}
+
+        </div>
+
+</div>
+
+
+{% endblock %}
+
+

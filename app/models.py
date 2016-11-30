@@ -111,12 +111,6 @@ class Skills(db.Model):
     id_user = db.Column(db.Integer, db.ForeignKey('user.id'))
     skill_name = db.Column(db.String(30))
 
-    def get_id(self):
-        try:
-            return unicode(self.id)  # python 2
-        except NameError:
-            return str(self.id)  # python 3
-
 
 class Question(db.Model):
     __tablename__ = 'user_question'
@@ -137,11 +131,6 @@ class Question(db.Model):
         self.description = description
         self.text_area = text_area
 
-    def get_id(self):
-        try:
-            return unicode(self.id)  # python 2
-        except NameError:
-            return str(self.id)  # python 3
 
 class TagQuestion(db.Model):
     __tablename__ = 'tag_question'
@@ -157,32 +146,70 @@ class TagQuestion(db.Model):
         self.tag_two = tag_two
         self.tag_three = tag_three
 
-    def get_id(self):
-        try:
-            return unicode(self.id)  # python 2
-        except NameError:
-            return str(self.id)  # python 3
-
 
 class AnswerLong(db.Model):
     __tablename__ = 'user_answer_long'
     id = db.Column(db.Integer, primary_key=True)
     id_user = db.Column(db.Integer, db.ForeignKey('user.id'))
     id_question = db.Column(db.Integer, db.ForeignKey('user_question.id'))
-    answer = db.Column(db.String(2000))
-    answer_code = db.Column(UnicodeText)
+    name_user = db.Column(db.String(80), nullable=False)
+    answer = db.Column(db.String(2000), nullable=False)
+    answer_code = db.Column(UnicodeText, nullable=True)
     upvote = db.Column(db.Integer, default=0)
     downvote = db.Column(db.Integer, default=0)
     create_date = db.Column(db.DateTime, default=datetime.datetime.now)
 
-    def __init__(self, id_user, id_question, answer, answer_code):
+    def __init__(self, id_user, name_user, id_question, answer, answer_code):
         self.id_user = id_user
+        self.name_user = name_user
         self.id_question = id_question
         self.answer = answer
         self.answer_code = answer_code
 
-    def get_id(self):
-        try:
-            return unicode(self.id)  # python 2
-        except NameError:
-            return str(self.id)  # python 3
+
+class Snippet(db.Model):
+    __tablename__ = 'user_snippet'
+    id = db.Column(db.Integer, primary_key=True)
+    id_user = db.Column(db.Integer, db.ForeignKey('user.id'))
+    title = db.Column(db.String(45))
+    description = db.Column(db.String(50))
+    text_area = db.Column(UnicodeText)
+    comment = db.relationship('CommentSnippet', backref='user_snippet', lazy='dynamic')
+    tag_relation = db.relationship('TagSnippet', backref='user_snippet', lazy='dynamic')
+    star = db.Column(db.Integer, default=0)
+    create_date = db.Column(db.DateTime, default=datetime.datetime.now)
+
+    def __init__(self, id_user, title, description, text_area):
+        self.id_user = id_user
+        self.title = title
+        self.description = description
+        self.text_area = text_area
+
+class TagSnippet(db.Model):
+    __tablename__ = 'tag_snippet'
+    id = db.Column(db.Integer, primary_key=True)
+    id_snippet = db.Column(db.Integer, db.ForeignKey('user_snippet.id'))
+    tag_one = db.Column(db.String(25),  nullable=True)
+    tag_two = db.Column(db.String(25),  nullable=True)
+    tag_three = db.Column(db.String(25), nullable=True)
+
+    def __init__(self, id_snippet, tag_one, tag_two, tag_three):
+        self.id_snippet = id_snippet
+        self.tag_one = tag_one
+        self.tag_two = tag_two
+        self.tag_three = tag_three
+
+class CommentSnippet(db.Model):
+    __tablename__ = 'comment_snippet'
+    id = db.Column(db.Integer, primary_key=True)
+    id_user = db.Column(db.Integer, db.ForeignKey('user.id'))
+    id_snippet = db.Column(db.Integer, db.ForeignKey('user_snippet.id'))
+    name_user = db.Column(db.String(80), nullable=False)
+    comment_text = db.Column(db.String(120), nullable=False)
+    create_date = db.Column(db.DateTime, default=datetime.datetime.now)
+
+    def __init__(self, id_user, id_snippet, name_user, comment_text):
+        self.id_user = id_user
+        self.id_snippet = id_snippet
+        self.name_user = name_user
+        self.comment_text = comment_text
