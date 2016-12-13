@@ -1,38 +1,54 @@
 {% extends 'base/base.html' %}
 {% set title = 'Question ' %}
+{% from "macros/_macro.html" import render_field %}
+
 {% block content %}
 
 <script src="{{ url_for('static', filename='codemirror/mode/javascript/javascript.js') }}"/></script>
 <script src="{{ url_for('static', filename='js/counter_letter.js') }}"/></script>
 
 <div class="container">
+  <br>
    <div class="col-md-8">
-      <div class="well well-sm">
-         <div class="panel-heading"><i class="icon-user text-info"></i> {{ User.username }}</div>
-         <div class="panel-body">{{ Question_data.title }}</div>
-         <div class="panel-body">{{ Question_data.description }}</div>
-         <h6 style="padding-left:15px;"><i class="icon-time"> </i> {{Question_data.create_date}}</h6>
-         <!--datetime.datetime.now-->
-      </div>
+     <form method="POST">
+         {% from "macros/_macro.html" import render_field %}
+         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+               {{ render_field(new_QuestionForm.tittle, class='form-litle', value=Question_data.title ) }}
+               {{ render_field(new_QuestionForm.description, class='description-area' ) }}
       <ul class="tags">
          <li><a href="#" class="tag-question" style="text-decoration:none;">{{Tag.tag_one}}</a></li>
          <li><a href="#" class="tag-question" style="text-decoration:none;">{{Tag.tag_two}}</a></li>
          <li><a href="#" class="tag-question" style="text-decoration:none;">{{Tag.tag_three}}</a></li>
-      </ul>
-      <div class="prettyBlock">
-         <div class="prettyPrint">
-            <?prettify?>
-            <pre class="prettyprint">
-{{Question_data.text_area}}
-            </pre>
-         </div>
-      </div>
-      <div class="btn-group  btn-group-raised">
-         <a type="button" class="btn btn-success">Upvote {{ Question_data.upvote}}</a>
-         <a type="button" class="btn btn-danger">Downvote {{ Question_data.downvote}}</a>
-      </div>
+         <li><a href="#" class="tag-question upvote" style="text-decoration:none;">{{ Question_data.upvote}}</a></li>
+         <li><a href="#" class="tag-question downvote" style="text-decoration:none;">{{ Question_data.downvote}}</a></li>
+         <li><a href="#" class="tag-question user" style="text-decoration:none;">{{ User.username }}</a></li>
+      </ul><br>
+                      <script type="text/javascript">
+                        $('.description-area').val({{Question_data.description | tojson}}).css('resize', 'none');
+
+                        $(document).ready(function () {
+                          var myCodeQuestion = $('.CodeQuestion')[0];
+                          var myCodeMirror = CodeMirror.fromTextArea(myCodeQuestion,{
+                            styleActiveLine: true,
+                            lineNumbers:true,
+                            theme: 'ttcn',
+                            lineWrapping: true,
+                            mode: 'javascript',
+                            readOnly: true
+                          });
+                          myCodeMirror.getDoc().setValue({{Question_data.text_area | tojson}});
+                          setTimeout(function() {
+                            myCodeMirror.refresh();
+                          },1);
+                        });
+                      </script>
+
+      {{ render_field(new_QuestionForm.text_area, class='CodeQuestion') }}
+      </form>
+
    </div>
-   {% if answer_long %}
+
+   {% if is_authenticated %}
    <div class="col-md-8">
       <br>
       <center><h4 class="text-pre-answer">Responde</h4></center>
@@ -40,7 +56,7 @@
          {% from "macros/_macro.html" import render_field %}
          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
          <div class="form-group">
-            {{ render_field(answer_long.answer_long, class='answer-area text-info' ) }}
+            {{ render_field(answer_long.answer_long, class='answer-area' ) }}
             <p class="help-block">Escribe tu respuesta</p>
             <br>
          </div>
@@ -68,7 +84,7 @@
             <div class="prettyBlock">
                <div class="prettyPrint">
                   <?prettify?>
-                  <pre class="prettyprint">
+<pre class="prettyprint linenums">
 {{ answer.answer_code }}
 </pre>
                </div>
@@ -96,17 +112,15 @@
       theme: 'ambiance',
       lineWrapping: true,
       mode: 'javascript',
+      viewportMargin: Infinity,
     });
-
+    myCodeMirror.setSize(710, '20%');
     var button = $('.btn-counter_letter');
     var textCounter = $('.counter');
     var field = $('.answer-area');
-
     LetterCounter(1, 250, field, button, textCounter);
 
   });
-
-
 </script>
 
 

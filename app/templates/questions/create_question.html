@@ -8,19 +8,18 @@
   <div class="container">
     <div class="row">
       <div class="col-md-8">
+          <h1>Question Info <i class="icon-border icon-light icon-large icon-file-text"></i></h1>
         <div class="write-question-grid">
-            <center>Write your Question</center>
-        <form class="" method="POST">
+          <form class="" method="POST">
             {% from "macros/_macro.html" import render_field %}
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
           <div class="form-group label-floating">
             <label class="control-label" for="">Tittle</label>
-                {{ render_field(form.tittle, class='form-control text-info' ) }}
-            <p class="help-block">Asegurate de escribir un titulo adecuado</p>
+                {{ render_field(form.tittle, class='form-litle' ) }}
           </div>
           <div class="form-group label-floating">
             <label class="control-label" for="" >Description</label>
-                {{ render_field(form.description, class='description-area text-info' ) }}
+                {{ render_field(form.description, class='description-area' ) }}
             <p class="help-block">Describe tu pregunta</p>
           </div>
         </div>
@@ -56,7 +55,7 @@
     var myCodeMirror = CodeMirror.fromTextArea(myTextArea,{
       styleActiveLine: true,
       lineNumbers:true,
-      theme: 'ambiance',
+      theme: 'ttcn',
       lineWrapping: true,
       mode: 'javascript',
     });

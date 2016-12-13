@@ -10,13 +10,13 @@
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
               <legend>CV Information</legend>
               <div class="form-group">
-                {{ render_field(form.tittle, class='form-control text-info') }}
+                {{ render_field(form.tittle, value=CurriculumDate.tittle, class='form-control') }}
               </div>
               <div class="form-group">
-                {{ render_field(form.university, class='form-control text-info' ) }}
+                {{ render_field(form.university,value=CurriculumDate.university, class='form-control' ) }}
               </div>
               <div class="form-group">
-                {{ render_field(form.description, class='form-control text-info') }}
+                {{ render_field(form.description,value=CurriculumDate.description, class='form-control') }}
               </div>
               </div>
               <div class="col-md-3">
@@ -26,7 +26,7 @@
                 {% for field in form.skillform %}
                 <div data-toggle="fieldset-entry">
                  <div class="form-group">
-                     {{ render_field(field.skill_field, class='form-control text-info') }}
+                     {{ render_field(field.skill_field, class='form-control') }}
                  </div>
                     <button type="button" data-toggle="fieldset-remove-row" id="phone-{{loop.index0}}-remove">-</button>
                 </div>

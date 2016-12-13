@@ -1,12 +1,11 @@
 # coding=utf-8
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import UnicodeText
+from sqlalchemy import UnicodeText, Date
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
 
 
 db = SQLAlchemy()
-
 
 class User(db.Model):
     __tablename__ = 'user'
@@ -44,7 +43,6 @@ class User(db.Model):
     def is_anonymous(self):
         return False
 
-
     def get_id(self):
         try:
             return unicode(self.id)  # python 2
@@ -64,29 +62,20 @@ class Personal_User(db.Model):
     last_name = db.Column(db.String(100))
     sex = db.Column(db.String(1))
     country = db.Column(db.String(45))
-    city = db.Column(db.String(45))
-    dob = db.Column(db.Date)
+    dob = db.Column(Date)
     repository = db.Column(db.String(120))
     social_red = db.Column(db.String(150))
     create_date_personal = db.Column(db.DateTime, default=datetime.datetime.now)
 
-    def __init__(self, id_user, name, last_name, sex, country, city, dob, repository, social_red):
+    def __init__(self, id_user, name, last_name, sex, country, dob, repository, social_red):
         self.id_user = id_user
         self.name = name
         self.last_name = last_name
         self.sex = sex
         self.country = country
-        self.city = city
         self.dob = dob
         self.repository = repository
         self.social_red = social_red
-
-
-    def get_id(self):
-        try:
-            return unicode(self.id)  # python 2
-        except NameError:
-            return str(self.id)  # python 3
 
 
 class Curriculum_User(db.Model):
@@ -106,6 +95,7 @@ class Curriculum_User(db.Model):
 
 
 class Skills(db.Model):
+    """"Many to Many..."""
     __tablename__ = 'skills'
     id = db.Column(db.Integer, primary_key=True)
     id_user = db.Column(db.Integer, db.ForeignKey('user.id'))

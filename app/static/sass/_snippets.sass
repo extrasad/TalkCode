@@ -9,6 +9,10 @@ $break-medium: 970px
 //...
 //..
 //.
+.username-snippets
+  // h-length, v-length, blur, spread, colour
+  margin-top: 25px
+  margin-bottom: 25px
 
 .dates-snippets
   overflow: hidden
@@ -17,7 +21,8 @@ $break-medium: 970px
 
 .name-snippets
 
-.description-snippets
+.description-snippet
+  margin-bottom: 40px
 
 hr.style10
   border-top: 1px solid #8c8b8b
@@ -28,3 +33,35 @@ hr.style10
     margin-top: 2px
     border-top: 1px solid #8c8b8b
     border-bottom: 1px solid #fff
+
+
+.form-snippet
+  color: rgb(125,124,114)
+  width: 100%
+  padding: 6px 10px 6px 10px
+  transition: .6s
+  border: 1px solid rgb(255,255,255)
+  border-radius: 5px
+  &:focus
+    transition: .6s
+    border: 1px solid
+    -webkit-box-shadow: inset 0px -2px 67px 0px rgba(0,0,0,0.15)
+    -moz-box-shadow: inset 0px -2px 67px 0px rgba(0,0,0,0.15)
+    box-shadow: inset 0px -2px 67px 0px rgba(0,0,0,0.15)
+
+.col-snippet
+  margin-top: 10px
+  a
+    text-decoration: none
+
+.limited-div
+  overflow-y: hidden
+  height: 100px
+  display: block
+  margin-top: 10px + 5
+  border: 1px solid rgb(212,212,212)
+  border-radius: 5px
+  background-color: #ffffff
+
+.limited
+  height: 110px

@@ -10,8 +10,10 @@ from flask_admin.contrib.sqla import ModelView
 from flask_admin.form import SecureForm
 from flask_admin import Admin, expose
 from flask_admin.contrib.fileadmin import FileAdmin
-from decorator_and_utils import user_required, know_website
+from decorator_and_utils import user_required, know_website, know_name_country
 import os.path
+import pycountry
+
 
 #   ------------------------------------- Instances ----------------------------
 mysql = MySQL()
@@ -40,32 +42,34 @@ def page_not_found(e):
 
 @app.before_request
 def before_request():
-    """Coment this function for debugging"""
-    if 'username' not in session and request.endpoint in ['user', 'logout', 'setting']:
+    pass
+    """if 'username' not in session and request.endpoint in ['user', 'logout', 'setting']:
         redirect(url_for('login'))
 
     if 'username' in session and request.endpoint in ['register', 'login']:
-        redirect(url_for('user'))
+        redirect(url_for('user'))"""
 
 # Index ------------------------------------------------------------------------
 @app.route('/', methods=['GET'])
 def index():
-    today = date.today()
     if 'username' in session:
-        return render_template('index.html', date=today, button='btn btn-info\
-                               btn-raised', username=session['username'])
+        return render_template('index.html', button='btn btn-info, btn-raised', username=session['username'])
     else:
-        return render_template('index.html', date=today, button='btn btn-info btn-raised')
+        return render_template('index.html', button='btn btn-info btn-raised')
 
 # User Page --------------------------------------------------------------------
 @app.route('/user/<string:username>', methods=['GET', 'POST'])
 def user(username):
     """"Perfil del Usuario Logeado"""
-
     username = session['username']
     UserDate = User.query.filter_by(id=session['id']).first()
     PersonalDate = Personal_User.query.filter_by(id_user=session['id']).first()
     CurriculumDate = Curriculum_User.query.filter_by(id_user=session['id']).first()
+
+    try:
+        country = know_name_country(PersonalDate.country)
+    except AttributeError:
+        country = ' '
 
     if PersonalDate is not None:
         user_link = [know_website(PersonalDate.social_red), know_website(PersonalDate.repository)]
@@ -73,6 +77,7 @@ def user(username):
                                name_user=session['username'],
                                user_link=user_link,
                                PersonalDate=PersonalDate,
+                               country=country,
                                UserDate=UserDate,
                                CurriculumDate=CurriculumDate)
 
@@ -86,7 +91,6 @@ def user(username):
 def register():
     new_registerForm = RegisterForm(request.form)
     if request.method == 'POST' and new_registerForm.validate():
-        print RegisterForm
         username = new_registerForm.username.data
         password = new_registerForm.password.data
         email = new_registerForm.email.data
@@ -95,24 +99,16 @@ def register():
         query_validate_password = User.query.filter_by(password=password).first()
         query_validate_email = User.query.filter_by(email=email).first()
 
-
         if query_validate_username is not None or query_validate_password is not None or query_validate_email is not None:
             uri_parameters = 'invalid'
             flash('That dates in use', 'danger')
-            print uri_parameters
             return redirect(url_for('register', error=uri_parameters))
         else:
-            session['username'] = username
-            session['password'] = password
-            session['email'] = email
-            user_new = User(username=session['username'], password=session['password'], email=session['email'])
+            user_new = User(username=username, password=password, email=email)
             db.session.add(user_new)
             db.session.commit()
-            #   user_id, quitar si redirect esta haciendo que se ejecute bien la funcion user
-            user_id = db.session.query(User.id).filter(User.username == session['username']).first()
-            session['id'] = user_id[0]
             flash('Your user commit!', 'success')
-            return redirect(url_for('user', username=username))
+            return redirect(url_for('login'))
     else:
         return render_template('sign/register.html', form=new_registerForm)
 
@@ -127,16 +123,16 @@ def login():
         user = User.query.filter_by(username=username).first()
 
         if user is not None and user.verify_password(password):
-            flash('Bienvenido {}'.format(username), 'success') #test
             session['username'] = username
             user_id = db.session.query(User.id).filter(User.username == session['username']).first()
             session['id'] = user_id[0]
-            print 'Bienvenido de nuevo {}'.format(username)
+            session['email'] = user.email
+
+            flash('Bienvenido {}'.format(username), 'success')
             return redirect(url_for('user', username=username))
 
         else:
             flash('Username or password invalid', 'danger')
-            print 'Error ', '\nusername:{}\npassword:{}'.format(username, password)
             return redirect(url_for('login',))
 
     return render_template('sign/login.html', form=new_Loginform)
@@ -145,64 +141,71 @@ def login():
 @app.route('/logout')
 @user_required
 def logout():
-    if 'username' in session:
-        session.pop('username', None)
+    session.clear()
     return redirect(url_for('login'))
 
 
-# User Dates Form and More Things ----------------------------------------------
-
+# User Information Form and More Things ----------------------------------------------
 
 @app.route('/setting/personal_info', methods=['GET', 'POST'])
 @user_required
 def setting_personal():
     new_PersonalForm = PersonalForm(request.form)
+    Personal_info = Personal_User.query.filter_by(id_user=session['id']).one_or_none()
     if request.method == 'POST' and new_PersonalForm.validate():
-        query = db.session.query(User.id).filter(User.username == session['username']).first()
-        user_id = query[0]  # long integer delete 'L'
+        id_user = session['id']
         name = new_PersonalForm.name.data
         last_name = new_PersonalForm.last_name.data
         sex = new_PersonalForm.sex.data
         country = new_PersonalForm.country.data
-        city = new_PersonalForm.city.data
         dob = new_PersonalForm.dob.data
         repository = new_PersonalForm.repository.data
         social_red = new_PersonalForm.social_red.data
-
-        setting_new = Personal_User(user_id, name, last_name, sex,
-                                    country, city, dob,
+        setting_new = Personal_User(id_user, name, last_name, sex,
+                                    country, dob,
                                     repository, social_red)
+        if Personal_info is None:
+            print 'NO HAY INFO, CREAMOS LA INFO'
+            db.session.add(setting_new)
+            db.session.commit()
+            flash('Personal date created', 'success')
+            return redirect(url_for('user', username=session['username']))
+        else:
+            print 'SI HAY DATOS PERSONALES, ELIMINAMOS LOS VIEJOS AGREGAMOS LOS NUEVOS '
+            db.session.delete(Personal_info)
+            db.session.add(setting_new)
+            db.session.commit()
+            flash('Personal date update', 'success')
+            return redirect(url_for('user', username=session['username']))
 
-        db.session.add(setting_new)
-        db.session.commit()
-
-        flash('Your personal date is update', 'success')
-        return redirect(url_for('user', username=session['username']))
     return render_template('user/setting/form_personal.html',
-                           form=new_PersonalForm)
+                           form=new_PersonalForm, PersonalDate=Personal_info)
 
 
 @app.route('/setting/curriculum_info', methods=['GET', 'POST'])
 @user_required
 def setting_curriculum():
-    """"Si esto da mas problemas hare dos add y ya..."""
-    user = User.query.filter_by(id=session['id']).first()
-    new_CurriculumForm = CurriculumForm(request.form, obj=user)
+    new_CurriculumForm = CurriculumForm(request.form)
+    Curriculum_info = Curriculum_User.query.filter_by(id_user=session['id']).one_or_none()
     if request.method == 'POST' and new_CurriculumForm.validate():
         tittle = new_CurriculumForm.tittle.data
         university = new_CurriculumForm.university.data
         description = new_CurriculumForm.description.data
-
         setting_new = Curriculum_User(session['id'], tittle,
                                       university, description)
-
-        db.session.add(setting_new)
-        db.session.commit()
-
-        flash('Your personal date is update', 'success')
-        return redirect(url_for('user', username=session['username']))
+        if Curriculum_info is None:
+            db.session.add(setting_new)
+            db.session.commit()
+            flash('Your curriculum created', 'success')
+            return redirect(url_for('user', username=session['username']))
+        else:
+            db.session.delete(Curriculum_info)
+            db.session.add(setting_new)
+            db.session.commit()
+            flash('Your curriculum date update', 'success')
+            return redirect(url_for('user', username=session['username']))
     return render_template('user/setting/form_curriculum_user.html',
-                           form=new_CurriculumForm)
+                           form=new_CurriculumForm, CurriculumDate=Curriculum_info)
 # About ----------------------------------------------------
 
 
@@ -223,50 +226,51 @@ def questions_pagination(page=1):
 
 @app.route('/questions/id/<int:id>', methods=['GET', 'POST'])
 def questions(id):
-    new_answer_form = AnswerForm(request.form)
+    new_QuestionForm = QuestionForm(request.form) # EDIT QUESTION
+    new_answer_form = AnswerForm(request.form) # FORM ANSWER
+    question_data = db.session.query(Question).filter(Question.id == id).first() # QUESTION
+    User_data = User.query.filter_by(id=question_data.id_user).first() # USER
+    Tag_data = TagQuestion.query.filter_by(id_question=question_data.id).first() # TAG
+    all_Answers = AnswerLong.query.filter_by(id_question=id).all() # ALL ANSWERS
+    try:
+        if (session['id'] == User_data.id):
+            if request.method == 'GET' and (session['id'] == User_data.id):
+                return render_template('questions/question.html',
+                                       Answers=all_Answers,
+                                       User=User_data,
+                                       Question_data=question_data,
+                                       Tag=Tag_data,
+                                       new_QuestionForm=new_QuestionForm)
 
-    question_data = db.session.query(Question).filter(Question.id == id).first()
-    User_data = User.query.filter_by(id=question_data.id_user).first()
-    Tag_data = TagQuestion.query.filter_by(id_question=question_data.id).first()
+            elif request.method == 'POST' and new_answer_form.validate():
+                id_question = question_data.id
+                answer_text = new_answer_form.answer_long.data
+                answer_code = new_answer_form.text_area.data
+                answer_new = AnswerLong(session['id'], session['username'],
+                                        id_question, answer_text, answer_code)
 
-    all_Answers = AnswerLong.query.filter_by(id_question=id).all()
+                db.session.add(answer_new)
+                db.session.commit()
+                flash('New answer!', 'success')
+                return redirect(url_for('questions', id=id))
 
+    except KeyError:
+        pass
 
-    if request.method == 'GET' and (session['id'] == User_data.id):
-
-        return render_template('questions/question.html',
-                               Answers=all_Answers,
-                               User=User_data,
-                               Question_data=question_data,
-                               Tag=Tag_data)
-
-    elif request.method == 'POST' and new_answer_form.validate():
-        id_question = question_data.id
-        answer_text = new_answer_form.answer_long.data
-        answer_code = new_answer_form.text_area.data
-        answer_new = AnswerLong(session['id'], session['username'],
-                                id_question, answer_text, answer_code)
-
-        db.session.add(answer_new)
-        db.session.commit()
-        flash('New answer!', 'success')
-        return redirect(url_for('questions', id=id))
-
-    else:
-        return render_template('questions/question.html',
-                               Answers = all_Answers,
-                               answer_long=new_answer_form,
-                               User=User_data,
-                               Question_data=question_data,
-                               Tag=Tag_data)
+    return render_template('questions/question.html',
+                           Answers=all_Answers,
+                           answer_long=new_answer_form,
+                           new_QuestionForm=new_QuestionForm,
+                           User=User_data,
+                           Question_data=question_data,
+                           Tag=Tag_data,
+                           is_authenticated=True if 'username' in session else False)
 
 @app.route('/questions/write/user/<string:username>', methods=['GET', 'POST'])
 @user_required
 def create_question(username):
     username = session['username']
     new_QuestionForm = QuestionForm(request.form)
-    if request.method == 'GET':
-        flash('write your question!', 'info')
     if request.method == 'POST' and new_QuestionForm.validate():
         query = db.session.query(User.id).filter(User.username == session['username']).first()
         user_id = query[0]  # long integer delete 'L'
@@ -289,59 +293,98 @@ def create_question(username):
 
 # Snippets ---------------------------------------------------------------------
 
-
-@app.route('/snippets/pagination')
-def snippets_pagination():
-    return "<h1>:(</h4>"
+@app.route('/snippets', methods=['GET', 'POST'])
+@app.route('/snippets/page/<int:page>', methods=['GET', 'POST'])
+def snippets_pagination(page=1):
+    query_snippets = Snippet.query.paginate(page, 3, False)
+    for date in query_snippets.items:
+        date.create_date = str(date.create_date).split(" ")[0]
+    return render_template('snippets/snippets_pagination.html',
+                           snippets=query_snippets)
 
 
 @app.route('/snippets/id/<int:id>', methods=['GET', 'POST'])
 def snippets(id):
-    new_comment_form = SnippetsComment(request.form)
+    new_SnippetForm = SnippetsForm(request.form) #FORM SNIPPET
+    new_comment_form = SnippetsComment(request.form) #FORM COMMENT
+    snippet_data = db.session.query(Snippet).filter(Snippet.id == id).first() # SNIPPET
+    User_data = User.query.filter_by(id=snippet_data.id_user).first() # USER
+    Tag_data = TagSnippet.query.filter_by(id_snippet=snippet_data.id).first() # TAG
+    create_date = str(snippet_data.create_date).split(" ")[0] #DATE FORMATE
 
-    snippet_data = db.session.query(Snippet).filter(Snippet.id == id).first()
-    User_data = User.query.filter_by(id=snippet_data.id_user).first()
-    Tag_data = TagSnippet.query.filter_by(id_snippet=snippet_data.id).first()
-    create_date = str(snippet_data.create_date).split(" ")[0]
+    try:
+        if session['id'] == User_data.id:
+            if request.method == 'GET':
+                all_Comments = CommentSnippet.query.filter_by(id_snippet=id).all() #  ALL COMMENT
+                return render_template('snippets/snippet.html',
+                                       Comments=all_Comments,
+                                       User=User_data,
+                                       Snippet_data=snippet_data,
+                                       Tag=Tag_data,
+                                       create_date=create_date,
+                                       new_SnippetForm=new_SnippetForm,
+                                       editboolean=True)
 
-    all_Comments = CommentSnippet.query.filter_by(id_snippet=id).all()
+            elif request.method == 'POST' and new_comment_form.validate():
+                id_snippets = snippet_data.id
+                comment_text = new_comment_form.comment.data
+                comment_new = CommentSnippet(session['id'], id_snippets,
+                                             session['username'],
+                                             comment_text.upper())
 
-    if request.method == 'GET' and (session['id'] == User_data.id):
-        return render_template('snippets/snippet.html',
-                               Comments=all_Comments,
-                               User=User_data,
-                               Snippet_data=snippet_data,
-                               Tag=Tag_data,
-                               create_date=create_date)
+                db.session.add(comment_new)
+                db.session.commit()
+                flash('New comment!', 'success')
+                return redirect(url_for('snippets', id=id))
 
-    elif request.method == 'POST' and new_comment_form.validate():
-        id_snippets = snippet_data.id
-        comment_text = new_comment_form.comment.data
-        comment_new = CommentSnippet(session['id'], id_snippets,
-                                     session['username'],
-                                     comment_text.upper())
+    except KeyError:
+        pass
 
-        db.session.add(comment_new)
-        db.session.commit()
-        flash('New comment!', 'success')
+    all_Comments = CommentSnippet.query.filter_by(id_snippet=id).all() #  ALL COMMENT
+    return render_template('snippets/snippet.html',
+                            Comments=all_Comments,
+                            comment_form=new_comment_form,
+                            User=User_data,
+                            Snippet_data=snippet_data,
+                            Tag=Tag_data,
+                            create_date=create_date,
+                            new_SnippetForm=new_SnippetForm,
+                            editboolean=False,
+                            is_authenticated=True if 'username' in session else False)
+
+
+@app.route('/snippets/edit/id/<int:id>', methods=['GET', 'POST'])
+def edit_snippet(id):
+    SnippetQuerySet = Snippet.query.filter_by(id=id).one_or_none()
+    edited_SnippetForm = SnippetsForm(request.form)
+    new = [edited_SnippetForm.tittle.data, edited_SnippetForm.description.data, edited_SnippetForm.text_area.data]
+    old = [SnippetQuerySet.title, SnippetQuerySet.description, SnippetQuerySet.text_area]
+
+
+    if request.method == 'POST' and set(new) != set(old):
+        if (new[0] != SnippetQuerySet.title):
+            SnippetQuerySet.title = new[0]
+            db.session.add(SnippetQuerySet)
+            db.session.commit()
+        if (new[1] != SnippetQuerySet.description):
+            SnippetQuerySet.description = new[1]
+            db.session.add(SnippetQuerySet)
+            db.session.commit()
+        if (new[2] != SnippetQuerySet.text_area):
+            SnippetQuerySet.text_area = new[2]
+            db.session.add(SnippetQuerySet)
+            db.session.commit()
+        flash('Edit ready!', 'success')
         return redirect(url_for('snippets', id=id))
-
     else:
-        return render_template('snippets/snippet.html',
-                               Comments=all_Comments,
-                               comment_form=new_comment_form,
-                               User=User_data,
-                               Snippet_data=snippet_data,
-                               Tag=Tag_data,
-                               create_date=create_date)
+        flash('Wow...! Seguro hiciste algun cambio?', 'danger')
+        return redirect(url_for('snippets', id=id))
 
 
 @app.route('/snippets/write/user/<string:username>', methods=['GET', 'POST'])
 def create_snippet(username):
     username = session['username']
     new_SnippetForm = SnippetsForm(request.form)
-    if request.method == 'GET':
-        flash('write your snippet!', 'info')
     if request.method == 'POST' and new_SnippetForm.validate():
         query = db.session.query(User.id).filter(User.username == session['username']).first()
         user_id = query[0]  # long integer delete 'L'
@@ -363,23 +406,6 @@ def create_snippet(username):
     return render_template('snippets/create_snippet.html', form=new_SnippetForm)
 
 
-# Articles  --------------------------------------------------------------------
-
-
-@app.route('/articles/pagination')
-def articles_pagination():
-    return "<h1>:(</h4>"
-
-@app.route('/articles')
-def articles():
-    return render_template('articles/articles.html')
-
-@app.route('/articles/write/user/<string:username>', methods=['GET', 'POST'])
-def create_articles(username):
-    username = session['username']
-    return render_template('articles/create_article.html')
-
-
 # Query Debbuging  -------------------------------------------------------------
 
 
@@ -389,22 +415,3 @@ def query_execute():
     cur.execute('SELECT username FROM user where username = "carlosjazz"')
     rv = cur.fetchall()
     return jsonify(username=rv)
-
-
-@app.route('/query/sqlalchemy/user')
-def query_orm_id():
-    user = db.session.query(User).filter(User.username == session['username']).first()
-    info_user = [user.id, user.username, user.password, user.email]
-    return jsonify({session['username']: info_user})
-
-
-@app.route('/query/sqlalchemy/personal_info')
-def query_orm_personal():
-    user_personal_info = db.session.query(Personal_User).filter(Personal_User.id_user == session['id']).first()
-    if user_personal_info == None:
-        return 'No have personal info'
-    else:
-        info_personal = [user_personal_info.name, user_personal_info.last_name, user_personal_info.sex,\
-                         user_personal_info.country, user_personal_info.city, user_personal_info.dob,\
-                         user_personal_info.repository, user_personal_info.social_red]
-        return jsonify({session['username']: info_personal})

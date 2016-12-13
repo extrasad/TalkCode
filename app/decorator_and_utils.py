@@ -2,8 +2,12 @@
 import re
 from functools import wraps
 from flask import redirect, url_for, session
-#   usar urllib2 y quitar esta mierda
-list_website = ['github', 'facebook', 'twitter', 'plus.google', 'google']
+from urlparse import urlparse
+import pycountry
+
+list_website = ['github', 'facebook', 'twitter',
+                'tumblr', 'plus.google', 'google',
+                'linkedin', 'reddit']
 
 def user_required(f):
     @wraps(f)
@@ -14,15 +18,16 @@ def user_required(f):
             return redirect(url_for('login'))
     return wrap
 
-def convert_uri_to_href(href):
-    html = '<a href="{}">website</a>'.format(str(href))
-    for site in list_website:
-        if site in html:
-            name_site = site
-            html = html.replace('website', name_site)
-            return html
-
 def know_website(anchor):
     for site in list_website:
-        if site in anchor:
+        if anchor.__contains__(site):
             return site
+        else:
+            return urlparse(anchor)[1]
+
+def know_name_country(alpha2):
+    for alpha in list(pycountry.countries):
+        if alpha2.__contains__(alpha.alpha2):
+            return alpha.name
+
+#print know_website('https://docs.python.org/2/library/urlparse.html')

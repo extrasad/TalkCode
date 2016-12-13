@@ -4,45 +4,111 @@
 <script src="{{ url_for('static', filename='codemirror/mode/javascript/javascript.js') }}"/></script>
 <script src="{{ url_for('static', filename='js/counter_letter.js') }}"/></script>
 
+{% if editboolean %}
 <div class="container">
-  <div class="">
-    <div class="col-md-3 ">
-      <h1>{{ User.username }}<i class="icon-border icon-light icon-large icon-file-text"></i></h1>
-    </div>
-    <div class="col-md-4 name-snippets">
-      <h2>{{Snippet_data.title}}</h2>
-    </div>
-    <div class="col-md-5 description-snippets">
-      <h2>{{Snippet_data.description}}</h2>
-    </div>
-    <ul class="">
-     <li>{{Tag.tag_one}}</li>
-     <li>{{Tag.tag_two}}</li>
-     <li>{{Tag.tag_three}}</li>
-    </ul>
-    <p>{{ create_date }}</p>
+  <div class="col-md-6">
+      <form action="{{ url_for('edit_snippet', id=Snippet_data.id) }}"  method="POST" >
+      {% from "macros/_macro.html" import render_field %}
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+      {{ render_field(new_SnippetForm.tittle, class='form-snippet title', value=Snippet_data.title, disabled=false ) }}
+      {{ render_field(new_SnippetForm.description, class='form-snippet description-snippet description', value=Snippet_data.description,  disabled=false ) }}
+     <li class="tag-question">{{Tag.tag_one}}</li>
+     <li class="tag-question">{{Tag.tag_two}}</li>
+     <li class="tag-question">{{Tag.tag_three}}</li>
+     <li class="tag-question">{{ create_date }}</li>
+     <li class="tag-question user">{{ User.username }}</li>
   </div>
-  <hr class="style10">
+  <div class="col-md-2" style="margin-top:10px">
+    <button class="btn btn-sm btn-raised btn-edit-counter_letter" type="submit" name="edit_submit">
+      Edit <p class="counter_snippet_length"></p>
+    </button>
+  </div>
   <br>
-  <div class="col-md-9 area-code-snippets">
-    <div class="prettyBlock">
-       <div class="prettyPrint">
-          <?prettify?>
-          <pre class="prettyprint">
-{{Snippet_data.text_area}}
-</pre>
-       </div>
+  <div class="row">
+    <div class="col-md-8">
+      <div class="area-text-question">
+                {{ render_field(new_SnippetForm.text_area, class='TextArea') }}
+      </div>
     </div>
   </div>
-    {% if comment_form %}
-    <div class="col-md-3">
+      </form>
+                <script type="text/javascript">
+                  $(document).ready(function () {
+                    var myTextArea = $('.TextArea')[0];
+                    var myCodeMirror = CodeMirror.fromTextArea(myTextArea,{
+                      styleActiveLine: true,
+                      lineNumbers:true,
+                      theme: 'ttcn',
+                      lineWrapping: true,
+                      mode: 'javascript',
+                      readOnly: false
+                    });
+                    myCodeMirror.getDoc().setValue({{Snippet_data.text_area | tojson }});
+                    setTimeout(function() {
+                      myCodeMirror.refresh();
+                    },1);
+                  });
+                </script>
+{% else %}
+
+<div class="container">
+  <div class="col-md-6">
+      <form method="POST">
+      {% from "macros/_macro.html" import render_field %}
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+      {{ render_field(new_SnippetForm.tittle, class='form-snippet', value=Snippet_data.title, disabled=true ) }}
+      {{ render_field(new_SnippetForm.description, class='form-snippet description-snippet ', value=Snippet_data.description,  disabled=true ) }}
+     <li class="tag-question">{{Tag.tag_one}}</li>
+     <li class="tag-question">{{Tag.tag_two}}</li>
+     <li class="tag-question">{{Tag.tag_three}}</li>
+     <li class="tag-question">{{ create_date }}</li>
+     <li class="tag-question user">{{ User.username }}</li>
+  </div>
+  <div class="col-md-2" style="margin-top:10px">
+    <button class="btn btn-sm btn-raised btn-edit-counter_letter" type="submit" name="share_submit" disabled>
+      Share
+    </button>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-md-8">
+      <div class="area-text-question">
+                {{ render_field(new_SnippetForm.text_area, class='TextArea') }}
+                <script type="text/javascript">
+                  $(document).ready(function () {
+                    var myTextArea = $('.TextArea')[0];
+                    var myCodeMirror = CodeMirror.fromTextArea(myTextArea,{
+                      styleActiveLine: true,
+                      lineNumbers:true,
+                      theme: 'ttcn',
+                      lineWrapping: true,
+                      mode: 'javascript',
+                      readOnly: true
+                    });
+                    myCodeMirror.getDoc().setValue({{Snippet_data.text_area | tojson }});
+                    setTimeout(function() {
+                      myCodeMirror.refresh();
+                    },1);
+                  });
+                </script>
+      </div>
+    </div>
+  </div>
+      </form>
+
+
+{% endif %}
+
+
+    {% if is_authenticated %}
+    <div class="col-md-8">
        <br>
-       <center><h4 class="text-pre-answer">Responde</h4></center>
+       <center><h4 class="text-pre-answer">Comenta</h4></center>
        <form class="" method="POST">
           {% from "macros/_macro.html" import render_field %}
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
           <div class="form-group">
-             {{ render_field(comment_form.comment, class='form-control comment-area text-info' ) }}
+             {{ render_field(comment_form.comment, class='form-control comment-area' ) }}
              <p class="help-block">Escribe tu comentario</p>
              <br>
           </div>
@@ -50,35 +116,64 @@
        </form>
     </div>
     {% else %}
-    <br>
+    </br>
     {% endif %}
+
+
     {% if Comments %}
-    {% for comment in Comments %}
-    <div class="col-md-3">
-      <h4>{{ comment.name_user }}</h4>
-      <br>
-      <p>{{ comment.comment_text }}</p>
-      <h6>{{ comment.create_date }}</h6>
-    </div>
-    {% endfor %}
-    {% else %}
-    <center>
-       <h5><i class="icon-info"></i> No hay Comentarios, responde tu!</h5>
-    </center>
-    {% endif %}
+
+      {% for comment in Comments %}
+        <div class="col-md-12">
+          <h4>{{ comment.name_user }}</h4>
+            <br>
+            <p>{{ comment.comment_text }}</p>
+          <h6>{{ comment.create_date }}</h6>
+        </div>
+      {% endfor %}
+
+  {% else %}
+
+      <div class="col-md-12">
+        <center>
+           <h5><i class="icon-info"></i> No hay Comentarios, responde tu!</h5>
+        </center>
+      </div>
+
+  {% endif %}
 
 </div>
 
 
 <script type="text/javascript">
   $(document).ready(function() {
-    var button = $('.btn-counter_letter');
-    var textCounter = $('.counter');
-    var field = $('.comment-area');
+    //comment LetterCounter
+    let buttonComment = $('.btn-counter_letter');
+    let textCounterComment = $('.counter');
+    let field = $('.comment-area');
 
-    LetterCounter(5, 120, field, button, textCounter)
+    LetterCounter(5, 120, field, buttonComment, textCounterComment);
+
+    //edit LetterCounter
+    let title= $('.title');
+    const title_length = [5, 150];
+
+    let description = $('.description');
+    const description_length = [15, 1000];
+
+    let buttonEdit = $('.btn-edit-counter_letter');
+    let textCounterSnippet = $('.counter_snippet_length');
+
+    LetterCounter(title_length[0], title_length[1], title, buttonEdit, textCounterSnippet);
+    LetterCounter(description_length[0], description_length[1], description, buttonEdit, textCounterSnippet);
+
+
   });
 </script>
+
+
+
+
+
 
 
 {% endblock  %}

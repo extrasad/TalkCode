@@ -11,20 +11,29 @@
 @import 'utils.sass'
 @import 'question.sass'
 @import 'snippets.sass'
+@import 'index.sass'
 
 
 
 $break-small: 320px
 $break-very-small: 310px
-$break-large: 1200px
-$break-medium: 970px
+$break-large: 1400px
+$break-no-large: 1200px
+$break-1086: 1086px
+$break-980: 980px
+$break-medium: 850px
 
-body
-  height: 100%
 
 body > .container
-  margin-bottom: -50px
+  margin-bottom: -30px
   min-height: 100%
 
-.btn a
-  text-decoration: none
+
+.flash-message
+  position: fixed
+  z-index: 9999
+  top: 30px + 30
+  right: 0
+  @media screen and (max-width: $break-medium)
+    top: 25px + 25
+    right: 0

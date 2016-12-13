@@ -13,7 +13,7 @@ setup(
     author_email='carlosjazzc1@gmail.com',
     description='Web app for questions, snippets, articles and much code.',
     packages=find_packages('app'),
-    package_dir = {'': 'app'},
+    package_dir={'': 'app'},
     platforms='any',
     install_requires=[
         'flask>=0.10',
@@ -23,9 +23,12 @@ setup(
         'sqlalchemy_utils',
         'flask_script',
         'flask_migrate',
+        'flask-login',
         'alembic',
         'pycountry',
         'flask_wtf',
+        'wtforms_components',
+        'wtforms',
     ],
     classifiers=[
         'Environment :: Web Environment',

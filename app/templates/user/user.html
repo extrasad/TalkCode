@@ -7,7 +7,7 @@
   <div class="activity-grid col-md-4">
 
 
-      <p class="h4">Activity</p>
+      <p class="h4"> <i class="icon-question icon-border" style="color:rgb(109,131,153)"> </i>Activity</p>
       <hr>
         <div class="activity-element">
         <h6><span class="label label-primary h6">Questions</span></h6>
@@ -25,9 +25,25 @@
         </p>
         <hr>
         </div>
+        <div class="activity-element">
+        <h6><span class="label label-success h6">Answer</span></h6>
+        <p class="card-text"><i class="icon-file-text text-success"> </i>Javascript Variables <code>var</code>, <code>let</code> and <code>const</code>
+        <br>...
+        <small>How correct use?</small>
+        </p>
+        <hr>
+        </div>
+        <div class="activity-element">
+        <h6><span class="label label-success h6">Answer</span></h6>
+        <p class="card-text"><i class="icon-file-text text-success"> </i>Javascript Variables <code>var</code>, <code>let</code> and <code>const</code>
+        <br>...
+        <small>How correct use?</small>
+        </p>
+        <hr>
+        </div>
   </div>
   <div class="snippet-grid col-md-4">
-      <p class="h4">Snippets</p>
+      <p class="h4"> <i class="icon-code icon-border" style="color:rgb(56,122,110)"> </i>Snippets</p>
       <hr>
         <div class="snippets-element">
         <h6><span class="label label-info h6">Python</span></h6>
@@ -36,11 +52,35 @@
         <small>Simple y eficiente generador para crear la sucecion fibonacci</small>
         </p>
         <hr>
-    </div>
+        </div>
+        <div class="snippets-element">
+        <h6><span class="label label-info h6">Python</span></h6>
+        <p class="card-text"><i class="icon-code text-info"> </i>Generator fibonacci sequence
+        <br>...
+        <small>Simple y eficiente generador para crear la sucecion fibonacci</small>
+        </p>
+        <hr>
+        </div>
+        <div class="snippets-element">
+        <h6><span class="label label-info h6">Python</span></h6>
+        <p class="card-text"><i class="icon-code text-info"> </i>Generator fibonacci sequence
+        <br>...
+        <small>Simple y eficiente generador para crear la sucecion fibonacci</small>
+        </p>
+        <hr>
+        </div>
+        <div class="snippets-element">
+        <h6><span class="label label-info h6">Python</span></h6>
+        <p class="card-text"><i class="icon-code text-info"> </i>Generator fibonacci sequence
+        <br>...
+        <small>Simple y eficiente generador para crear la sucecion fibonacci</small>
+        </p>
+        <hr>
+        </div>
   </div>
 
 <div class="user-grid col-md-4">
-  <h4 class="h4"> {{ name_user }}</h4>
+  <h4 class="h4"> <i class="icon-user icon-border" style="color:rgb(142,136,193)"> </i> {{ name_user }}</h4>
   <div class="list">
     <ul>
     <li class="text-primary" style=""><i class="icon-star"></i> 0</li>
@@ -52,36 +92,30 @@
 </div>
 <div class="job-grid col-md-4">
 
-    <h4 class="h4">{{CurriculumDate.tittle}}</h4>
-    <h6>University: {% if not CurriculumDate %} <spam class="text-info"> Add in curriculum.</spam> {% else  %}{{CurriculumDate.university}} {% endif %}</h6>
+    <h4 class="h4">{{CurriculumDate.tittle | capitalize}}</h4>
+    <h6>University: {% if not CurriculumDate %} <spam class="text-info"> Add in curriculum.</spam> {% else  %}{{CurriculumDate.university | capitalize}} {% endif %}</h6>
 
               <a href="http://127.0.0.1:8000/setting/curriculum_info" class="right btn btn-info btn-raised btn-xs">Curriculum</a>
-              <p class="card-text">{{CurriculumDate.description}}</p>
-    </div>
-    <div class="article-class col-md-4">
-
-        <h4>Articles <span class="badge"> 0</span></h4><!--create this class-->
-
-        <p>Lista de Articulos o No hay articulos</p>
-      <a href="http://127.0.0.1:8000/setting/curriculum_info" class="right btn btn-info btn-raised btn-xs">Write Article</a>
+              <p class="card-text">{{CurriculumDate.description | capitalize}}</p>
     </div>
 
 <div class="personal-grid col-md-4">
-    <h4 class="card-title">Personal Date</h4>
     <hr>
         {% if not PersonalDate %}
         <h6 class="text-info">Add your information in setting.</h6>
         <a href=" {{ url_for('setting_personal') }}" class="right btn btn-info btn-raised btn-xs">Setting</a>
         {% else %}
-                <h6>{{PersonalDate.name + " " + PersonalDate.last_name}}</h6>
-                <h6>{{PersonalDate.country}}</h6>
-                <h6>{{PersonalDate.city}}</h6>
+        <a href=" {{ url_for('setting_personal') }}" class="right btn btn-info btn-raised btn-xs" style="padding-right:25px;padding-left:25px">Setting</a>
+                <h6>{{PersonalDate.name | capitalize + " " + PersonalDate.last_name  | capitalize}}</h6>
+                <h6>{{country}}</h6>
+                <h6>{{PersonalDate.sex}}</h6>
                 <h6>{{PersonalDate.dob}}</h6>
-                <a href="{{PersonalDate.social_red}}">{{ user_link[1] }}</a>
+                <a href="{{PersonalDate.social_red}}">{{ user_link[0] }}</a>
                 <br>
-                <a href="{{PersonalDate.repository}}">{{ user_link[0] }}</a>
+                <a href="{{PersonalDate.repository}}">{{ user_link[1] }}</a>
 
             <p class="card-text"><small class="text-muted">Last updated {{PersonalDate.create_date_personal}} ago</small></p>
+
         {% endif %}
 
 </div>

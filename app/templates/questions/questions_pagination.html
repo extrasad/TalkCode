@@ -4,17 +4,16 @@
 
 <!-- posts is a Paginate object -->
 <div class="container">
-
 {% for question in questions.items %}
     <div class="col-md-8">
-  <h1 class="text-muted h4"><a href="{{ url_for('questions', id=question.id )}}">{{ question.title }}</a></h1>
-  <p class="">{{ question.description }}</p>
-      <div class="right">
-          <div class="btn-group  btn-group-raised">
-             <a type="button" class="btn btn-success btn-xs"><i class="icon-plus"></i> {{ question.upvote}}</a>
-             <a type="button" class="btn btn-danger btn-xs"><i class="icon-minus"></i> {{ question.downvote}}</a>
-          </div>
-      </div>
+    <h4 class="h4">
+      <a href="{{ url_for('questions', id=question.id )}}">{{ question.title | title }}</a>
+    </h4>
+      <ul class="tags right">
+         <li><a  class="tag-question upvote" style="text-decoration:none;">{{ question.upvote}}</a></li>
+         <li><a  class="tag-question downvote" style="text-decoration:none;">{{ question.downvote}}</a></li>
+      </ul>
+      <p class="">{{ question.description | title}}</p>
     </div>
 {% endfor %}
 
@@ -31,14 +30,9 @@
         </ul>
             {% else %}
     </div>
-
             {% endif %}
-
-        </div>
-
+  </div>
 </div>
 
 
 {% endblock %}
-
-

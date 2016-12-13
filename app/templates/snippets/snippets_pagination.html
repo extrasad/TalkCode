@@ -1,0 +1,43 @@
+{% extends 'base/base.html' %}
+{% set title = 'Snippets ' %}
+{% block content %}
+
+<div class="container">
+
+{% for snippet in snippets.items %}
+<div class="col-snippet">
+    <div class="col-md-3">
+      <h4 class="text-muted h4">
+        <a href="{{ url_for('snippets', id=snippet.id )}}">{{ snippet.title }}</a>
+      </h4>
+      <h6>{{snippet.create_date}}</h6>
+      <p class="">{{ snippet.description }}</p>
+    </div>
+    <div class="col-md-8 limited-div"><?prettify?>
+      <pre class="prettyprint linenums limited">{{ snippet.text_area }}</pre>
+    </div>
+</div>
+{% endfor %}
+
+    <div class="col-md-8">
+        <ul class="pagination pagination-lg">
+            {% if snippets.has_prev %}
+          <li><a href="{{ url_for('snippets_pagination', page=snippets.prev_num)}}"><i class="icon-chevron-left"></i></a></li>
+            {% else %}
+            {% endif %}
+
+
+            {% if snippets.has_next %}
+          <li><a href="{{ url_for('snippets_pagination', page=snippets.next_num) }}"><i class="icon-chevron-right"></i></a></li>
+        </ul>
+            {% else %}
+    </div>
+
+            {% endif %}
+
+        </div>
+
+</div>
+
+
+{% endblock %}

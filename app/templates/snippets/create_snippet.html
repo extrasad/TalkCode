@@ -5,27 +5,24 @@
 
 <div class="container">
   <div class="dates-snippets">
-    <div class="col-md-3 checkbox-secrect">
-      <h1>Snippet Info <i class="icon-border icon-light icon-large icon-file-text"></i></h1>
-    </div>
     <div class="col-md-9 name-snippets">
+      <h1>Snippet Info <i class="icon-border icon-light icon-large icon-file-text"></i></h1>
       <form class="" method="POST">
         {% from "macros/_macro.html" import render_field %}
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-        <div class="form-group label-floating">
+        <div class="form-group">
           <label class="control-label" for="">Filename including extension</label>
-          {{ render_field(form.tittle, class='form-control text-info input-xs' ) }}
+          {{ render_field(form.tittle, class='form-snippet' ) }}
           <p class="help-block">Add the name to your snippet</p>
         </div>
-        <div class="form-group label-floating">
+        <div class="form-group">
           <label class="control-label" for="">Add description</label>
-          {{ render_field(form.description, class='form-control text-info input-xs' ) }}
+          {{ render_field(form.description, class=' form-snippet ' ) }}
           <p class="help-block">Add the description to your snippet</p>
           <br>
         </div>
     </div>
   </div>
-  <hr class="style10">
   <br>
   <div class="col-md-9 area-code-snippets">
     {{ render_field(form.text_area, class='TextArea') }}
@@ -63,11 +60,12 @@
       styleActiveLine: true,
       indentUnit: 2,
       lineNumbers:true,
-      theme: 'ambiance',
+      theme: 'ttcn',
       lineWrapping: true,
       mode: 'javascript',
+      viewportMargin: Infinity,
     });
-    myCodeMirror.setSize(width, height);
+    myCodeMirror.setSize(width, "80%");
     myCodeMirror.getDoc().setValue('print("Hello");\n>> "Hello"');
 
   });

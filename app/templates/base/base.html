@@ -21,20 +21,17 @@
     <script src="{{ url_for('static', filename='js/snackbar.js') }}"/></script>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='google-code-prettify/prettify.css') }}"/>
     <script src="{{ url_for('static', filename='google-code-prettify/run_prettify.js') }}"/></script>
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300|Raleway" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap-material-datetimepicker.css') }}"/>
     <script src="{{ url_for('static', filename='js/moment.js') }}"/></script>
     <script src="{{ url_for('static', filename='js/bootstrap-material-datetime.js') }}"/></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='codemirror/lib/codemirror.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='codemirror/lib/ambiance.css') }}">
-
+    <link rel="stylesheet" href="{{ url_for('static', filename='codemirror/lib/ttcn.css') }}">
     <script src="{{ url_for('static', filename='codemirror/lib/codemirror.js') }}"/></script>
 
 </head>
 <body>
-  <div class="bs-component">
-            <div class="navbar navbar-default">
+            <div class="navbar navbar-default" style="background-color:rgb(182,182,182)">
               <header class="container-fluid">
                 <div class="navbar-header">
                   <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
@@ -42,44 +39,35 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                   </button>
-                  <a class="navbar-brand" href="{{ url_for('index') }}">TalkCode<div class="ripple-container"></div></a>
+                  <a style="font-family:'Raleway'"class="navbar-brand" href="{{ url_for('index') }}">T a l k C o d e<div class="ripple-container"></div></a>
                 </div>
                 <div class="navbar-collapse navbar-responsive-collapse collapse" aria-expanded="false" style="height: 1px;">
                   <ul class="nav navbar-nav">
-                    <li><a href="{{ url_for('questions_pagination', id=1) }}">Questions</a></li>
-                    <li><a href="{{ url_for('snippets_pagination') }}">Snippets</a></li>
-                    <li><a href="{{ url_for('articles_pagination') }}">Articles</a></li>
+                    <li><a  class="btns navbarbtnleft"   href="{{ url_for('questions_pagination', page=1) }}">Questions</a></li>
+                    <li><a  class="btns navbarbtnleft"   href="{{ url_for('snippets_pagination' , page=1) }}">Snippets</a></li>
                   </ul>
                   <form class="navbar-form navbar-left" >
-                    <div class="form-group is-empty">
-                      <input type="text" class="form-control col-md-6" placeholder="Search">
-                    </div>
+                        <div class="label-static" style="display:flex !important">
+                          <input placeholder="Busca algo" id="search"class="search-form">
+                          <button type="submit" style="margin: 0px 5px 0px 0px; height: auto; padding: 0 10px 0 10px;" class="btns btn-search" name="button"><i class="icon-search"></i></button>
+                        </div>
                   </form>
                   <ul class="nav navbar-nav navbar-right">
                     {% if not 'username' in session %}
-                    <li><a   href="{{ url_for('register') }}">Sign Up <i class="icon-hand-left"></i><div class="ripple-container"></div></a></li>
-                    <li><a   href="{{ url_for('login') }}">Sign In <i class="icon-signin"></i><div class="ripple-container"></div></a></li>
-                    <li class="dropdown">
-                      <a href="bootstrap-elements.html" data-toggle="dropdown"><i class="icon-gear"></i>
-                        </a>
-                      <ul class="dropdown-menu">
-                        <li><a href="{{ url_for('about') }}">About</a></li>
-                      </ul>
-                    </li>
+                    <li><a class="btns navbarbtnright"  href="{{ url_for('login') }}">Sign In <i class="icon-signin"></i><div class="ripple-container"></div></a></li>
+                    <li><a class="btns navbarbtnright"  href="{{ url_for('register') }}">Sign Up <i class="icon-hand-left"></i><div class="ripple-container"></div></a></li>
                     {% else %}
                     <li class="dropdown">
-                      <a href="bootstrap-elements.html" data-toggle="dropdown">Write... <i class="icon-pencil"></i>
+                        <a class="btns navbarbtnright" data-toggle="dropdown">Write... <i class="icon-pencil"></i>
                         </a>
                       <ul class="dropdown-menu">
                         <li><a href="{{ url_for('create_question', username=session['username'])}}">Write Question</a></li>
                         <li><a href="{{ url_for('create_snippet', username=session['username'])}}">Write Snippet</a></li>
-                        <li><a href="{{ url_for('create_articles', username=session['username'])}}">Write Articles</a></li>
                       </ul>
                     </li>
-                    <li><a   href="{{ url_for('user', username=session['username'])}}">Dashboard <i class="icon-user"></i><div class="ripple-container"></div></a></li>
+                    <li><a class="btns navbarbtnright" href="{{ url_for('user', username=session['username'])}}">Me <i class="icon-user"></i><div class="ripple-container"></div></a></li>
                     <li class="dropdown">
-                      <a href="bootstrap-elements.html" data-toggle="dropdown"><i class="icon-gear"></i>
-                        </a>
+                      <a class="btns navbarbtn setting" href="" data-toggle="dropdown"><i class="icon-gear"></i></a>
                       <ul class="dropdown-menu">
                         <li><a href="{{ url_for('setting_personal') }}"  style="font-size:13px">Setting Personal Date</a></li>
                         <li><a href="{{ url_for('setting_curriculum') }}" style="font-size:13px">Setting Curriculum Date</a></li>
@@ -108,20 +96,20 @@
 {% block content%}
 {% endblock %}
 
-<br><br><br><br>
 
 
       <div id="footer-base">
         <div class="container-fluid">
         <div class="col-md-12  text-info text-footer">
-        <h6 class="tooltip-inner text-xs-center text-sm-center text-md-center">Page
-        <span style="color:rgb(144,161,134)">in</span> Flask</h6>
-        <div class="flex-container flex space-between col-md-2 col-sm-5 ">
+        <center><h6 class="tooltip-inner text-xs-center text-sm-center text-md-center">Page
+        <span style="color:rgb(144,161,134)">in</span> Flask <br><br>Desarrollada por Carlos Azuaje</h6><center>
+        <center>
+          <!--<div class="flex-container flex space-between col-md-6 col-md-push-3">
               <div class="flex-item"><i class="icon-facebook icon-2x"></i></div>
               <div class="flex-item"><i class="icon-github icon-2x"></i></div>
               <div class="flex-item"><i class="icon-google-plus icon-2x"></i></div>
-        </div>
-        <small class="text-center right" style="color:black; font-size:1.2em;">Site Design / Logo © 2016 TalkCode Inc</small><br><br><br>
+          </div>-->
+        </center>
         </div>
 
       </div>
@@ -130,8 +118,9 @@
 
 
 <script type="text/javascript">
+document.getElementById('search').autocomplete = "off";
   $.material.init();
-  const second = 2000;
+  const second = 1750;
   $('.flash-message').show().delay(second).fadeOut();
 </script>
 

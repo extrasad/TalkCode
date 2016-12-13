@@ -1,6 +1,7 @@
 {% extends 'base/base.html' %}
 {% set title = 'Setting' %}
 {% block content %}
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <div class="container">
    <div class="row">
       <div class="col-md-4">
@@ -10,20 +11,17 @@
             <fieldset>
                <legend>General Information</legend>
                <div class="form-group">
-                  {{ render_field(form.name, class='form-control text-info' ) }}
+                  {{ render_field(form.name, value= PersonalDate.name, class='form-control ' ) }}
                </div>
                <div class="form-group">
-                  {{ render_field(form.last_name, class='form-control text-info' ) }}
+                  {{ render_field(form.last_name, value= PersonalDate.last_name,class='form-control ' ) }}
                </div>
                <div class="form-group" >
-                  {{ render_field(form.sex, class='form-control text-warning' ) }}
+                  {{ render_field(form.sex, value= PersonalDate.sex, class='form-control' ) }}
                </div>
-               
+
                <div class="form-group">
-                  {{ render_field(form.country, class='form-control text-info' ) }}
-               </div>
-               <div class="form-group">
-                  {{ render_field(form.city, class='form-control text-info' ) }}
+                  {{ render_field(form.country, value= PersonalDate.country, class='form-control ' ) }}
                </div>
             </fieldset>
       </div>
@@ -31,10 +29,10 @@
       <fieldset>
       <legend>Network Data</legend>
       <div class="form-group">
-      {{ render_field(form.repository, class='form-control text-info' ) }}
+      {{ render_field(form.repository, value= PersonalDate.repository, class='form-control ' ) }}
       </div>
       <div class="form-group">
-      {{ render_field(form.social_red, class='form-control text-info' ) }}
+      {{ render_field(form.social_red, value= PersonalDate.social_red, class='form-control ' ) }}
       </div>
       </fieldset>
       </div>
@@ -42,7 +40,8 @@
       <fieldset>
       <legend>Date</legend>
       <span class="icon-calendar"></span>
-      {{ render_field(form.dob, class='form-control text-info', id='date') }}
+      <!--Recordad este error!-->
+      {{ render_field(form.dob, value="2012-12-2", class='form-control', id='date') }}
       <script>
          $( function() {
              $('#date').bootstrapMaterialDatePicker({ weekStart : 0, time: false });
@@ -51,10 +50,11 @@
       </script>
       </fieldset>
       <button type="submit" class="btn  btn-sm btn-success btn-raised">Submit</button>
-
       </div>
       </form>
 
    </div>
 </div>
+<br>
+
 {% endblock %}

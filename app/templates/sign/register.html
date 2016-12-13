@@ -4,47 +4,64 @@
 
 {% block content %}
   <div class="container">
-      <div class="row-content">
-        <br>
 
-              <div class="col-md-4">
-                  <h2 class="h2">Ya tienes cuenta?</h2>
+    <div class="col-md-4">
+        <h2 class="h2">Ya tienes cuenta?</h2>
 
-                  <button class="btn btn-success btn-raised"><a href="http://127.0.0.1:8000/login">Conectate</a></button>
-              </div>
-      <fieldset>
-          <legend>Registrate</legend>
-
-      <form class="form-horizontal" action="" method="POST">
-            {% from "macros/_macro.html" import render_field %}
-
-
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-        <div class="form-group  label-floating">
-          <label for="i2" class="control-label text-form">Username</label>
-          {{ render_field(form.username, class='form-control' ) }}
-
-        </div>
-
-        <div class="form-group label-floating">
-          <label for="i5" class="control-label">Password</label>
-          {{ render_field(form.password, class='form-control' ) }}
-        </div>
-
-        <div class="form-group label-floating">
-          <label for="i5" class="control-label ">Email</label>
-          {{ render_field(form.email, class='form-control' ) }}
-        </div>
-
-        <button class="btn btn-danger btn-raised">Go!</button>
-      </form>
-    </fieldset>
+        <button class="btn btn-success btn-raised"><a href="http://127.0.0.1:8000/login">Conectate</a></button>
     </div>
+    <div class="col-md-8">
+
+        <form class="form-horizontal" action="" method="POST">
+            <fieldset>
+                <legend>Registrate</legend>
+
+                {% from "macros/_macro.html" import render_field %}
+
+
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+              <div class="form-group   label-floating">
+                <label for="i2" class="control-label text-form">Username</label>
+                {{ render_field(form.username, class='form-control' ) }}
+              </div>
+
+              <div class="form-group  label-floating">
+                <label for="i5" class="control-label">Password</label>
+                {{ render_field(form.password, class='form-control' ) }}
+              </div>
+
+              <div class="form-group">
+                <label for="i5" class="control-label ">Confirm password</label>
+                {{ render_field(form.confirm_password, class='form-control' ) }}
+              </div>
+
+              <div class="form-group  label-floating">
+                <label for="i5" class="control-label ">Email</label>
+                {{ render_field(form.email, class='form-control' ) }}
+              </div>
+
+              <div class="form-group">
+                <label for="i5" class="control-label ">Confirm email</label>
+                {{ render_field(form.confirm_email, class='form-control' ) }}
+              </div>
+            </br>
+
+              <div class="checkbox ">
+                <label for=accept_tos>
+
+                  {{ form.accept_tos }} <span> I accept the Terms of Service and Privacy Notice</span>
+                </label>
+              </div>
+
+              <br>
+              <button class="btn btn-danger btn-raised">Go!</button>
+            </fieldset>
+      </form>
+  </div>
 
 
 
   <div class="container">
-    <br>
   <div class="">
   Maecenas eget interdum ante, sit amet aliquet velit.
   Nunc vitae mauris quis turpis pulvinar auctor nec eu nulla. Donec
@@ -62,8 +79,6 @@
   Phasellus lacinia vehicula est.
   </div>
   <br>
-
-
   <div class="">
   In hac habitasse platea dictumst. Cras ut pulvinar est. Curabitur sem enim,
   aliquam laoreet diam ut, convallis cursus lectus. Nunc et orci pretium,
