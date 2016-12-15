@@ -7,14 +7,16 @@
 <script src="{{ url_for('static', filename='codemirror/mode/javascript/javascript.js') }}"/></script>
 <script src="{{ url_for('static', filename='js/counter_letter.js') }}"/></script>
 
+{% if CRUD  %}
+
 <div class="container">
   <br>
-   <div class="col-md-8">
-     <form method="POST">
+   <div class="col-md-6">
+     <form  action="{{ url_for('edit_question', id=Question_data.id) }}" method="POST">
          {% from "macros/_macro.html" import render_field %}
          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-               {{ render_field(new_QuestionForm.tittle, class='form-litle', value=Question_data.title ) }}
-               {{ render_field(new_QuestionForm.description, class='description-area' ) }}
+               {{ render_field(new_QuestionForm.tittle, class='form-litle title', value=Question_data.title ) }}
+               {{ render_field(new_QuestionForm.description, class='description-area description' ) }}
       <ul class="tags">
          <li><a href="#" class="tag-question" style="text-decoration:none;">{{Tag.tag_one}}</a></li>
          <li><a href="#" class="tag-question" style="text-decoration:none;">{{Tag.tag_two}}</a></li>
@@ -22,31 +24,109 @@
          <li><a href="#" class="tag-question upvote" style="text-decoration:none;">{{ Question_data.upvote}}</a></li>
          <li><a href="#" class="tag-question downvote" style="text-decoration:none;">{{ Question_data.downvote}}</a></li>
          <li><a href="#" class="tag-question user" style="text-decoration:none;">{{ User.username }}</a></li>
-      </ul><br>
-                      <script type="text/javascript">
-                        $('.description-area').val({{Question_data.description | tojson}}).css('resize', 'none');
+      </ul>
 
-                        $(document).ready(function () {
-                          var myCodeQuestion = $('.CodeQuestion')[0];
-                          var myCodeMirror = CodeMirror.fromTextArea(myCodeQuestion,{
-                            styleActiveLine: true,
-                            lineNumbers:true,
-                            theme: 'ttcn',
-                            lineWrapping: true,
-                            mode: 'javascript',
-                            readOnly: true
-                          });
-                          myCodeMirror.getDoc().setValue({{Question_data.text_area | tojson}});
-                          setTimeout(function() {
-                            myCodeMirror.refresh();
-                          },1);
-                        });
-                      </script>
+    </div>
 
-      {{ render_field(new_QuestionForm.text_area, class='CodeQuestion') }}
-      </form>
+      <div class="col-md-2" style="margin-top:10px">
+        <button class="btn btn-sm btn-raised btn-edit-counter_letter" type="submit" name="edit_submit">
+          Edit <p class="counter_snippet_length"></p>
+        </button>
+      </div>
+      <br>
+                                  <script type="text/javascript">
+                                    $('.description-area').val({{Question_data.description | tojson}}).css('resize', 'none');
 
-   </div>
+                                    $(document).ready(function () {
+                                      var myCodeQuestion = $('.CodeQuestion')[0];
+                                      var myCodeMirror = CodeMirror.fromTextArea(myCodeQuestion,{
+                                        styleActiveLine: true,
+                                        lineNumbers:true,
+                                        theme: 'ttcn',
+                                        lineWrapping: true,
+                                        mode: 'javascript',
+                                        readOnly: false
+                                      });
+
+                                      let buttonEdit = $('.btn-edit-counter_letter');
+                                      let textCounterSnippet = $('.counter_snippet_length');
+                                      let textarea = $('.CodeQuestion');
+                                      const textarea_length = [50, 2500]; // BUG
+
+                                      myCodeMirror.getDoc().setValue({{Question_data.text_area | tojson}});
+                                      myCodeMirror.on("change", function(){
+                                        var value_length = myCodeMirror.getValue().length;
+                                        LetterCounter(textarea_length[0], textarea_length[1], value_length, buttonEdit, textCounterSnippet);
+                                        myCodeMirror.refresh();
+                                      });
+
+
+                                      setTimeout(function() {
+                                        myCodeMirror.refresh();
+                                      },1);
+
+
+                                    });
+                                  </script>
+      <div class="col-md-8">
+        <div class="area-text-question">
+          {{ render_field(new_QuestionForm.text_area, class='CodeQuestion') }}
+        </div>
+      </div>
+    </form>
+{% else %}
+<div class="container">
+  <br>
+   <div class="col-md-6">
+     <form>
+         {% from "macros/_macro.html" import render_field %}
+               {{ render_field(new_QuestionForm.tittle, class='form-litle', value=Question_data.title, disabled=true  ) }}
+               {{ render_field(new_QuestionForm.description, class='description-area', disabled=true  ) }}
+      <ul class="tags">
+         <li><a href="#" class="tag-question" style="text-decoration:none;">{{Tag.tag_one}}</a></li>
+         <li><a href="#" class="tag-question" style="text-decoration:none;">{{Tag.tag_two}}</a></li>
+         <li><a href="#" class="tag-question" style="text-decoration:none;">{{Tag.tag_three}}</a></li>
+         <li><a href="#" class="tag-question upvote" style="text-decoration:none;">{{ Question_data.upvote}}</a></li>
+         <li><a href="#" class="tag-question downvote" style="text-decoration:none;">{{ Question_data.downvote}}</a></li>
+         <li><a href="#" class="tag-question user" style="text-decoration:none;">{{ User.username }}</a></li>
+      </ul>
+
+    </div>
+
+      <div class="col-md-2" style="margin-top:10px">
+        <button class="btn btn-sm btn-raised" type="submit" name="share_submit">
+          SHARE
+        </button>
+      </div>
+      <br>
+                                  <script type="text/javascript">
+                                    $('.description-area').val({{Question_data.description | tojson}}).css('resize', 'none');
+
+                                    $(document).ready(function () {
+                                      var myCodeQuestion = $('.CodeQuestion')[0];
+                                      var myCodeMirror = CodeMirror.fromTextArea(myCodeQuestion,{
+                                        styleActiveLine: true,
+                                        lineNumbers:true,
+                                        theme: 'ttcn',
+                                        lineWrapping: true,
+                                        mode: 'javascript',
+                                        readOnly: true
+                                      });
+                                      myCodeMirror.getDoc().setValue({{Question_data.text_area | tojson}});
+                                      setTimeout(function() {
+                                        myCodeMirror.refresh();
+                                      },1);
+                                    });
+                                  </script>
+      <div class="col-md-8">
+        <div class="area-text-question">
+          {{ render_field(new_QuestionForm.text_area, class='CodeQuestion') }}
+        </div>
+      </div>
+    </form>
+
+{% endif %}
+
 
    {% if is_authenticated %}
    <div class="col-md-8">
@@ -66,6 +146,25 @@
          <button type="submit" class="btn-counter_letter right  btn btn-raised btn-sm btn-success">Submit <p class="counter"></p> </button>
       </form>
    </div>
+                                   <script type="text/javascript">
+                                     $(document).ready(function () {
+                                       var myTextArea = $('.TextArea')[0];
+                                       var myCodeMirror = CodeMirror.fromTextArea(myTextArea,{
+                                         styleActiveLine: true,
+                                         lineNumbers:true,
+                                         theme: 'ambiance',
+                                         lineWrapping: true,
+                                         mode: 'javascript',
+                                         viewportMargin: Infinity,
+                                       });
+                                       myCodeMirror.setSize(710, '20%');
+                                       var button = $('.btn-counter_letter');
+                                       var textCounter = $('.counter');
+                                       var field = $('.answer-area');
+                                       LetterCounter(1, 250, field, button, textCounter);
+
+                                     });
+                                   </script>
    {% else %}
    <br>
    {% endif %}
@@ -104,24 +203,29 @@
 
 
 <script type="text/javascript">
-  $(document).ready(function () {
-    var myTextArea = $('.TextArea')[0];
-    var myCodeMirror = CodeMirror.fromTextArea(myTextArea,{
-      styleActiveLine: true,
-      lineNumbers:true,
-      theme: 'ambiance',
-      lineWrapping: true,
-      mode: 'javascript',
-      viewportMargin: Infinity,
-    });
-    myCodeMirror.setSize(710, '20%');
-    var button = $('.btn-counter_letter');
-    var textCounter = $('.counter');
-    var field = $('.answer-area');
-    LetterCounter(1, 250, field, button, textCounter);
+/*TODO: RESPUESTAS COUNTER LETTER
+let buttonComment = $('.btn-counter_letter');
+let textCounterComment = $('.counter');
+let field = $('.comment-area');
+LetterCounter(5, 120, field, buttonComment, textCounterComment);
+*/
 
-  });
+//edit LetterCounter
+let title= $('.title');
+const title_length = [5, 150];
+
+let description = $('.description');
+const description_length = [15, 1000];
+
+//let textarea = $('.TextArea');
+//const textarea_length = [5, Infinity]; // BUG
+
+let buttonEdit = $('.btn-edit-counter_letter');
+let textCounterSnippet = $('.counter_snippet_length');
+
+LetterCounter(title_length[0], title_length[1], title, buttonEdit, textCounterSnippet);
+LetterCounter(description_length[0], description_length[1], description, buttonEdit, textCounterSnippet);
+
 </script>
-
 
 {% endblock %}

@@ -232,30 +232,31 @@ def questions(id):
     User_data = User.query.filter_by(id=question_data.id_user).first() # USER
     Tag_data = TagQuestion.query.filter_by(id_question=question_data.id).first() # TAG
     all_Answers = AnswerLong.query.filter_by(id_question=id).all() # ALL ANSWERS
+
     try:
-        if (session['id'] == User_data.id):
-            if request.method == 'GET' and (session['id'] == User_data.id):
-                return render_template('questions/question.html',
-                                       Answers=all_Answers,
-                                       User=User_data,
-                                       Question_data=question_data,
-                                       Tag=Tag_data,
-                                       new_QuestionForm=new_QuestionForm)
-
-            elif request.method == 'POST' and new_answer_form.validate():
-                id_question = question_data.id
-                answer_text = new_answer_form.answer_long.data
-                answer_code = new_answer_form.text_area.data
-                answer_new = AnswerLong(session['id'], session['username'],
-                                        id_question, answer_text, answer_code)
-
-                db.session.add(answer_new)
-                db.session.commit()
-                flash('New answer!', 'success')
-                return redirect(url_for('questions', id=id))
-
+        if request.method == 'GET' and (session['id'] == User_data.id):
+            return render_template('questions/question.html',
+                                   Answers=all_Answers,
+                                   User=User_data,
+                                   Question_data=question_data,
+                                   Tag=Tag_data,
+                                   new_QuestionForm=new_QuestionForm,
+                                   CRUD=True)
     except KeyError:
         pass
+
+    if request.method == 'POST' and new_answer_form.validate():
+        id_question = question_data.id
+        answer_text = new_answer_form.answer_long.data
+        answer_code = new_answer_form.text_area.data
+        answer_new = AnswerLong(session['id'], session['username'],
+        id_question, answer_text, answer_code)
+
+        db.session.add(answer_new)
+        db.session.commit()
+        flash('New answer!', 'success')
+        return redirect(url_for('questions', id=id))
+
 
     return render_template('questions/question.html',
                            Answers=all_Answers,
@@ -264,6 +265,7 @@ def questions(id):
                            User=User_data,
                            Question_data=question_data,
                            Tag=Tag_data,
+                           CRUD=False,
                            is_authenticated=True if 'username' in session else False)
 
 @app.route('/questions/write/user/<string:username>', methods=['GET', 'POST'])
@@ -291,6 +293,39 @@ def create_question(username):
         return redirect(url_for('questions', id=id[0]))
     return render_template('questions/create_question.html', form=new_QuestionForm)
 
+
+@app.route('/questions/edit/id/<int:id>', methods=['GET', 'POST'])
+def edit_question(id):
+    QuestionQuerySet = Question.query.filter_by(id=id).one_or_none()
+    edited_QuestionForm = QuestionForm(request.form)
+    new = [edited_QuestionForm.tittle.data, edited_QuestionForm.description.data, edited_QuestionForm.text_area.data]
+    old = [QuestionQuerySet.title, QuestionQuerySet.description, QuestionQuerySet.text_area]
+
+    new = [i for i in new if i.isspace() != True and i != ''] # CHECK EMPTY STRING AND DELETE
+
+    if request.method == 'POST' and len(new) == 3 and set(new) != set(old):
+        if (new[0] != QuestionQuerySet.title):
+            QuestionQuerySet.title = new[0]
+            db.session.add(QuestionQuerySet)
+            db.session.commit()
+        if (new[1] != QuestionQuerySet.description):
+            QuestionQuerySet.description = new[1]
+            db.session.add(QuestionQuerySet)
+            db.session.commit()
+        if (new[2] != QuestionQuerySet.text_area):
+            QuestionQuerySet.text_area = new[2]
+            db.session.add(QuestionQuerySet)
+            db.session.commit()
+        flash('Edit ready!', 'success')
+        return redirect(url_for('questions', id=id))
+    elif len(new) < 3:
+        flash('Wow...! Olvidaste algun campo?', 'danger')
+        return redirect(url_for('questions', id=id))
+    else:
+        flash('Wow...! Seguro hiciste algun cambio?', 'danger')
+        return redirect(url_for('questions', id=id))
+
+
 # Snippets ---------------------------------------------------------------------
 
 @app.route('/snippets', methods=['GET', 'POST'])
@@ -313,32 +348,31 @@ def snippets(id):
     create_date = str(snippet_data.create_date).split(" ")[0] #DATE FORMATE
 
     try:
-        if session['id'] == User_data.id:
-            if request.method == 'GET':
-                all_Comments = CommentSnippet.query.filter_by(id_snippet=id).all() #  ALL COMMENT
-                return render_template('snippets/snippet.html',
-                                       Comments=all_Comments,
-                                       User=User_data,
-                                       Snippet_data=snippet_data,
-                                       Tag=Tag_data,
-                                       create_date=create_date,
-                                       new_SnippetForm=new_SnippetForm,
-                                       editboolean=True)
-
-            elif request.method == 'POST' and new_comment_form.validate():
-                id_snippets = snippet_data.id
-                comment_text = new_comment_form.comment.data
-                comment_new = CommentSnippet(session['id'], id_snippets,
-                                             session['username'],
-                                             comment_text.upper())
-
-                db.session.add(comment_new)
-                db.session.commit()
-                flash('New comment!', 'success')
-                return redirect(url_for('snippets', id=id))
-
+        if request.method == 'GET' and session['id'] == User_data.id:
+            all_Comments = CommentSnippet.query.filter_by(id_snippet=id).all() #  ALL COMMENT
+            return render_template('snippets/snippet.html',
+                                   Comments=all_Comments,
+                                   User=User_data,
+                                   Snippet_data=snippet_data,
+                                   Tag=Tag_data,
+                                   create_date=create_date,
+                                   new_SnippetForm=new_SnippetForm,
+                                   CRUD=True)
     except KeyError:
         pass
+
+    if request.method == 'POST' and new_comment_form.validate():
+        id_snippets = snippet_data.id
+        comment_text = new_comment_form.comment.data
+        comment_new = CommentSnippet(session['id'], id_snippets,
+                                     session['username'],
+                                     comment_text.upper())
+
+        db.session.add(comment_new)
+        db.session.commit()
+        flash('New comment!', 'success')
+        return redirect(url_for('snippets', id=id))
+
 
     all_Comments = CommentSnippet.query.filter_by(id_snippet=id).all() #  ALL COMMENT
     return render_template('snippets/snippet.html',
@@ -349,7 +383,7 @@ def snippets(id):
                             Tag=Tag_data,
                             create_date=create_date,
                             new_SnippetForm=new_SnippetForm,
-                            editboolean=False,
+                            CRUD=False,
                             is_authenticated=True if 'username' in session else False)
 
 
@@ -360,8 +394,9 @@ def edit_snippet(id):
     new = [edited_SnippetForm.tittle.data, edited_SnippetForm.description.data, edited_SnippetForm.text_area.data]
     old = [SnippetQuerySet.title, SnippetQuerySet.description, SnippetQuerySet.text_area]
 
+    new = [i for i in new if i.isspace() != True and i != ''] # CHECK EMPTY STRING AND DELETE
 
-    if request.method == 'POST' and set(new) != set(old):
+    if request.method == 'POST' and len(new) == 3 and set(new) != set(old):
         if (new[0] != SnippetQuerySet.title):
             SnippetQuerySet.title = new[0]
             db.session.add(SnippetQuerySet)
@@ -375,6 +410,9 @@ def edit_snippet(id):
             db.session.add(SnippetQuerySet)
             db.session.commit()
         flash('Edit ready!', 'success')
+        return redirect(url_for('snippets', id=id))
+    elif len(new) < 3:
+        flash('Wow...! Olvidaste algun campo?', 'danger')
         return redirect(url_for('snippets', id=id))
     else:
         flash('Wow...! Seguro hiciste algun cambio?', 'danger')

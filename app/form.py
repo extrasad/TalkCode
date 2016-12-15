@@ -91,8 +91,8 @@ class CurriculumForm(Form):
 
 
 class QuestionForm(Form):
-    tittle = StringField('',      [validators.DataRequired(message='El campo esta vacio.'), validators.length(min=5, max=150, message='Min 25, Max 150')])
-    description = StringField('', [validators.DataRequired(message='El campo esta vacio.'), validators.length(min=15, max=1000, message='Min 25, Max 1000')], render_kw={"placeholder": "", "rows": 3}, widget=TextArea())
+    tittle = StringField('',      [validators.DataRequired(message='El campo esta vacio.'), validators.length(min=5, max=150, message='Min 5, Max 150')])
+    description = StringField('', [validators.DataRequired(message='El campo esta vacio.'), validators.length(min=15, max=1000, message='Min 15, Max 1000')], render_kw={"placeholder": "", "rows": 3}, widget=TextArea())
     text_area = StringField('',   [validators.DataRequired(message='El campo esta vacio.'), validators.length(min=50, max=2500, message='Min 50, Max 2000')], render_kw={"placeholder": "Code . . ."}, widget=TextArea())
     tag_one = StringField('',     [validators.length(min=2, max=25, message='Max 25')], render_kw={"placeholder": "#C++"})
     tag_two = StringField('',     [validators.length(min=2, max=25, message='Max 25')], render_kw={"placeholder": "#Python"})
