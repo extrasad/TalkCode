@@ -106,7 +106,7 @@ class AnswerForm(Form):
 
 class SnippetsForm(Form):
     tittle = StringField('',      [validators.DataRequired(message='El campo esta vacio.'), validators.length(min=5, max=45, message='Min 5, Max 45')])
-    description = StringField('', [validators.DataRequired(message='El campo esta vacio.'), validators.length(min=15, max=50, message='Min 15, Max 50')])
+    description = StringField('', [validators.DataRequired(message='El campo esta vacio.'), validators.length(min=15, max=250, message='Min 15, Max 50')])
     text_area = StringField('',   [validators.DataRequired(message='El campo esta vacio.'), validators.length(min=5, message='Min 5')], widget=TextArea())
     tag_one = StringField('',    [validators.length(min=1, max=25, message='Max 25')], render_kw={"placeholder": "#Algorithm"})
     tag_two = StringField('',    [validators.length(min=1, max=25, message='Max 25')], render_kw={"placeholder": "#Class"})

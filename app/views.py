@@ -10,7 +10,7 @@ from flask_admin.contrib.sqla import ModelView
 from flask_admin.form import SecureForm
 from flask_admin import Admin, expose
 from flask_admin.contrib.fileadmin import FileAdmin
-from decorator_and_utils import user_required, know_website, know_name_country
+from decorator_and_utils import *
 import os.path
 import pycountry
 
@@ -233,6 +233,8 @@ def questions(id):
     Tag_data = TagQuestion.query.filter_by(id_question=question_data.id).first() # TAG
     all_Answers = AnswerLong.query.filter_by(id_question=id).all() # ALL ANSWERS
 
+    lang = know_mode_exist(Tag_data.tag_one, Tag_data.tag_two, Tag_data.tag_three) #Check if exist lang
+
     try:
         if request.method == 'GET' and (session['id'] == User_data.id):
             return render_template('questions/question.html',
@@ -240,6 +242,7 @@ def questions(id):
                                    User=User_data,
                                    Question_data=question_data,
                                    Tag=Tag_data,
+                                   lang=lang,
                                    new_QuestionForm=new_QuestionForm,
                                    CRUD=True)
     except KeyError:
@@ -265,6 +268,7 @@ def questions(id):
                            User=User_data,
                            Question_data=question_data,
                            Tag=Tag_data,
+                           lang=lang,
                            CRUD=False,
                            is_authenticated=True if 'username' in session else False)
 
@@ -326,7 +330,17 @@ def edit_question(id):
         return redirect(url_for('questions', id=id))
 
 
+@app.route('/questions/delete/id/<int:id>', methods=['GET', 'POST'])
+def delete_question(id):
+    delete_Question = db.session.query(Question).filter(Question.id == id).first()
+    db.session.delete(delete_Question)
+    db.session.commit()
+    return redirect(url_for('user', username=session['username']))
+
+
+
 # Snippets ---------------------------------------------------------------------
+
 
 @app.route('/snippets', methods=['GET', 'POST'])
 @app.route('/snippets/page/<int:page>', methods=['GET', 'POST'])
@@ -346,6 +360,7 @@ def snippets(id):
     User_data = User.query.filter_by(id=snippet_data.id_user).first() # USER
     Tag_data = TagSnippet.query.filter_by(id_snippet=snippet_data.id).first() # TAG
     create_date = str(snippet_data.create_date).split(" ")[0] #DATE FORMATE
+    lang = know_lang(know_file_extension(snippet_data.title))
 
     try:
         if request.method == 'GET' and session['id'] == User_data.id:
@@ -355,6 +370,7 @@ def snippets(id):
                                    User=User_data,
                                    Snippet_data=snippet_data,
                                    Tag=Tag_data,
+                                   lang=lang,
                                    create_date=create_date,
                                    new_SnippetForm=new_SnippetForm,
                                    CRUD=True)
@@ -381,6 +397,7 @@ def snippets(id):
                             User=User_data,
                             Snippet_data=snippet_data,
                             Tag=Tag_data,
+                            lang=lang,
                             create_date=create_date,
                             new_SnippetForm=new_SnippetForm,
                             CRUD=False,
@@ -443,6 +460,13 @@ def create_snippet(username):
         return redirect(url_for('snippets', id=id[0]))
     return render_template('snippets/create_snippet.html', form=new_SnippetForm)
 
+
+@app.route('/snippets/delete/id/<int:id>', methods=['GET', 'POST'])
+def delete_snippet(id):
+    delete_Snippet = db.session.query(Snippet).filter(Snippet.id == id).first()
+    db.session.delete(delete_Snippet)
+    db.session.commit()
+    return redirect(url_for('user', username=session['username']))
 
 # Query Debbuging  -------------------------------------------------------------
 

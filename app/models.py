@@ -109,8 +109,6 @@ class Question(db.Model):
     title = db.Column(db.String(150))
     description = db.Column(db.String(1000))
     text_area = db.Column(UnicodeText)
-    answer_long = db.relationship('AnswerLong', backref='user_question', lazy='dynamic')
-    tag_relation = db.relationship('TagQuestion', backref='user_question', lazy='dynamic')
     upvote = db.Column(db.Integer, default=0)
     downvote = db.Column(db.Integer, default=0)
     create_date = db.Column(db.DateTime, default=datetime.datetime.now)
@@ -125,7 +123,9 @@ class Question(db.Model):
 class TagQuestion(db.Model):
     __tablename__ = 'tag_question'
     id = db.Column(db.Integer, primary_key=True)
-    id_question = db.Column(db.Integer, db.ForeignKey('user_question.id'))
+    id_question = db.Column(db.Integer, db.ForeignKey('user_question.id'), nullable=False)
+    tag_relation = db.relationship('Question', backref=db.backref('user_question_tag',
+                                               cascade="all, delete-orphan"), lazy='joined')
     tag_one = db.Column(db.String(25),  nullable=True)
     tag_two = db.Column(db.String(25),  nullable=True)
     tag_three = db.Column(db.String(25), nullable=True)
@@ -140,8 +140,10 @@ class TagQuestion(db.Model):
 class AnswerLong(db.Model):
     __tablename__ = 'user_answer_long'
     id = db.Column(db.Integer, primary_key=True)
-    id_user = db.Column(db.Integer, db.ForeignKey('user.id'))
+    id_user = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     id_question = db.Column(db.Integer, db.ForeignKey('user_question.id'))
+    question = db.relationship('Question', backref=db.backref('user_question_answer',
+                                           cascade="all, delete-orphan"), lazy='joined')
     name_user = db.Column(db.String(80), nullable=False)
     answer = db.Column(db.String(2000), nullable=False)
     answer_code = db.Column(UnicodeText, nullable=True)
@@ -162,10 +164,8 @@ class Snippet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     id_user = db.Column(db.Integer, db.ForeignKey('user.id'))
     title = db.Column(db.String(45))
-    description = db.Column(db.String(50))
+    description = db.Column(db.String(250))
     text_area = db.Column(UnicodeText)
-    comment = db.relationship('CommentSnippet', backref='user_snippet', lazy='dynamic')
-    tag_relation = db.relationship('TagSnippet', backref='user_snippet', lazy='dynamic')
     star = db.Column(db.Integer, default=0)
     create_date = db.Column(db.DateTime, default=datetime.datetime.now)
 
@@ -175,10 +175,13 @@ class Snippet(db.Model):
         self.description = description
         self.text_area = text_area
 
+
 class TagSnippet(db.Model):
     __tablename__ = 'tag_snippet'
     id = db.Column(db.Integer, primary_key=True)
-    id_snippet = db.Column(db.Integer, db.ForeignKey('user_snippet.id'))
+    id_snippet = db.Column(db.Integer, db.ForeignKey('user_snippet.id'), nullable=False)
+    tag_relation = db.relationship('Snippet', backref=db.backref('user_snippet_tag',
+                                              cascade="all, delete-orphan"), lazy='joined')
     tag_one = db.Column(db.String(25),  nullable=True)
     tag_two = db.Column(db.String(25),  nullable=True)
     tag_three = db.Column(db.String(25), nullable=True)
@@ -189,17 +192,20 @@ class TagSnippet(db.Model):
         self.tag_two = tag_two
         self.tag_three = tag_three
 
+
 class CommentSnippet(db.Model):
     __tablename__ = 'comment_snippet'
     id = db.Column(db.Integer, primary_key=True)
     id_user = db.Column(db.Integer, db.ForeignKey('user.id'))
-    id_snippet = db.Column(db.Integer, db.ForeignKey('user_snippet.id'))
-    name_user = db.Column(db.String(80), nullable=False)
+    id_snippet = db.Column(db.Integer, db.ForeignKey('user_snippet.id'), nullable=False)
+    tag_relation = db.relationship('Snippet', backref=db.backref('user_snippet_comment',
+                                              cascade="all, delete-orphan"), lazy='joined')
+    commet_user = db.Column(db.String(80), nullable=False)
     comment_text = db.Column(db.String(120), nullable=False)
     create_date = db.Column(db.DateTime, default=datetime.datetime.now)
 
-    def __init__(self, id_user, id_snippet, name_user, comment_text):
+    def __init__(self, id_user, id_snippet, commet_user, comment_text):
         self.id_user = id_user
         self.id_snippet = id_snippet
-        self.name_user = name_user
+        self.commet_user = commet_user
         self.comment_text = comment_text

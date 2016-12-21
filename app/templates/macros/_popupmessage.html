@@ -1,0 +1,29 @@
+{% macro popupmessage(type, this_id) %}
+
+<div id="myModal" class="modalmessage">
+  <!-- Modal content -->
+  <div class="modal-content">
+    <div class="modal-header">
+      <span class="close">×</span>
+      <h2>Wow!</h2>
+    </div>
+    <div class="modal-body">
+      <p id=messagebox></p>
+        {% if type|string() == 'question'%}
+        <button type="button" name="button">
+        <a href="{{ url_for('delete_question', id=this_id) }}">Delete</a>
+        </button>
+        {% endif %}
+
+        {% if type|string() == 'snippet' %}
+        <button type="button" name="button">
+        <a href="{{ url_for('delete_snippet', id=this_id) }}">Delete</a>
+        </button>
+        {% endif %}
+    </div>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/popupmessage.js')}}"/></script>
+
+{% endmacro %}
