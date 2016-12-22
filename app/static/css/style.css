@@ -1,3 +1,8 @@
+.shadow {
+  -webkit-box-shadow: -1px -1px 18px -5px rgba(0, 0, 0, 0.85);
+  -moz-box-shadow: -1px -1px 18px -5px rgba(0, 0, 0, 0.85);
+  box-shadow: -1px -1px 18px -5px rgba(0, 0, 0, 0.85); }
+
 .navbar {
   margin-bottom: 40px !important; }
 
@@ -539,7 +544,7 @@ body > .container {
   /* Hidden by default */
   position: fixed;
   /* Stay in place */
-  z-index: 1;
+  z-index: 9999;
   /* Sit on top */
   padding-top: 100px;
   /* Location of the box */
@@ -564,7 +569,6 @@ body > .container {
   padding: 0;
   border: 1px solid #888;
   width: 80%;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   -webkit-animation-name: animatetop;
   -webkit-animation-duration: 0.4s;
   animation-name: animatetop;
@@ -587,18 +591,20 @@ body > .container {
     opacity: 1; } }
 /* The Close Button */
 .close {
-  color: #72c390;
+  color: #a64c5f;
   float: right;
   font-size: 28px;
-  font-weight: bold; }
+  font-weight: bold;
+  transition: 0.4s;
+  margin-right: 15px; }
   .close:hover, .close:focus {
+    transition: 0.4s;
     color: #000;
     text-decoration: none;
     cursor: pointer; }
 
 .modal-header {
   padding: 2px 16px;
-  background-color: #9ad09a;
   color: white; }
 
 .modal-body {

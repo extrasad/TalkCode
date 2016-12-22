@@ -60,11 +60,23 @@ def index():
 # User Page --------------------------------------------------------------------
 @app.route('/user/<string:username>', methods=['GET', 'POST'])
 def user(username):
-    """"Perfil del Usuario Logeado"""
-    username = session['username']
-    UserDate = User.query.filter_by(id=session['id']).first()
-    PersonalDate = Personal_User.query.filter_by(id_user=session['id']).first()
-    CurriculumDate = Curriculum_User.query.filter_by(id_user=session['id']).first()
+    UserDate = User.query.filter_by(username=username).first()
+    PersonalDate = Personal_User.query.filter_by(id_user=UserDate.id).first()
+    CurriculumDate = Curriculum_User.query.filter_by(id_user=UserDate.id).first()
+
+    """Activity:
+                Questions = Select * from Question, User where
+                            Question.id_user = UserDate.id order_by Question.create_date limite offset 5
+
+                Answers   = Select * from AnswerLong, Question, User where AnswerLong.id_user = UserDate.id
+                            and AnswerLong.id_question = Question.id limite offset 5
+
+                Snippets  = Select * from Snippet, User where Snippet.id_user = UserDate.id limite offset 5
+
+            **Usar query_execute() para debugear estas consultas
+            **Cuando esten perfectas traducirlas a SQLAlchemy
+            **Buscar en la documentacion
+    """
 
     try:
         country = know_name_country(PersonalDate.country)
@@ -73,18 +85,30 @@ def user(username):
 
     if PersonalDate is not None:
         user_link = [know_website(PersonalDate.social_red), know_website(PersonalDate.repository)]
-        return render_template('user/user.html',
-                               name_user=session['username'],
-                               user_link=user_link,
-                               PersonalDate=PersonalDate,
-                               country=country,
-                               UserDate=UserDate,
-                               CurriculumDate=CurriculumDate)
+    else:
+        user_link = ['', '']
+
+    try:
+        if request.method == 'GET' and (session['id'] == UserDate.id):
+            return render_template('user/user.html',
+                                    user_link=user_link,
+                                    PersonalDate=PersonalDate,
+                                    country=country,
+                                    UserDate=UserDate,
+                                    CurriculumDate=CurriculumDate,
+                                    CRUD=True)
+    except KeyError:
+        pass
+
 
     return render_template('user/user.html', name_user=session['username'],
+                           user_link=user_link,
+                           country=country,
                            PersonalDate=PersonalDate,
                            UserDate=UserDate,
-                           CurriculumDate=CurriculumDate)
+                           CurriculumDate=CurriculumDate,
+                           CRUD=False,
+                           is_authenticated=True if 'username' in session else False)
 
 # Sign in, Sign On, Sign out ---------------------------------------------------
 @app.route('/register', methods=['GET', 'POST'])

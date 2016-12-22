@@ -3,10 +3,9 @@
     {% set name = name_user %}
 
 {% block content %}
-<div class="container">
+<div class="container shadow">
+  <hr>
   <div class="activity-grid col-md-4">
-
-
       <p class="h4"> <i class="icon-question icon-border" style="color:rgb(109,131,153)"> </i>Activity</p>
       <hr>
         <div class="activity-element">
@@ -79,14 +78,18 @@
         </div>
   </div>
 
-<div class="user-grid col-md-4">
-  <h4 class="h4"> <i class="icon-user icon-border" style="color:rgb(142,136,193)"> </i> {{ name_user }}</h4>
+<div class=" col-md-4">
+
+  <h4 class="h4"> <i class="icon-user icon-border" style="color:rgb(142,136,193)"> </i> {{ UserDate.username }}</h4>
   <div class="list">
     <ul>
     <li class="text-primary" style=""><i class="icon-star"></i> 0</li>
     <li class="text-danger" style=""><i class="icon-gittip"></i> 0</li>
     <li class="text-warning" style=""><i class="icon-chevron-down"></i> 0</li>
     <li class="text-success" style=""><i class="icon-chevron-up"></i> 0</li>
+    {% if is_authenticated %}
+    <button class="btns" type="button" name="button"><a href="{# url_for(follow, id=UserDate.id )#}" style="text-decoration:none;">Follow</a></button>
+    {% endif %}
     </ul>
   </div>
 </div>
@@ -94,18 +97,25 @@
 
     <h4 class="h4">{{CurriculumDate.tittle | capitalize}}</h4>
     <h6>University: {% if not CurriculumDate %} <spam class="text-info"> Add in curriculum.</spam> {% else  %}{{CurriculumDate.university | capitalize}} {% endif %}</h6>
+  {% if CRUD %}
+  <a href="http://127.0.0.1:8000/setting/curriculum_info" class="right btn btn-info btn-raised btn-xs">Curriculum</a>
+  {% endif %}
 
-              <a href="http://127.0.0.1:8000/setting/curriculum_info" class="right btn btn-info btn-raised btn-xs">Curriculum</a>
-              <p class="card-text">{{CurriculumDate.description | capitalize}}</p>
+    <p class="card-text">{{CurriculumDate.description | capitalize}}</p>
     </div>
 
 <div class="personal-grid col-md-4">
     <hr>
+
         {% if not PersonalDate %}
         <h6 class="text-info">Add your information in setting.</h6>
+        {% if CRUD %}
         <a href=" {{ url_for('setting_personal') }}" class="right btn btn-info btn-raised btn-xs">Setting</a>
+        {% endif %}
         {% else %}
+        {% if CRUD %}
         <a href=" {{ url_for('setting_personal') }}" class="right btn btn-info btn-raised btn-xs" style="padding-right:25px;padding-left:25px">Setting</a>
+        {% endif %}
                 <h6>{{PersonalDate.name | capitalize + " " + PersonalDate.last_name  | capitalize}}</h6>
                 <h6>{{country}}</h6>
                 <h6>{{PersonalDate.sex}}</h6>
@@ -115,7 +125,6 @@
                 <a href="{{PersonalDate.repository}}">{{ user_link[1] }}</a>
 
             <p class="card-text"><small class="text-muted">Last updated {{PersonalDate.create_date_personal}} ago</small></p>
-
         {% endif %}
 
 </div>

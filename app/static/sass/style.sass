@@ -6,14 +6,13 @@
 //...
 //..
 //.
+@import 'user.sass'
 @import 'base.sass'
 @import 'flexbox.sass'
 @import 'utils.sass'
 @import 'question.sass'
 @import 'snippets.sass'
 @import 'index.sass'
-
-
 
 $break-small: 320px
 $break-very-small: 310px
@@ -46,7 +45,7 @@ body > .container
   /* Hidden by default
   position: fixed
   /* Stay in place
-  z-index: 1
+  z-index: 9999
   /* Sit on top
   padding-top: 100px
   /* Location of the box
@@ -72,7 +71,6 @@ body > .container
   padding: 0
   border: 1px solid #888
   width: 80%
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)
   -webkit-animation-name: animatetop
   -webkit-animation-duration: 0.4s
   animation-name: animatetop
@@ -102,18 +100,20 @@ body > .container
 /* The Close Button
 
 .close
-  color: rgb(114,195,144)
+  color: rgb(166,76,95)
   float: right
   font-size: 28px
   font-weight: bold
+  transition: .4s
+  margin-right: 5px + 10
   &:hover, &:focus
+    transition: .4s
     color: #000
     text-decoration: none
     cursor: pointer
 
 .modal-header
   padding: 2px 16px
-  background-color: #9ad09a
   color: white
 
 .modal-body

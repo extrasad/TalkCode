@@ -10,7 +10,7 @@ var span = document.getElementsByClassName("close")[0];
 active = function(message) {
    document.getElementById('messagebox').innerHTML = message;
    modal.style.display = "block";
-   
+
 }
 
 // When the user clicks on <span> (x), close the modal
