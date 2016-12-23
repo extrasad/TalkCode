@@ -2,6 +2,10 @@
 {% set title = 'Question ' %}
 {% block content %}
 
+{% if lang|string() == 'htmlmixed' %}
+<script src="{{ url_for('static', filename='codemirror/mode/xml/xml.js') }}"/></script>
+{% endif %}
+
 <script src="{{ url_for('static', filename='js/counter_letter.js') }}"/></script>
 {% from "macros/_knowmode.html" import knowmode %}
 {% from "macros/_popupmessage.html" import popupmessage %}
@@ -47,17 +51,17 @@
                                         styleActiveLine: true,
                                         lineNumbers:true,
                                         theme: 'ttcn',
-                                        lineWrapping: true,
-                                        mode: {{lang|tojson}},
+                                        matchBrackets: true,
+                                        indentUnit: 4,
+                                        indentWithTabs: true,
                                         readOnly: false
                                       });
-
+                                      myCodeMirror.setOption('mode', {{lang|tojson}});
+                                      myCodeMirror.getDoc().setValue({{Question_data.text_area | tojson}});
                                       let buttonEdit = $('.btn-edit-counter_letter');
                                       let textCounterSnippet = $('.counter_snippet_length');
                                       let textarea = $('.CodeQuestion');
                                       const textarea_length = [50, 2500]; // BUG
-
-                                      myCodeMirror.getDoc().setValue({{Question_data.text_area | tojson}});
                                       myCodeMirror.on("change", function(){
                                         var value_length = myCodeMirror.getValue().length;
                                         LetterCounter(textarea_length[0], textarea_length[1], value_length, buttonEdit, textCounterSnippet);
@@ -105,7 +109,6 @@
       <br>
                                   <script type="text/javascript">
                                     $('.description-area').val({{Question_data.description | tojson}}).css('resize', 'none');
-
                                     $(document).ready(function () {
                                       var myCodeQuestion = $('.CodeQuestion')[0];
                                       var myCodeMirror = CodeMirror.fromTextArea(myCodeQuestion,{
@@ -113,9 +116,12 @@
                                         lineNumbers:true,
                                         theme: 'ttcn',
                                         lineWrapping: true,
-                                        mode: {{lang|tojson}},
+                                        matchBrackets: true,
+                                        indentUnit: 4,
+                                        indentWithTabs: true,
                                         readOnly: true
                                       });
+                                      myCodeMirror.setOption('mode', {{lang|tojson}});
                                       myCodeMirror.getDoc().setValue({{Question_data.text_area | tojson}});
                                       setTimeout(function() {
                                         myCodeMirror.refresh();
@@ -161,6 +167,7 @@
                                          mode: 'javascript',
                                          viewportMargin: Infinity,
                                        });
+                                       
                                        myCodeMirror.setSize(710, '20%');
                                        var button = $('.btn-counter_letter');
                                        var textCounter = $('.counter');

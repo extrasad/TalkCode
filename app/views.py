@@ -69,9 +69,11 @@ def user(username):
                             Question.id_user = UserDate.id order_by Question.create_date limite offset 5
 
                 Answers   = Select * from AnswerLong, Question, User where AnswerLong.id_user = UserDate.id
-                            and AnswerLong.id_question = Question.id limite offset 5
+                            and AnswerLong.id_question = Question.id order_by Question.create_date
+                        limite offset 5
 
-                Snippets  = Select * from Snippet, User where Snippet.id_user = UserDate.id limite offset 5
+                Snippets  = Select * from Snippet, User where Snippet.id_user = UserDate.id
+                            order_by Question.create_date limite offset 5
 
             **Usar query_execute() para debugear estas consultas
             **Cuando esten perfectas traducirlas a SQLAlchemy
@@ -495,9 +497,28 @@ def delete_snippet(id):
 # Query Debbuging  -------------------------------------------------------------
 
 
-@app.route('/query/execute')
-def query_execute():
+@app.route('/query/question')
+def query_question():
     cur = mysql.connection.cursor()
-    cur.execute('SELECT username FROM user where username = "carlosjazz"')
+    cur.execute('Select a.title, a.create_date from user_question as a,\
+                user as b where a.id_user = 1 and b.id = 1 order by a.create_date limit 5')
     rv = cur.fetchall()
-    return jsonify(username=rv)
+    return jsonify(questions=rv)
+
+# TODO:
+@app.route('/query/snippet')
+def query_snippet():
+    cur = mysql.connection.cursor()
+    cur.execute('Select a.title, a.create_date from user_question as a,\
+                user as b where a.id_user = 1 and b.id = 1 order by a.create_date limit 5')
+    rv = cur.fetchall()
+    return jsonify(questions=rv)
+
+# TODO:
+@app.route('/query/answer')
+def query_answer():
+    cur = mysql.connection.cursor()
+    cur.execute('Select a.title, a.create_date from user_question as a,\
+                user as b where a.id_user = 1 and b.id = 1 order by a.create_date limit 5')
+    rv = cur.fetchall()
+    return jsonify(questions=rv)
