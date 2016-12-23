@@ -22,4 +22,4 @@ with app.app_context():
     db.create_all()
 db.init_app(app)
 
-from app import views, models
+from app import views, models, filters

@@ -4,82 +4,7 @@
 
 {% block content %}
 <div class="container shadow">
-  <hr>
-  <div class="activity-grid col-md-4">
-      <p class="h4"> <i class="icon-question icon-border" style="color:rgb(109,131,153)"> </i>Activity</p>
-      <hr>
-        <div class="activity-element">
-        <h6><span class="label label-primary h6">Questions</span></h6>
-        <p class="card-text"><i class="icon-question-sign text-pr"> </i>Python music librery <code>pyknon</code>
-        <br>...
-        <small>How to convert midi format to mp3 in python?</small>
-        </p>
-        <hr>
-        </div>
-        <div class="activity-element">
-        <h6><span class="label label-success h6">Answer</span></h6>
-        <p class="card-text"><i class="icon-file-text text-success"> </i>Javascript Variables <code>var</code>, <code>let</code> and <code>const</code>
-        <br>...
-        <small>How correct use?</small>
-        </p>
-        <hr>
-        </div>
-        <div class="activity-element">
-        <h6><span class="label label-success h6">Answer</span></h6>
-        <p class="card-text"><i class="icon-file-text text-success"> </i>Javascript Variables <code>var</code>, <code>let</code> and <code>const</code>
-        <br>...
-        <small>How correct use?</small>
-        </p>
-        <hr>
-        </div>
-        <div class="activity-element">
-        <h6><span class="label label-success h6">Answer</span></h6>
-        <p class="card-text"><i class="icon-file-text text-success"> </i>Javascript Variables <code>var</code>, <code>let</code> and <code>const</code>
-        <br>...
-        <small>How correct use?</small>
-        </p>
-        <hr>
-        </div>
-  </div>
-  <div class="snippet-grid col-md-4">
-      <p class="h4"> <i class="icon-code icon-border" style="color:rgb(56,122,110)"> </i>Snippets</p>
-      <hr>
-        <div class="snippets-element">
-        <h6><span class="label label-info h6">Python</span></h6>
-        <p class="card-text"><i class="icon-code text-info"> </i>Generator fibonacci sequence
-        <br>...
-        <small>Simple y eficiente generador para crear la sucecion fibonacci</small>
-        </p>
-        <hr>
-        </div>
-        <div class="snippets-element">
-        <h6><span class="label label-info h6">Python</span></h6>
-        <p class="card-text"><i class="icon-code text-info"> </i>Generator fibonacci sequence
-        <br>...
-        <small>Simple y eficiente generador para crear la sucecion fibonacci</small>
-        </p>
-        <hr>
-        </div>
-        <div class="snippets-element">
-        <h6><span class="label label-info h6">Python</span></h6>
-        <p class="card-text"><i class="icon-code text-info"> </i>Generator fibonacci sequence
-        <br>...
-        <small>Simple y eficiente generador para crear la sucecion fibonacci</small>
-        </p>
-        <hr>
-        </div>
-        <div class="snippets-element">
-        <h6><span class="label label-info h6">Python</span></h6>
-        <p class="card-text"><i class="icon-code text-info"> </i>Generator fibonacci sequence
-        <br>...
-        <small>Simple y eficiente generador para crear la sucecion fibonacci</small>
-        </p>
-        <hr>
-        </div>
-  </div>
-
-<div class=" col-md-4">
-
+    <div class="col-md-12">
   <h4 class="h4"> <i class="icon-user icon-border" style="color:rgb(142,136,193)"> </i> {{ UserDate.username }}</h4>
   <div class="list">
     <ul>
@@ -92,9 +17,6 @@
     {% endif %}
     </ul>
   </div>
-</div>
-<div class="job-grid col-md-4">
-
     <h4 class="h4">{{CurriculumDate.tittle | capitalize}}</h4>
     <h6>University: {% if not CurriculumDate %} <spam class="text-info"> Add in curriculum.</spam> {% else  %}{{CurriculumDate.university | capitalize}} {% endif %}</h6>
   {% if CRUD %}
@@ -102,11 +24,6 @@
   {% endif %}
 
     <p class="card-text">{{CurriculumDate.description | capitalize}}</p>
-    </div>
-
-<div class="personal-grid col-md-4">
-    <hr>
-
         {% if not PersonalDate %}
         <h6 class="text-info">Add your information in setting.</h6>
         {% if CRUD %}
@@ -123,12 +40,59 @@
                 <a href="{{PersonalDate.social_red}}">{{ user_link[0] }}</a>
                 <br>
                 <a href="{{PersonalDate.repository}}">{{ user_link[1] }}</a>
-
             <p class="card-text"><small class="text-muted">Last updated {{PersonalDate.create_date_personal}} ago</small></p>
         {% endif %}
-
+     </div>
+  <div class="activity-grid col-md-4">
+      <p class="h4"> <i class="icon-question icon-border" style="color:rgb(109,131,153)"> </i>Question</p>
+      {% if Questions %}
+          {% for question in Questions %}
+          <hr>
+          <div class="activity-element">
+            <h6><span class="label label-primary h6">Questions</span></h6>
+            <p class="card-text"><i class="icon-question-sign text-pr"> </i>{{question.title}}
+            <br>...
+            <small>{{question.description|superwordwrap(60)}}...</small>
+            </p>
+          </div>
+          {% endfor %}
+      {% else %}
+            <small>No hay preguntas realizadas</small>
+      {% endif %}
+  </div>
+  <div class="snippet-grid col-md-4">
+      <p class="h4"> <i class="icon-code icon-border" style="color:rgb(56,122,110)"> </i>Answer</p>
+          {% if Answers %}
+          {% for answer in Answers %}
+        <hr>
+        <div class="snippets-element">
+        <h6><span class="label label-info h6">Answer</span></h6>
+        <p class="card-text"><i class="icon-code text-info"> </i>{{answer.answer|superwordwrap(60)}}
+        <br>...
+        <small>{{answer.title|superwordwrap(60)}}...</small>
+        </p>
+        </div>
+      {% endfor %}
+      {% else %}
+            <small>No hay respuestas realizadas</small>
+      {% endif %}
+  </div>
+ <div class="snippet-grid col-md-4">
+      <p class="h4"> <i class="icon-code icon-border" style="color:rgb(56,122,110)"> </i>Snippets</p>
+          {% if Snippets %}
+          {% for snippet in Snippets %}
+          <hr>
+          <div class="activity-element">
+            <h6><span class="label label-primary h6">Snippets Lang</span></h6>
+            <p class="card-text"><i class="icon-question-sign text-pr"> </i>{{snippet.title}}
+            <br>...
+            <small>{{snippet.description|superwordwrap(60)}}...</small>
+            </p>
+          </div>
+          {% endfor %}
+      {% else %}
+            <small>No hay snippets creados</small>
+      {% endif %}
+  </div>
 </div>
-</div>
-<br>
-
 {% endblock %}

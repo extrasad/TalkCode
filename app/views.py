@@ -13,6 +13,7 @@ from flask_admin.contrib.fileadmin import FileAdmin
 from decorator_and_utils import *
 import os.path
 import pycountry
+from sqlalchemy import desc, asc, and_, or_, not_
 
 
 #   ------------------------------------- Instances ----------------------------
@@ -31,6 +32,8 @@ admin.add_view(ModelView(TagSnippet, db.session))
 admin.add_view(ModelView(CommentSnippet, db.session))
 path = os.path.join(os.path.dirname(__file__), 'static')
 admin.add_view(FileAdmin(path, '/static/', name='Static Files'))
+
+
 # Handling request -------------------------------------------------------------
 
 
@@ -49,6 +52,7 @@ def before_request():
     if 'username' in session and request.endpoint in ['register', 'login']:
         redirect(url_for('user'))"""
 
+
 # Index ------------------------------------------------------------------------
 @app.route('/', methods=['GET'])
 def index():
@@ -57,28 +61,26 @@ def index():
     else:
         return render_template('index.html', button='btn btn-info btn-raised')
 
+
 # User Page --------------------------------------------------------------------
 @app.route('/user/<string:username>', methods=['GET', 'POST'])
 def user(username):
     UserDate = User.query.filter_by(username=username).first()
     PersonalDate = Personal_User.query.filter_by(id_user=UserDate.id).first()
     CurriculumDate = Curriculum_User.query.filter_by(id_user=UserDate.id).first()
-
-    """Activity:
-                Questions = Select * from Question, User where
-                            Question.id_user = UserDate.id order_by Question.create_date limite offset 5
-
-                Answers   = Select * from AnswerLong, Question, User where AnswerLong.id_user = UserDate.id
-                            and AnswerLong.id_question = Question.id order_by Question.create_date
-                        limite offset 5
-
-                Snippets  = Select * from Snippet, User where Snippet.id_user = UserDate.id
-                            order_by Question.create_date limite offset 5
-
-            **Usar query_execute() para debugear estas consultas
-            **Cuando esten perfectas traducirlas a SQLAlchemy
-            **Buscar en la documentacion
-    """
+    Questions = db.session.query(Question.title, Question.description, Question.create_date). \
+        filter_by(id_user=UserDate.id). \
+        order_by(desc(Question.create_date)). \
+        limit(5)
+    Snippets = db.session.query(Snippet.title, Snippet.description, Snippet.create_date). \
+        filter_by(id_user=UserDate.id). \
+        order_by(desc(Snippet.create_date)). \
+        limit(5)
+    Answers = db.session.query(AnswerLong.answer, Question.title). \
+        filter(AnswerLong.id_user == UserDate.id). \
+        filter(AnswerLong.id_question == Question.id). \
+        order_by(desc(AnswerLong.create_date)). \
+        limit(5)
 
     try:
         country = know_name_country(PersonalDate.country)
@@ -93,24 +95,30 @@ def user(username):
     try:
         if request.method == 'GET' and (session['id'] == UserDate.id):
             return render_template('user/user.html',
-                                    user_link=user_link,
-                                    PersonalDate=PersonalDate,
-                                    country=country,
-                                    UserDate=UserDate,
-                                    CurriculumDate=CurriculumDate,
-                                    CRUD=True)
+                                   user_link=user_link,
+                                   PersonalDate=PersonalDate,
+                                   country=country,
+                                   UserDate=UserDate,
+                                   Questions=Questions,
+                                   Snippets=Snippets,
+                                   Answers=Answers,
+                                   CurriculumDate=CurriculumDate,
+                                   CRUD=True)
     except KeyError:
         pass
 
-
-    return render_template('user/user.html', name_user=session['username'],
+    return render_template('user/user.html',
                            user_link=user_link,
                            country=country,
                            PersonalDate=PersonalDate,
                            UserDate=UserDate,
+                           Questions=Questions,
+                           Snippets=Snippets,
+                           Answers=Answers,
                            CurriculumDate=CurriculumDate,
                            CRUD=False,
                            is_authenticated=True if 'username' in session else False)
+
 
 # Sign in, Sign On, Sign out ---------------------------------------------------
 @app.route('/register', methods=['GET', 'POST'])
@@ -159,7 +167,7 @@ def login():
 
         else:
             flash('Username or password invalid', 'danger')
-            return redirect(url_for('login',))
+            return redirect(url_for('login', ))
 
     return render_template('sign/login.html', form=new_Loginform)
 
@@ -232,12 +240,15 @@ def setting_curriculum():
             return redirect(url_for('user', username=session['username']))
     return render_template('user/setting/form_curriculum_user.html',
                            form=new_CurriculumForm, CurriculumDate=Curriculum_info)
+
+
 # About ----------------------------------------------------
 
 
 @app.route('/about', methods=['GET'])
 def about():
     return render_template('about.html')
+
 
 # Question  ------------------------------------------------
 
@@ -252,14 +263,14 @@ def questions_pagination(page=1):
 
 @app.route('/questions/id/<int:id>', methods=['GET', 'POST'])
 def questions(id):
-    new_QuestionForm = QuestionForm(request.form) # EDIT QUESTION
-    new_answer_form = AnswerForm(request.form) # FORM ANSWER
-    question_data = db.session.query(Question).filter(Question.id == id).first() # QUESTION
-    User_data = User.query.filter_by(id=question_data.id_user).first() # USER
-    Tag_data = TagQuestion.query.filter_by(id_question=question_data.id).first() # TAG
-    all_Answers = AnswerLong.query.filter_by(id_question=id).all() # ALL ANSWERS
+    new_QuestionForm = QuestionForm(request.form)  # EDIT QUESTION
+    new_answer_form = AnswerForm(request.form)  # FORM ANSWER
+    question_data = db.session.query(Question).filter(Question.id == id).first()  # QUESTION
+    User_data = User.query.filter_by(id=question_data.id_user).first()  # USER
+    Tag_data = TagQuestion.query.filter_by(id_question=question_data.id).first()  # TAG
+    all_Answers = AnswerLong.query.filter_by(id_question=id).all()  # ALL ANSWERS
 
-    lang = know_mode_exist(Tag_data.tag_one, Tag_data.tag_two, Tag_data.tag_three) #Check if exist lang
+    lang = know_mode_exist(Tag_data.tag_one, Tag_data.tag_two, Tag_data.tag_three)  # Check if exist lang
 
     try:
         if request.method == 'GET' and (session['id'] == User_data.id):
@@ -279,13 +290,12 @@ def questions(id):
         answer_text = new_answer_form.answer_long.data
         answer_code = new_answer_form.text_area.data
         answer_new = AnswerLong(session['id'], session['username'],
-        id_question, answer_text, answer_code)
+                                id_question, answer_text, answer_code)
 
         db.session.add(answer_new)
         db.session.commit()
         flash('New answer!', 'success')
         return redirect(url_for('questions', id=id))
-
 
     return render_template('questions/question.html',
                            Answers=all_Answers,
@@ -297,6 +307,7 @@ def questions(id):
                            lang=lang,
                            CRUD=False,
                            is_authenticated=True if 'username' in session else False)
+
 
 @app.route('/questions/write/user/<string:username>', methods=['GET', 'POST'])
 @user_required
@@ -313,9 +324,11 @@ def create_question(username):
 
         db.session.add(question_new)
 
-        id_question = db.session.query(Question.id).filter(Question.id_user == session['id'], Question.title == title).first()
+        id_question = db.session.query(Question.id).filter(Question.id_user == session['id'],
+                                                           Question.title == title).first()
         id_question_for_tag = id_question[0]
-        tag_new = TagQuestion(id_question_for_tag, new_QuestionForm.tag_one.data, new_QuestionForm.tag_two.data, new_QuestionForm.tag_three.data)
+        tag_new = TagQuestion(id_question_for_tag, new_QuestionForm.tag_one.data, new_QuestionForm.tag_two.data,
+                              new_QuestionForm.tag_three.data)
         db.session.add(tag_new)
         db.session.commit()
         flash('Perfect', 'info')
@@ -331,7 +344,7 @@ def edit_question(id):
     new = [edited_QuestionForm.tittle.data, edited_QuestionForm.description.data, edited_QuestionForm.text_area.data]
     old = [QuestionQuerySet.title, QuestionQuerySet.description, QuestionQuerySet.text_area]
 
-    new = [i for i in new if i.isspace() != True and i != ''] # CHECK EMPTY STRING AND DELETE
+    new = [i for i in new if i.isspace() != True and i != '']  # CHECK EMPTY STRING AND DELETE
 
     if request.method == 'POST' and len(new) == 3 and set(new) != set(old):
         if (new[0] != QuestionQuerySet.title):
@@ -364,7 +377,6 @@ def delete_question(id):
     return redirect(url_for('user', username=session['username']))
 
 
-
 # Snippets ---------------------------------------------------------------------
 
 
@@ -380,17 +392,17 @@ def snippets_pagination(page=1):
 
 @app.route('/snippets/id/<int:id>', methods=['GET', 'POST'])
 def snippets(id):
-    new_SnippetForm = SnippetsForm(request.form) #FORM SNIPPET
-    new_comment_form = SnippetsComment(request.form) #FORM COMMENT
-    snippet_data = db.session.query(Snippet).filter(Snippet.id == id).first() # SNIPPET
-    User_data = User.query.filter_by(id=snippet_data.id_user).first() # USER
-    Tag_data = TagSnippet.query.filter_by(id_snippet=snippet_data.id).first() # TAG
-    create_date = str(snippet_data.create_date).split(" ")[0] #DATE FORMATE
+    new_SnippetForm = SnippetsForm(request.form)  # FORM SNIPPET
+    new_comment_form = SnippetsComment(request.form)  # FORM COMMENT
+    snippet_data = db.session.query(Snippet).filter(Snippet.id == id).first()  # SNIPPET
+    User_data = User.query.filter_by(id=snippet_data.id_user).first()  # USER
+    Tag_data = TagSnippet.query.filter_by(id_snippet=snippet_data.id).first()  # TAG
+    create_date = str(snippet_data.create_date).split(" ")[0]  # DATE FORMATE
     lang = know_lang(know_file_extension(snippet_data.title))
 
     try:
         if request.method == 'GET' and session['id'] == User_data.id:
-            all_Comments = CommentSnippet.query.filter_by(id_snippet=id).all() #  ALL COMMENT
+            all_Comments = CommentSnippet.query.filter_by(id_snippet=id).all()  # ALL COMMENT
             return render_template('snippets/snippet.html',
                                    Comments=all_Comments,
                                    User=User_data,
@@ -415,19 +427,18 @@ def snippets(id):
         flash('New comment!', 'success')
         return redirect(url_for('snippets', id=id))
 
-
-    all_Comments = CommentSnippet.query.filter_by(id_snippet=id).all() #  ALL COMMENT
+    all_Comments = CommentSnippet.query.filter_by(id_snippet=id).all()  # ALL COMMENT
     return render_template('snippets/snippet.html',
-                            Comments=all_Comments,
-                            comment_form=new_comment_form,
-                            User=User_data,
-                            Snippet_data=snippet_data,
-                            Tag=Tag_data,
-                            lang=lang,
-                            create_date=create_date,
-                            new_SnippetForm=new_SnippetForm,
-                            CRUD=False,
-                            is_authenticated=True if 'username' in session else False)
+                           Comments=all_Comments,
+                           comment_form=new_comment_form,
+                           User=User_data,
+                           Snippet_data=snippet_data,
+                           Tag=Tag_data,
+                           lang=lang,
+                           create_date=create_date,
+                           new_SnippetForm=new_SnippetForm,
+                           CRUD=False,
+                           is_authenticated=True if 'username' in session else False)
 
 
 @app.route('/snippets/edit/id/<int:id>', methods=['GET', 'POST'])
@@ -437,7 +448,7 @@ def edit_snippet(id):
     new = [edited_SnippetForm.tittle.data, edited_SnippetForm.description.data, edited_SnippetForm.text_area.data]
     old = [SnippetQuerySet.title, SnippetQuerySet.description, SnippetQuerySet.text_area]
 
-    new = [i for i in new if i.isspace() != True and i != ''] # CHECK EMPTY STRING AND DELETE
+    new = [i for i in new if i.isspace() != True and i != '']  # CHECK EMPTY STRING AND DELETE
 
     if request.method == 'POST' and len(new) == 3 and set(new) != set(old):
         if (new[0] != SnippetQuerySet.title):
@@ -476,9 +487,11 @@ def create_snippet(username):
 
         db.session.add(snippet_new)
 
-        id_snippet = db.session.query(Snippet.id).filter(Snippet.id_user == session['id'], Snippet.title == title).first()
+        id_snippet = db.session.query(Snippet.id).filter(Snippet.id_user == session['id'],
+                                                         Snippet.title == title).first()
         id_snippet_for_tag = id_snippet[0]
-        tag_new = TagSnippet(id_snippet_for_tag, new_SnippetForm.tag_one.data, new_SnippetForm.tag_two.data, new_SnippetForm.tag_three.data)
+        tag_new = TagSnippet(id_snippet_for_tag, new_SnippetForm.tag_one.data, new_SnippetForm.tag_two.data,
+                             new_SnippetForm.tag_three.data)
         db.session.add(tag_new)
         db.session.commit()
         flash('Perfect', 'info')
@@ -494,6 +507,7 @@ def delete_snippet(id):
     db.session.commit()
     return redirect(url_for('user', username=session['username']))
 
+
 # Query Debbuging  -------------------------------------------------------------
 
 
@@ -505,20 +519,21 @@ def query_question():
     rv = cur.fetchall()
     return jsonify(questions=rv)
 
+
 # TODO:
 @app.route('/query/snippet')
 def query_snippet():
     cur = mysql.connection.cursor()
-    cur.execute('Select a.title, a.create_date from user_question as a,\
+    cur.execute('Select a.title, a.create_date from user_snippet as a,\
                 user as b where a.id_user = 1 and b.id = 1 order by a.create_date limit 5')
     rv = cur.fetchall()
     return jsonify(questions=rv)
 
-# TODO:
+
 @app.route('/query/answer')
 def query_answer():
     cur = mysql.connection.cursor()
-    cur.execute('Select a.title, a.create_date from user_question as a,\
-                user as b where a.id_user = 1 and b.id = 1 order by a.create_date limit 5')
+    cur.execute('Select a.answer, b.title from user_answer_long as a,\
+                user_question as b where a.id_user = 1 and a.id_question = b.id order by a.create_date limit 5')
     rv = cur.fetchall()
-    return jsonify(questions=rv)
+    return jsonify(answers=rv)
