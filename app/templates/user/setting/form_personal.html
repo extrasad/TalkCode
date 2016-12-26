@@ -41,11 +41,10 @@
       <legend>Date</legend>
       <span class="icon-calendar"></span>
       <!--Recordad este error!-->
-      {{ render_field(form.dob, value="2012-12-2", class='form-control', id='date') }}
+      {{ form.dob(value= PersonalDate.dub, class="inputdate", id='date') }}
       <script>
          $( function() {
              $('#date').bootstrapMaterialDatePicker({ weekStart : 0, time: false });
-
          } );
       </script>
       </fieldset>

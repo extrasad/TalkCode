@@ -3,6 +3,30 @@
   -moz-box-shadow: -1px -1px 18px -5px rgba(0, 0, 0, 0.85);
   box-shadow: -1px -1px 18px -5px rgba(0, 0, 0, 0.85); }
 
+.inputdate {
+  height: 24px;
+  padding: 3px 0;
+  font-size: 16px;
+  line-height: 1.5;
+  border: 0;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#009688), to(#009688)), -webkit-gradient(linear, left top, left bottom, from(#D2D2D2), to(#D2D2D2));
+  background-image: -webkit-linear-gradient(#009688, #009688), -webkit-linear-gradient(#D2D2D2, #D2D2D2);
+  background-image: -o-linear-gradient(#009688, #009688), -o-linear-gradient(#D2D2D2, #D2D2D2);
+  background-image: linear-gradient(#009688, #009688), linear-gradient(#D2D2D2, #D2D2D2);
+  -webkit-background-size: 0 2px, 100% 1px;
+  background-size: 0 2px, 100% 1px;
+  background-repeat: no-repeat;
+  background-position: center bottom, center -webkit-calc(100% - 1px);
+  background-position: center bottom, center calc(100% - 1px);
+  background-color: transparent;
+  -webkit-transition: background 0s ease-out;
+  -o-transition: background 0s ease-out;
+  transition: background 0s ease-out;
+  float: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  border-radius: 0; }
+
 .navbar {
   margin-bottom: 40px !important; }
 
@@ -42,6 +66,9 @@
   background-color: #f6f6f6; }
 
 #footer-base {
+  position: fixed;
+  bottom: 0;
+  right: 0;
   box-shadow: 0 0 1rem rgba(0, 0, 0, 0.2);
   background-color: #d0d0d0;
   margin-top: 40px; }
@@ -400,19 +427,19 @@
     width: 4px;
     left: 5px;
     top: 0; }
-  .tag-question.upvote {
+  .tag-question.up {
     background: #3fa15d; }
-    .tag-question.upvote::before {
+    .tag-question.up::before {
       content: "+";
       color: white;
       position: absolute;
       width: 4px;
       left: 5px;
       top: 0; }
-  .tag-question.downvote {
+  .tag-question.down {
     background-color: #be6d4f;
     width: 50px; }
-    .tag-question.downvote::before {
+    .tag-question.down::before {
       content: "-";
       color: white;
       position: absolute;

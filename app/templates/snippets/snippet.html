@@ -50,18 +50,18 @@
                       styleActiveLine: true,
                       lineNumbers:true,
                       theme: 'ttcn',
+                      indentUnit: 4,
+                      indentWithTabs: true,
                       lineWrapping: true,
-                      mode: {{lang|tojson}},
                       readOnly: false
                     });
 
-
+                    myCodeMirror.setOption('mode', {{lang|tojson}});
+                    myCodeMirror.getDoc().setValue({{Snippet_data.text_area | tojson }});
                     let buttonEdit = $('.btn-edit-counter_letter');
                     let textCounterSnippet = $('.counter_snippet_length');
                     let textarea = $('.TextArea');
                     const textarea_length = [5, 2000]; // BUG
-
-                    myCodeMirror.getDoc().setValue({{Snippet_data.text_area | tojson }});
                     myCodeMirror.on("change", function(){
                       var value_length = myCodeMirror.getValue().length;
                       LetterCounter(textarea_length[0], textarea_length[1], value_length, buttonEdit, textCounterSnippet);
@@ -106,11 +106,13 @@
                     var myCodeMirror = CodeMirror.fromTextArea(myTextArea,{
                       styleActiveLine: true,
                       lineNumbers:true,
-                      theme: 'ttcn',
                       lineWrapping: true,
-                      mode: {{lang|tojson}},
+                      matchBrackets: true,
+                      indentUnit: 4,
+                      indentWithTabs: true,
                       readOnly: true
                     });
+                    myCodeMirror.setOption('mode', {{lang|tojson}});
                     myCodeMirror.getDoc().setValue({{Snippet_data.text_area | tojson }});
                     setTimeout(function() {
                       myCodeMirror.refresh();
@@ -124,7 +126,6 @@
 
 
 {% endif %}
-
 
     {% if is_authenticated %}
     <div class="col-md-8">
@@ -169,7 +170,6 @@
 
 </div>
 
-
 <script type="text/javascript">
   $(document).ready(function() {
     //comment LetterCounter
@@ -195,16 +195,6 @@
     LetterCounter(title_length[0], title_length[1], title, buttonEdit, textCounterSnippet);
     LetterCounter(description_length[0], description_length[1], description, buttonEdit, textCounterSnippet);
     //LetterCounter(textarea_length[0], textarea_length[1], textarea, buttonEdit, textCounterSnippet);
-
-
-
   });
 </script>
-
-
-
-
-
-
-
 {% endblock  %}

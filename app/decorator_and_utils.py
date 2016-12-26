@@ -43,26 +43,20 @@ def know_file_extension(file):
         extension = os.path.splitext(file)[1]
         return extension[1:]
 
+
 def know_lang(format):
     if format is False:
         return 'javascript'
 
     format = format.lower()
-    if format == 'cpp': return 'clike'
-    if format == 'cs': return 'clike'
-    if format == 'mm' or format == 'm': return 'clike'
-    if format == 'kt': return 'clike'
-    if format == 'java': return 'clike'
-    if format == 'nut': return 'clike'
-    if format == 'scala': return 'clike'
+    if format in ['cs', 'c', 'cpp', 'mm', 'm', 'kt', 'java', 'nut', 'scala']: return 'clike'
     if format in ["build", "bzl", "py", "pyw"]: return 'python'
+    if format in ["clj", "cljc", "cljx"]: return 'clojure'
+    if format in ["cl", "lisp", "el"]: return 'commonlisp'
     if format == 'js': return 'javascript'
-    if format == 'html': return 'html'
-    if format == 'c': return 'clike'
     if format == 'cmake': return 'cobol'
     if format == 'squirrel': return 'squirrel'
     if format == 'ceylon': return 'ceylon'
-    if format in ["clj", "cljc", "cljx"]: return 'clojure'
     if format == 'sh': return 'shell'
     if format == 'pm' or format == 'pl': return 'perl'
     if format == 'exs' or format == 'ex': return 'elixir'
@@ -71,7 +65,6 @@ def know_lang(format):
     if format == 'coffee': return 'coffeescript'
     if format == 'cr': return 'crystal'
     if format == 'cbl': return 'cobol'
-    if format in ["cl", "lisp", "el"]: return 'commonlisp'
     if format == 'jl': return 'julia'
     if format == 'ls': return 'livescript'
     if format == 'hs': return 'haskell'
@@ -92,14 +85,15 @@ def know_lang(format):
     if format == 'dart': return format
     if format == 'lua': return format
     if format == 'swift': return format
+    if format == 'html': return format
+    if format == 'xml': return format
 
     return 'javascript'  # default mode
 
-#print know_lang(know_file_extension('hola.swift'))
 
 def know_mode_exist(*args):
     for tag in args:
-        if tag == 'html' or tag == 'php':
+        if tag in ['html', 'xml', 'php']:
             tag = 'htmlmixed'
         if os.path.exists('./app/static/codemirror/mode/' + tag):
             return tag

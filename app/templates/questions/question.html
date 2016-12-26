@@ -25,8 +25,8 @@
          <li><a href="#" class="tag-question" style="text-decoration:none;">{{Tag.tag_one}}</a></li>
          <li><a href="#" class="tag-question" style="text-decoration:none;">{{Tag.tag_two}}</a></li>
          <li><a href="#" class="tag-question" style="text-decoration:none;">{{Tag.tag_three}}</a></li>
-         <li><a href="#" class="tag-question upvote" style="text-decoration:none;">{{ Question_data.upvote}}</a></li>
-         <li><a href="#" class="tag-question downvote" style="text-decoration:none;">{{ Question_data.downvote}}</a></li>
+         <li><a href="#" class="tag-question up " style="text-decoration:none;">{{ Question_data.upvote_count}}</a></li>
+         <li><a href="#" class="tag-question down" style="text-decoration:none;">{{ Question_data.downvote_count}}</a></li>
          <li><a href="#" class="tag-question user" style="text-decoration:none;">{{ User.username }}</a></li>
       </ul>
 
@@ -94,8 +94,8 @@
          <li><a href="#" class="tag-question" style="text-decoration:none;">{{Tag.tag_one}}</a></li>
          <li><a href="#" class="tag-question" style="text-decoration:none;">{{Tag.tag_two}}</a></li>
          <li><a href="#" class="tag-question" style="text-decoration:none;">{{Tag.tag_three}}</a></li>
-         <li><a href="#" class="tag-question upvote" style="text-decoration:none;">{{ Question_data.upvote}}</a></li>
-         <li><a href="#" class="tag-question downvote" style="text-decoration:none;">{{ Question_data.downvote}}</a></li>
+         <li><a href="#" class="tag-question up"  style="text-decoration:none;">{{ Question_data.upvote}}</a></li>
+         <li><a href="#" class="tag-question down" style="text-decoration:none;">{{ Question_data.downvote}}</a></li>
          <li><a href="#" class="tag-question user" style="text-decoration:none;">{{ User.username }}</a></li>
       </ul>
 
@@ -162,18 +162,16 @@
                                        var myCodeMirror = CodeMirror.fromTextArea(myTextArea,{
                                          styleActiveLine: true,
                                          lineNumbers:true,
-                                         theme: 'ambiance',
+                                         theme: 'ttcn',
                                          lineWrapping: true,
-                                         mode: 'javascript',
                                          viewportMargin: Infinity,
                                        });
-                                       
+                                       myCodeMirror.setOption('mode', {{lang|tojson}});
                                        myCodeMirror.setSize(710, '20%');
                                        var button = $('.btn-counter_letter');
                                        var textCounter = $('.counter');
                                        var field = $('.answer-area');
                                        LetterCounter(1, 250, field, button, textCounter);
-
                                      });
                                    </script>
    {% else %}
@@ -238,5 +236,41 @@ LetterCounter(title_length[0], title_length[1], title, buttonEdit, textCounterSn
 LetterCounter(description_length[0], description_length[1], description, buttonEdit, textCounterSnippet);
 
 </script>
+
+
+   {% if is_authenticated  %}
+
+<script>
+$(".up").addClass('upvote');
+$(".down").addClass('downvote');
+
+$('.upvote').click(function(){
+  var scope = this;
+      $.ajax({
+              type: "POST",
+              url: "{{ url_for('upvote',  id=Question_data.id) }}",
+              dataType: "json",
+              success: function(response){
+                  //$(scope).text(response.likes);
+                  $('.upvote').text(response.likes);
+              }
+          })
+});
+
+$('.downvote').click(function(){
+  var scope = this;
+      $.ajax({
+              type: "POST",
+              url: "{{ url_for('downvote',  id=Question_data.id) }}",
+              dataType: "json",
+              success: function(response){
+                  //$(scope).text(response.likes);
+                  $('.downvote').text(response.likes);
+              }
+          })
+});
+</script>
+
+   {% endif %}
 
 {% endblock %}

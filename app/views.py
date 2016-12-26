@@ -1,8 +1,8 @@
 # coding=utf-8
 #   ------------------------------------- Modules ------------------------------
-from . import app
+from . import app, csrf
 from datetime import date
-from flask import request, render_template, session, redirect, url_for, flash, jsonify
+from flask import request, render_template, session, redirect, url_for, flash, jsonify, json
 from form import *
 from models import *
 from flask_mysqldb import MySQL
@@ -23,7 +23,6 @@ admin = Admin(app, name='talkcode', template_mode='bootstrap3')
 admin.add_view(ModelView(User, db.session))
 admin.add_view(ModelView(Personal_User, db.session))
 admin.add_view(ModelView(Curriculum_User, db.session))
-admin.add_view(ModelView(Skills, db.session))
 admin.add_view(ModelView(Question, db.session))
 admin.add_view(ModelView(TagQuestion, db.session))
 admin.add_view(ModelView(AnswerLong, db.session))
@@ -43,16 +42,6 @@ def page_not_found(e):
     return render_template('index.html'), 404
 
 
-@app.before_request
-def before_request():
-    pass
-    """if 'username' not in session and request.endpoint in ['user', 'logout', 'setting']:
-        redirect(url_for('login'))
-
-    if 'username' in session and request.endpoint in ['register', 'login']:
-        redirect(url_for('user'))"""
-
-
 # Index ------------------------------------------------------------------------
 @app.route('/', methods=['GET'])
 def index():
@@ -68,14 +57,17 @@ def user(username):
     UserDate = User.query.filter_by(username=username).first()
     PersonalDate = Personal_User.query.filter_by(id_user=UserDate.id).first()
     CurriculumDate = Curriculum_User.query.filter_by(id_user=UserDate.id).first()
+
     Questions = db.session.query(Question.title, Question.description, Question.create_date). \
         filter_by(id_user=UserDate.id). \
         order_by(desc(Question.create_date)). \
         limit(5)
+
     Snippets = db.session.query(Snippet.title, Snippet.description, Snippet.create_date). \
         filter_by(id_user=UserDate.id). \
         order_by(desc(Snippet.create_date)). \
         limit(5)
+
     Answers = db.session.query(AnswerLong.answer, Question.title). \
         filter(AnswerLong.id_user == UserDate.id). \
         filter(AnswerLong.id_question == Question.id). \
@@ -133,7 +125,11 @@ def register():
         query_validate_password = User.query.filter_by(password=password).first()
         query_validate_email = User.query.filter_by(email=email).first()
 
-        if query_validate_username is not None or query_validate_password is not None or query_validate_email is not None:
+        if username == password:
+            uri_parameters = 'invalid'
+            flash('Username and Password are very same', 'danger')
+            return redirect(url_for('register', error=uri_parameters))
+        elif query_validate_username is not None or query_validate_password is not None or query_validate_email is not None:
             uri_parameters = 'invalid'
             flash('That dates in use', 'danger')
             return redirect(url_for('register', error=uri_parameters))
@@ -309,6 +305,44 @@ def questions(id):
                            is_authenticated=True if 'username' in session else False)
 
 
+@user_required
+@csrf.exempt
+@app.route('/upvote/<int:id>', methods=['GET', 'POST'])
+def upvote(id):
+    if request.method == "POST":
+        query_question = Question.query.filter_by(id=id).first()
+        user_in_query_upvote = Upvote.query.filter(Upvote.users_upvote.any(id_user=session['id'])).one_or_none()
+
+
+        if query_question.upvote_count == 0 or user_in_query_upvote == None:
+            query_question.upvote.append(Upvote(id_user=session['id']))
+            db.session.commit()
+        else:
+            query_question.upvote_count -= 1
+            db.session.delete(user_in_query_upvote)
+            db.session.commit()
+            db.session.refresh(query_question)
+        return json.dumps({'status': 'OK', 'likes': query_question.upvote_count})
+
+@user_required
+@csrf.exempt
+@app.route('/downvote/<int:id>', methods=['GET', 'POST'])
+def downvote(id):
+    if request.method == "POST":
+        query_question = Question.query.filter_by(id=id).first()
+        user_in_query_downvote = Downvote.query.filter(Downvote.users_downvote.any(id_user=session['id'])).one_or_none()
+
+
+        if query_question.downvote_count == 0 or user_in_query_downvote == None:
+            query_question.downvote.append(Downvote(id_user=session['id']))
+            db.session.commit()
+        else:
+            query_question.downvote_count -= 1
+            db.session.delete(user_in_query_downvote)
+            db.session.commit()
+            db.session.refresh(query_question)
+        return json.dumps({'status': 'OK', 'likes': query_question.downvote_count})
+
 @app.route('/questions/write/user/<string:username>', methods=['GET', 'POST'])
 @user_required
 def create_question(username):
@@ -479,7 +513,7 @@ def create_snippet(username):
     new_SnippetForm = SnippetsForm(request.form)
     if request.method == 'POST' and new_SnippetForm.validate():
         query = db.session.query(User.id).filter(User.username == session['username']).first()
-        user_id = query[0]  # long integer delete 'L'
+        user_id = query[0]
         title = new_SnippetForm.tittle.data
         description = new_SnippetForm.description.data
         text_area = new_SnippetForm.text_area.data

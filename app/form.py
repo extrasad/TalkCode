@@ -2,7 +2,6 @@
 from wtforms import *
 from wtforms.fields.html5 import EmailField
 from wtforms.widgets import TextArea
-from models import Skills
 #from datetime import datetime, date
 #from wtforms_components import DateRange
 import pycountry
@@ -56,9 +55,12 @@ class RegisterForm(Form):
         Form.__init__(self, *args, **kwargs)
         self.user = None
 
+
 class RegistrationForm(Form):
     confirm = PasswordField('Repeat Password')
     accept_tos = BooleanField('I accept the Terms of Service and Privacy Notice (updated Jan 22, 2015)', [validators.Required()])
+
+
 class LoginForm(Form):
     username = StringField('',   [validators.DataRequired(message='El campo esta vacio.'), validators.length(min=5, message='Min 5 letter, Try Again')])
     password = PasswordField('', [validators.DataRequired(message='El campo esta vacio.'), validators.length(min=8, message='Min 8 letter, Try Again')])
@@ -69,25 +71,19 @@ class LoginForm(Form):
 
 
 class PersonalForm(Form):
-    """Crear Regex para que solo sean letras"""
     name = StringField('First Name..',      [validators.Regexp('^[A-z]+$', message="Regex: Username must contain only letters"), validators.DataRequired(message='El campo esta vacio.')])
     last_name = StringField('Last Name..',  [validators.Regexp('^[A-z]+$', message="Regex: Username must contain only letters"), validators.DataRequired(message='El campo esta vacio.')])
     sex = SelectField('Select your sex',    choices=[('M', 'Male'), ('F', 'Female'), ('T', 'Transgendered')])
     country = SelectField('Country',        choices=choices_class)
-    dob = DateField('DOB' , format='%Y-%m-%d')
+    dob = DateField('DOB')
     repository = StringField('Repository', [validators.URL(require_tld=True, message=u'Invalid URL.'), validators.DataRequired(message='El campo esta vacio.')])
     social_red = StringField('Social',     [validators.URL(require_tld=True, message=u'Invalid URL.'), validators.DataRequired(message='El campo esta vacio.')])
-
-
-class SkillForm(Form):
-    skill_field = StringField('Skill...',   [validators.DataRequired(message='El campo esta vacio.')])
 
 
 class CurriculumForm(Form):
     tittle = StringField('Your tittle or Job',       [validators.DataRequired(message='El campo esta vacio.')])
     university = StringField('University o College', [validators.DataRequired(message='El campo esta vacio.')])
     description = StringField('Your description',    [validators.DataRequired(message='El campo esta vacio.')])
-    skillform = FieldList(FormField(SkillForm, default=lambda: Skills()))
 
 
 class QuestionForm(Form):
@@ -105,7 +101,7 @@ class AnswerForm(Form):
 
 
 class SnippetsForm(Form):
-    tittle = StringField('',      [validators.DataRequired(message='El campo esta vacio.'), validators.length(min=5, max=45, message='Min 5, Max 45')])
+    tittle = StringField('',      [validators.Regexp(r'^[\w,\s-]+\.[A-Za-z]{1,5}$', message="Regex: Username must contain only letters"), validators.DataRequired(message='El campo esta vacio.'), validators.length(min=5, max=45, message='Min 5, Max 45')])
     description = StringField('', [validators.DataRequired(message='El campo esta vacio.'), validators.length(min=15, max=250, message='Min 15, Max 50')])
     text_area = StringField('',   [validators.DataRequired(message='El campo esta vacio.'), validators.length(min=5, message='Min 5')], widget=TextArea())
     tag_one = StringField('',    [validators.length(min=1, max=25, message='Max 25')], render_kw={"placeholder": "#Algorithm"})

@@ -1,11 +1,12 @@
 # coding=utf-8
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import UnicodeText, Date
+from sqlalchemy import UnicodeText, Date, Table, func
+from sqlalchemy_utils import aggregated
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
 
-
 db = SQLAlchemy()
+
 
 class User(db.Model):
     __tablename__ = 'user'
@@ -16,7 +17,6 @@ class User(db.Model):
     create_date = db.Column(db.DateTime, default=datetime.datetime.now)
     curriculum_date = db.relationship('Curriculum_User')
     personal_date = db.relationship('Personal_User')
-    skill = db.relationship('Skills', backref='user', lazy='dynamic')
     question = db.relationship('Question', backref='user', lazy='dynamic')
     answer_longer = db.relationship('AnswerLong', backref='user', lazy='dynamic')
 
@@ -30,18 +30,6 @@ class User(db.Model):
 
     def verify_password(self, password):
         return check_password_hash(self.password, password)
-
-    @property
-    def is_authenticated(self):
-        return True
-
-    @property
-    def is_active(self):
-        return True
-
-    @property
-    def is_anonymous(self):
-        return False
 
     def get_id(self):
         try:
@@ -94,12 +82,16 @@ class Curriculum_User(db.Model):
         self.description = description
 
 
-class Skills(db.Model):
-    """"Many to Many..."""
-    __tablename__ = 'skills'
-    id = db.Column(db.Integer, primary_key=True)
-    id_user = db.Column(db.Integer, db.ForeignKey('user.id'))
-    skill_name = db.Column(db.String(30))
+
+question_upvote = Table('question_upvote', db.metadata,
+                          db.Column('user_question.id', db.Integer, db.ForeignKey('user_question.id')),
+                          db.Column('upvote.id', db.Integer, db.ForeignKey('upvote.id'))
+                          )
+
+question_downvote = Table('question_downvote', db.metadata,
+                          db.Column('user_question.id', db.Integer, db.ForeignKey('user_question.id')),
+                          db.Column('downvote.id', db.Integer, db.ForeignKey('downvote.id'))
+                          )
 
 
 class Question(db.Model):
@@ -109,8 +101,6 @@ class Question(db.Model):
     title = db.Column(db.String(150))
     description = db.Column(db.String(1000))
     text_area = db.Column(UnicodeText)
-    upvote = db.Column(db.Integer, default=0)
-    downvote = db.Column(db.Integer, default=0)
     create_date = db.Column(db.DateTime, default=datetime.datetime.now)
 
     def __init__(self, id_user, title, description, text_area):
@@ -119,15 +109,39 @@ class Question(db.Model):
         self.description = description
         self.text_area = text_area
 
+    @aggregated('upvote', db.Column(db.Integer, default=0))
+    def upvote_count(self):
+        return func.count('1')
+
+    @aggregated('downvote', db.Column(db.Integer, default=0))
+    def downvote_count(self):
+        return func.count('1')
+
+    upvote = db.relationship('Upvote', secondary=question_upvote, backref=db.backref('users_upvote'))
+
+    downvote = db.relationship('Downvote', secondary=question_downvote, backref=db.backref('users_downvote'))
+
+
+class Upvote(db.Model):
+    __tablename__ = 'upvote'
+    id = db.Column(db.Integer, primary_key=True)
+    id_user = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+
+class Downvote(db.Model):
+    __tablename__ = 'downvote'
+    id = db.Column(db.Integer, primary_key=True)
+    id_user = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
 
 class TagQuestion(db.Model):
     __tablename__ = 'tag_question'
     id = db.Column(db.Integer, primary_key=True)
     id_question = db.Column(db.Integer, db.ForeignKey('user_question.id'), nullable=False)
     tag_relation = db.relationship('Question', backref=db.backref('user_question_tag',
-                                               cascade="all, delete-orphan"), lazy='joined')
-    tag_one = db.Column(db.String(25),  nullable=True)
-    tag_two = db.Column(db.String(25),  nullable=True)
+                                                                  cascade="all, delete-orphan"), lazy='joined')
+    tag_one = db.Column(db.String(25), nullable=True)
+    tag_two = db.Column(db.String(25), nullable=True)
     tag_three = db.Column(db.String(25), nullable=True)
 
     def __init__(self, id_question, tag_one, tag_two, tag_three):
@@ -143,7 +157,7 @@ class AnswerLong(db.Model):
     id_user = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     id_question = db.Column(db.Integer, db.ForeignKey('user_question.id'))
     question = db.relationship('Question', backref=db.backref('user_question_answer',
-                                           cascade="all, delete-orphan"), lazy='joined')
+                                                              cascade="all, delete-orphan"), lazy='joined')
     name_user = db.Column(db.String(80), nullable=False)
     answer = db.Column(db.String(2000), nullable=False)
     answer_code = db.Column(UnicodeText, nullable=True)
@@ -181,9 +195,9 @@ class TagSnippet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     id_snippet = db.Column(db.Integer, db.ForeignKey('user_snippet.id'), nullable=False)
     tag_relation = db.relationship('Snippet', backref=db.backref('user_snippet_tag',
-                                              cascade="all, delete-orphan"), lazy='joined')
-    tag_one = db.Column(db.String(25),  nullable=True)
-    tag_two = db.Column(db.String(25),  nullable=True)
+                                                                 cascade="all, delete-orphan"), lazy='joined')
+    tag_one = db.Column(db.String(25), nullable=True)
+    tag_two = db.Column(db.String(25), nullable=True)
     tag_three = db.Column(db.String(25), nullable=True)
 
     def __init__(self, id_snippet, tag_one, tag_two, tag_three):
@@ -199,7 +213,7 @@ class CommentSnippet(db.Model):
     id_user = db.Column(db.Integer, db.ForeignKey('user.id'))
     id_snippet = db.Column(db.Integer, db.ForeignKey('user_snippet.id'), nullable=False)
     tag_relation = db.relationship('Snippet', backref=db.backref('user_snippet_comment',
-                                              cascade="all, delete-orphan"), lazy='joined')
+                                                                 cascade="all, delete-orphan"), lazy='joined')
     commet_user = db.Column(db.String(80), nullable=False)
     comment_text = db.Column(db.String(120), nullable=False)
     create_date = db.Column(db.DateTime, default=datetime.datetime.now)
