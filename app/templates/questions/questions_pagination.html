@@ -10,8 +10,8 @@
       <a href="{{ url_for('questions', id=question.id )}}">{{ question.title | title }}</a>
     </h4>
       <ul class="tags right">
-         <li><a  class="tag-question upvote" style="text-decoration:none;">{{ question.upvote}}</a></li>
-         <li><a  class="tag-question downvote" style="text-decoration:none;">{{ question.downvote}}</a></li>
+         <li><a  class="tag-question upvote" style="text-decoration:none;">{{ question.upvote_count }}</a></li>
+         <li><a  class="tag-question downvote" style="text-decoration:none;">{{ question.downvote_count }}</a></li>
       </ul>
       <p class="">{{ question.description | title}}</p>
     </div>

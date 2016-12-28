@@ -94,8 +94,8 @@
          <li><a href="#" class="tag-question" style="text-decoration:none;">{{Tag.tag_one}}</a></li>
          <li><a href="#" class="tag-question" style="text-decoration:none;">{{Tag.tag_two}}</a></li>
          <li><a href="#" class="tag-question" style="text-decoration:none;">{{Tag.tag_three}}</a></li>
-         <li><a href="#" class="tag-question up"  style="text-decoration:none;">{{ Question_data.upvote}}</a></li>
-         <li><a href="#" class="tag-question down" style="text-decoration:none;">{{ Question_data.downvote}}</a></li>
+         <li><a href="#" class="tag-question up "  style="text-decoration:none;">{{ Question_data.upvote_count}}</a></li>
+         <li><a href="#" class="tag-question down" style="text-decoration:none;">{{ Question_data.downvote_count}}</a></li>
          <li><a href="#" class="tag-question user" style="text-decoration:none;">{{ User.username }}</a></li>
       </ul>
 
@@ -179,6 +179,7 @@
    {% endif %}
    {% if Answers %}
    {% for answer in Answers  %}
+
    <div class="col-md-8">
       <br>
       <h5><i class="icon-info text-success"></i>
@@ -186,8 +187,8 @@
       </h5>
       <div class="list-group-item">
          <div class="row-content">
-            <a type="button" class="btn btn-success btn-xs">Upvote {{ answer.upvote}}</a>
-            <a type="button" class="btn btn-danger  btn-xs">Downvote {{ answer.downvote}}</a>
+            <a type="button" class="btn btn-success answerup btn-xs" id-answer="{{ answer.id }}">Upvote {{ answer.upvote_count}}</a>
+            <a type="button" class="btn btn-danger  answerdown btn-xs" id-answer="{{ answer.id }}">Downvote {{ answer.downvote_count}}</a>
             <p class="right"> {{ answer.create_date }} </p>
             <div class="prettyBlock">
                <div class="prettyPrint">
@@ -201,6 +202,33 @@
          </div>
       </div>
    </div>
+    <script>
+    $('.upvoteanswer').click(function(){
+      var scope = this;
+      $.ajax({
+              type: "POST",
+              url: "{{ url_for('upvote',  model='answer'|string(), id=answer.id) }}",
+              dataType: "json",
+              success: function(response){
+                  $('.upvoteanswer').text(response.likes);
+              }
+      })
+    });
+
+
+
+        $('.downvoteanswer').click(function(){
+          var scope = this;
+          $.ajax({
+              type: "POST",
+              url: "{{ url_for('downvote',  model='answer'|string(), id=answer.id) }}",
+              dataType: "json",
+              success: function(response){
+                  $('.downvoteanswer').text(response.likes);
+              }
+          })
+        });
+    </script>
    {% endfor %}
    {% else %}
    <center>
@@ -241,34 +269,39 @@ LetterCounter(description_length[0], description_length[1], description, buttonE
    {% if is_authenticated  %}
 
 <script>
-$(".up").addClass('upvote');
-$(".down").addClass('downvote');
+$(".up").addClass('upvotequestion');
+$(".down").addClass('downvotequestion');
+$(".answerup").addClass('upvoteanswer');
+$(".answerdown").addClass('downvoteanswer');
 
-$('.upvote').click(function(){
+$('.upvotequestion').click(function(){
   var scope = this;
       $.ajax({
               type: "POST",
-              url: "{{ url_for('upvote',  id=Question_data.id) }}",
+              url: "{{ url_for('upvote',  model='question'|string(), id=Question_data.id) }}",
               dataType: "json",
               success: function(response){
                   //$(scope).text(response.likes);
-                  $('.upvote').text(response.likes);
+                  $('.upvotequestion').text(response.likes);
               }
-          })
+      })
 });
 
-$('.downvote').click(function(){
+$('.downvotequestion').click(function(){
   var scope = this;
       $.ajax({
               type: "POST",
-              url: "{{ url_for('downvote',  id=Question_data.id) }}",
+              url: "{{ url_for('downvote',  model='question'|string(), id=Question_data.id) }}",
               dataType: "json",
               success: function(response){
                   //$(scope).text(response.likes);
-                  $('.downvote').text(response.likes);
+                  $('.downvotequestion').text(response.likes);
               }
-          })
+      })
 });
+
+
+
 </script>
 
    {% endif %}

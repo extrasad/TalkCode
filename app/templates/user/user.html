@@ -3,17 +3,19 @@
     {% set name = name_user %}
 
 {% block content %}
+
 <div class="container shadow">
     <div class="col-md-12">
-  <h4 class="h4"> <i class="icon-user icon-border" style="color:rgb(142,136,193)"> </i> {{ UserDate.username }}</h4>
-  <div class="list">
+        <h4 class="h4"> <i class="icon-user icon-border" style="color:rgb(142,136,193)"> </i> {{ UserDate.username }}</h4>
+    <div class="list">
     <ul>
     <li class="text-primary" style=""><i class="icon-star"></i> 0</li>
     <li class="text-danger" style=""><i class="icon-gittip"></i> 0</li>
     <li class="text-warning" style=""><i class="icon-chevron-down"></i> 0</li>
     <li class="text-success" style=""><i class="icon-chevron-up"></i> 0</li>
     {% if is_authenticated %}
-    <button class="btns" type="button" name="button"><a href="{# url_for(follow, id=UserDate.id )#}" style="text-decoration:none;">Follow</a></button>
+        <button class="btn btn-raised btn-success btn-xs"><a href="{{ url_for('follow', username=UserDate.username) }}">Follow</a></button>
+        <button class="btn btn-raised btn-danger  btn-xs"><a href="{{ url_for('unfollow', username=UserDate.username) }}">Unfollow</a></button>
     {% endif %}
     </ul>
   </div>

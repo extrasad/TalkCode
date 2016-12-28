@@ -3,7 +3,13 @@
 <div class="container" style="margin-top:20px">
    <div class="row">
       <div class="col-md-12">
-
+         <h1>Hi! <br> {{ username }}</h1>
+         {% for question in Questions %}
+         {{ question.title }}
+         {% endfor %}
+         {% for answer in Answers %}
+         {{ answer.title }}
+         {% endfor %}
       </div>
    </div>
 </div>

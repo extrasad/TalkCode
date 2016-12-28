@@ -2,7 +2,7 @@
 #   ------------------------------------- Modules ------------------------------
 from . import app, csrf
 from datetime import date
-from flask import request, render_template, session, redirect, url_for, flash, jsonify, json
+from flask import request, render_template, session, redirect, url_for, flash, jsonify, json, g
 from form import *
 from models import *
 from flask_mysqldb import MySQL
@@ -46,9 +46,21 @@ def page_not_found(e):
 @app.route('/', methods=['GET'])
 def index():
     if 'username' in session:
-        return render_template('index.html', button='btn btn-info, btn-raised', username=session['username'])
+        UserDate = User.query.filter_by(username=session['username']).first()
+        try:
+            Questions_by_following = UserDate.followed_question().all()
+            Answers_by_following = UserDate.followed_answer().all()
+        except AttributeError:
+            Questions_by_following, Answers_by_following = []
+
+        return render_template('index.html',
+                               Questions=Questions_by_following,
+                               Answers=Answers_by_following,
+                               button='btn btn-info, btn-raised',
+                               username=session['username']
+                               )
     else:
-        return render_template('index.html', button='btn btn-info btn-raised')
+        return render_template('index.html')
 
 
 # User Page --------------------------------------------------------------------
@@ -136,6 +148,8 @@ def register():
         else:
             user_new = User(username=username, password=password, email=email)
             db.session.add(user_new)
+            db.session.commit()
+            db.session.add(user_new.follow(user_new))
             db.session.commit()
             flash('Your user commit!', 'success')
             return redirect(url_for('login'))
@@ -305,43 +319,88 @@ def questions(id):
                            is_authenticated=True if 'username' in session else False)
 
 
-@user_required
-@csrf.exempt
-@app.route('/upvote/<int:id>', methods=['GET', 'POST'])
-def upvote(id):
-    if request.method == "POST":
-        query_question = Question.query.filter_by(id=id).first()
-        user_in_query_upvote = Upvote.query.filter(Upvote.users_upvote.any(id_user=session['id'])).one_or_none()
 
 
-        if query_question.upvote_count == 0 or user_in_query_upvote == None:
-            query_question.upvote.append(Upvote(id_user=session['id']))
-            db.session.commit()
-        else:
-            query_question.upvote_count -= 1
-            db.session.delete(user_in_query_upvote)
-            db.session.commit()
-            db.session.refresh(query_question)
-        return json.dumps({'status': 'OK', 'likes': query_question.upvote_count})
+# row will be deleted from the "secondary" table
+# automatically
+#myparent.children.remove(somechild)
+
 
 @user_required
 @csrf.exempt
-@app.route('/downvote/<int:id>', methods=['GET', 'POST'])
-def downvote(id):
+@app.route('/upvote/<string:model>/id/<int:id>', methods=['GET', 'POST'])
+def upvote(model, id):
+    print model
     if request.method == "POST":
-        query_question = Question.query.filter_by(id=id).first()
-        user_in_query_downvote = Downvote.query.filter(Downvote.users_downvote.any(id_user=session['id'])).one_or_none()
+        if model == 'question':
+
+            query_model = Question.query.filter_by(id=id).first()
+            user_in_query_upvote = Upvote.query.filter(Upvote.users_upvote.
+                                                       any(id_user=session['id'])).one_or_none()
+
+            if query_model.upvote_count == 0 or user_in_query_upvote == None:
+                query_model.upvote.append(Upvote(id_user=session['id']))
+                db.session.commit()
+            else:
+                query_model.upvote_count -= 1
+                db.session.delete(user_in_query_upvote)
+                db.session.commit()
+                db.session.refresh(query_model)
+
+        elif model == 'answer':
+            query_model = AnswerLong.query.filter_by(id=id).first()
+            user_in_query_upvote = Answer_Upvote.query.filter(Answer_Upvote.users_answer_upvote.
+                                                        any(id_user=session['id'])).one_or_none()
+
+            if query_model.upvote_count == 0 or user_in_query_upvote == None:
+                query_model.upvote.append(Answer_Upvote(id_user=session['id']))
+                db.session.commit()
+            else:
+                query_model.upvote_count -= 1
+                db.session.delete(user_in_query_upvote)
+                db.session.commit()
+                db.session.refresh(query_model)
+
+        return json.dumps({'status': 'OK', 'likes': query_model.upvote_count})
 
 
-        if query_question.downvote_count == 0 or user_in_query_downvote == None:
-            query_question.downvote.append(Downvote(id_user=session['id']))
-            db.session.commit()
-        else:
-            query_question.downvote_count -= 1
-            db.session.delete(user_in_query_downvote)
-            db.session.commit()
-            db.session.refresh(query_question)
-        return json.dumps({'status': 'OK', 'likes': query_question.downvote_count})
+@user_required
+@csrf.exempt
+@app.route('/downvote/<string:model>/id/<int:id>', methods=['GET', 'POST'])
+def downvote(model, id):
+    print model
+    if request.method == "POST":
+        if model == 'question':
+
+            query_model = Question.query.filter_by(id=id).first()
+            user_in_query_downvote = Downvote.query.filter(Downvote.users_downvote.
+                                                       any(id_user=session['id'])).one_or_none()
+
+            if query_model.downvote_count == 0 or user_in_query_downvote == None:
+                query_model.downvote.append(Downvote(id_user=session['id']))
+                db.session.commit()
+            else:
+                query_model.downvote_count -= 1
+                db.session.delete(user_in_query_downvote)
+                db.session.commit()
+                db.session.refresh(query_model)
+
+        elif model == 'answer':
+            query_model = AnswerLong.query.filter_by(id=id).first()
+            user_in_query_downvote = Answer_Downvote.query.filter(Answer_Downvote.users_answer_downvote.
+                                                        any(id_user=session['id'])).one_or_none()
+
+            if query_model.downvote_count == 0 or user_in_query_downvote == None:
+                query_model.downvote.append(Answer_Downvote(id_user=session['id']))
+                db.session.commit()
+            else:
+                query_model.downvote_count -= 1
+                db.session.delete(user_in_query_downvote)
+                db.session.commit()
+                db.session.refresh(query_model)
+
+        return json.dumps({'status': 'OK', 'likes': query_model.downvote_count})
+
 
 @app.route('/questions/write/user/<string:username>', methods=['GET', 'POST'])
 @user_required
@@ -541,9 +600,49 @@ def delete_snippet(id):
     db.session.commit()
     return redirect(url_for('user', username=session['username']))
 
+# Follow functionality ---------------------------------------------------------
+
+@app.route('/follow/<username>')
+@user_required
+def follow(username):
+    UserSession = User.query.filter_by(username=session['username']).first()
+    user = User.query.filter_by(username=username).first()
+    if user is None:
+        flash('User %s not found.' % username,  'danger')
+        return redirect(url_for('index'))
+    if user.id == UserSession.id:
+        flash('You can\'t follow yourself!',  'danger')
+        return redirect(url_for('user', username=username))
+    u = UserSession.follow(user)
+    if u is None:
+        flash('Cannot follow ' + username + '.',  'danger')
+        return redirect(url_for('user', username=username))
+    db.session.add(u)
+    db.session.commit()
+    flash('You are now following ' + username + '!',  'success')
+    return redirect(url_for('user', username=username))
+
+@app.route('/unfollow/<username>')
+@user_required
+def unfollow(username):
+    UserSession = User.query.filter_by(username=session['username']).first()
+    user = User.query.filter_by(username=username).first()
+    if user is None:
+        flash('User %s not found.' % username,  'danger')
+        return redirect(url_for('index'))
+    if user.id == UserSession.id:
+        flash('You can\'t unfollow yourself!',  'danger')
+        return redirect(url_for('user', username=username))
+    u = UserSession.unfollow(user)
+    if u is None:
+        flash('Cannot unfollow ' + username + '.',  'danger')
+        return redirect(url_for('user', username=username))
+    db.session.add(u)
+    db.session.commit()
+    flash('You have stopped following ' + username + '.',  'success')
+    return redirect(url_for('user', username=username))
 
 # Query Debbuging  -------------------------------------------------------------
-
 
 @app.route('/query/question')
 def query_question():
@@ -553,21 +652,3 @@ def query_question():
     rv = cur.fetchall()
     return jsonify(questions=rv)
 
-
-# TODO:
-@app.route('/query/snippet')
-def query_snippet():
-    cur = mysql.connection.cursor()
-    cur.execute('Select a.title, a.create_date from user_snippet as a,\
-                user as b where a.id_user = 1 and b.id = 1 order by a.create_date limit 5')
-    rv = cur.fetchall()
-    return jsonify(questions=rv)
-
-
-@app.route('/query/answer')
-def query_answer():
-    cur = mysql.connection.cursor()
-    cur.execute('Select a.answer, b.title from user_answer_long as a,\
-                user_question as b where a.id_user = 1 and a.id_question = b.id order by a.create_date limit 5')
-    rv = cur.fetchall()
-    return jsonify(answers=rv)

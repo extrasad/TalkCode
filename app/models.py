@@ -6,6 +6,11 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
 
 db = SQLAlchemy()
+# falta poner db.metadata
+followers = db.Table('followers',
+    db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('followed_id', db.Integer, db.ForeignKey('user.id'))
+)
 
 
 class User(db.Model):
@@ -17,13 +22,23 @@ class User(db.Model):
     create_date = db.Column(db.DateTime, default=datetime.datetime.now)
     curriculum_date = db.relationship('Curriculum_User')
     personal_date = db.relationship('Personal_User')
-    question = db.relationship('Question', backref='user', lazy='dynamic')
-    answer_longer = db.relationship('AnswerLong', backref='user', lazy='dynamic')
+    question = db.relationship('Question', backref='userquestion', lazy='dynamic')
+    answer_longer = db.relationship('AnswerLong', backref='useranswer', lazy='dynamic')
+    followed = db.relationship('User',
+                               secondary=followers,
+                               primaryjoin=(followers.c.follower_id == id),
+                               secondaryjoin=(followers.c.followed_id == id),
+                               backref=db.backref('followers', lazy='dynamic'),
+                               lazy='dynamic')
 
     def __init__(self, username, password, email):
         self.username = username
         self.password = self.__create_password(password)
         self.email = email
+
+    def __repr__(self):
+        return "<User(id='%s',name='%s', email='%s', password='%s')>" % \
+               (self.id, self.username, self.email, self.password)
 
     def __create_password(self, password):
         return generate_password_hash(password)
@@ -37,9 +52,27 @@ class User(db.Model):
         except NameError:
             return str(self.id)  # python 3
 
-    def __repr__(self):
-        return "<User(id='%s',name='%s', email='%s', password='%s')>" % \
-               (self.id, self.username, self.email, self.password)
+    def follow(self, user):
+        if not self.is_following(user):
+            self.followed.append(user)
+            return self
+
+    def unfollow(self, user):
+        if self.is_following(user):
+            self.followed.remove(user)
+            return self
+
+    def is_following(self, user):
+        return self.followed.filter(followers.c.followed_id == user.id).count() > 0
+
+    def followed_question(self):
+        return Question.query.join(followers, (followers.c.followed_id == Question.id_user)).filter(
+            followers.c.follower_id == self.id).order_by(Question.create_date.desc())
+
+
+    def followed_answer(self):
+        return AnswerLong.query.join(followers, (followers.c.followed_id == AnswerLong.id_user)).filter(
+            followers.c.follower_id == self.id).order_by(AnswerLong.create_date.desc())
 
 
 class Personal_User(db.Model):
@@ -81,12 +114,11 @@ class Curriculum_User(db.Model):
         self.university = university
         self.description = description
 
-
-
 question_upvote = Table('question_upvote', db.metadata,
-                          db.Column('user_question.id', db.Integer, db.ForeignKey('user_question.id')),
-                          db.Column('upvote.id', db.Integer, db.ForeignKey('upvote.id'))
-                          )
+                       db.Column('user_question.id', db.Integer, db.ForeignKey('user_question.id')),
+                       db.Column('upvote.id', db.Integer, db.ForeignKey('upvote.id'))
+                       )
+
 
 question_downvote = Table('question_downvote', db.metadata,
                           db.Column('user_question.id', db.Integer, db.ForeignKey('user_question.id')),
@@ -122,6 +154,7 @@ class Question(db.Model):
     downvote = db.relationship('Downvote', secondary=question_downvote, backref=db.backref('users_downvote'))
 
 
+
 class Upvote(db.Model):
     __tablename__ = 'upvote'
     id = db.Column(db.Integer, primary_key=True)
@@ -132,6 +165,7 @@ class Downvote(db.Model):
     __tablename__ = 'downvote'
     id = db.Column(db.Integer, primary_key=True)
     id_user = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
 
 
 class TagQuestion(db.Model):
@@ -151,6 +185,18 @@ class TagQuestion(db.Model):
         self.tag_three = tag_three
 
 
+
+answer_has_upvote = Table('answer_has_upvote', db.metadata,
+                        db.Column('user_answer_long.id', db.Integer, db.ForeignKey('user_answer_long.id')),
+                        db.Column('answer_upvote.id', db.Integer, db.ForeignKey('answer_upvote.id'))
+                        )
+
+
+answer_has_downvote = Table('answer_has_downvote', db.metadata,
+                          db.Column('answer_user_answer_long.id', db.Integer, db.ForeignKey('user_answer_long.id')),
+                          db.Column('answer_downvote.id', db.Integer, db.ForeignKey('answer_downvote.id'))
+                          )
+
 class AnswerLong(db.Model):
     __tablename__ = 'user_answer_long'
     id = db.Column(db.Integer, primary_key=True)
@@ -161,8 +207,6 @@ class AnswerLong(db.Model):
     name_user = db.Column(db.String(80), nullable=False)
     answer = db.Column(db.String(2000), nullable=False)
     answer_code = db.Column(UnicodeText, nullable=True)
-    upvote = db.Column(db.Integer, default=0)
-    downvote = db.Column(db.Integer, default=0)
     create_date = db.Column(db.DateTime, default=datetime.datetime.now)
 
     def __init__(self, id_user, name_user, id_question, answer, answer_code):
@@ -172,6 +216,30 @@ class AnswerLong(db.Model):
         self.answer = answer
         self.answer_code = answer_code
 
+    @aggregated('upvote', db.Column(db.Integer, default=0))
+    def upvote_count(self):
+        return func.count('1')
+
+    @aggregated('downvote', db.Column(db.Integer, default=0))
+    def downvote_count(self):
+        return func.count('1')
+
+
+    upvote = db.relationship('Answer_Upvote', secondary=answer_has_upvote, backref=db.backref('users_answer_upvote'))
+
+    downvote = db.relationship('Answer_Downvote', secondary=answer_has_downvote, backref=db.backref('users_answer_downvote'))
+
+
+class Answer_Upvote(db.Model):
+    __tablename__ = 'answer_upvote'
+    id = db.Column(db.Integer, primary_key=True)
+    id_user = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+
+class Answer_Downvote(db.Model):
+    __tablename__ = 'answer_downvote'
+    id = db.Column(db.Integer, primary_key=True)
+    id_user = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
 class Snippet(db.Model):
     __tablename__ = 'user_snippet'
