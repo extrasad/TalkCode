@@ -600,6 +600,25 @@ def delete_snippet(id):
     db.session.commit()
     return redirect(url_for('user', username=session['username']))
 
+@user_required
+@csrf.exempt
+@app.route('/star/<int:id>', methods=['GET', 'POST'])
+def star(id):
+    if request.method == "POST":
+        UserSession = User.query.filter_by(username=session['username']).first()
+        QuerySnippet = Snippet.query.filter_by(id=id).first()
+        user_in_query_star = Star.query.filter(Star.users_snippet_star.any(id_user=UserSession.id)).one_or_none()
+
+        if user_in_query_star == None:
+            QuerySnippet.star.append(Star(id_user=session['id']))
+            db.session.commit()
+        else:
+            QuerySnippet.star_count -= 1
+            db.session.commit()
+            db.session.refresh(QuerySnippet)
+        return json.dumps({'status': 'OK', 'likes': QuerySnippet.star_count})
+
+
 # Follow functionality ---------------------------------------------------------
 
 @app.route('/follow/<username>')

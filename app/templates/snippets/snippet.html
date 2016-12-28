@@ -24,6 +24,7 @@
      <li class="tag-question">{{Tag.tag_three}}</li>
      <li class="tag-question">{{ create_date }}</li>
      <li class="tag-question user">{{ User.username }}</li>
+     <li class="tag-question user">{{ Snippet_data.star_count }}</li>
   </div>
   <div class="col-md-2" style="margin-top:10px">
     <button class="btn btn-sm btn-raised btn-edit-counter_letter" type="submit" name="edit_submit">
@@ -89,6 +90,7 @@
      <li class="tag-question">{{Tag.tag_three}}</li>
      <li class="tag-question">{{ create_date }}</li>
      <li class="tag-question user">{{ User.username }}</li>
+     <a class="tag-question user star">{{ Snippet_data.star_count }}</a>
   </div>
   <div class="col-md-2" style="margin-top:10px">
     <button class="btn btn-sm btn-raised" type="submit" name="share_submit" >
@@ -196,5 +198,19 @@
     LetterCounter(description_length[0], description_length[1], description, buttonEdit, textCounterSnippet);
     //LetterCounter(textarea_length[0], textarea_length[1], textarea, buttonEdit, textCounterSnippet);
   });
+</script>
+
+<script>
+$('.star').click(function(){
+  var scope = this;
+      $.ajax({
+              type: "POST",
+              url: "{{ url_for('star', id=Snippet_data.id) }}",
+              dataType: "json",
+              success: function(response){
+                  $('.star').text(response.likes);
+              }
+      })
+});
 </script>
 {% endblock  %}

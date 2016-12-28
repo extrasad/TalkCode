@@ -11,3 +11,5 @@
 *.map
 *.png
 *.jpg
+
+migration/

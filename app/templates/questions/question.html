@@ -187,8 +187,8 @@
       </h5>
       <div class="list-group-item">
          <div class="row-content">
-            <a type="button" class="btn btn-success answerup btn-xs" id-answer="{{ answer.id }}">Upvote {{ answer.upvote_count}}</a>
-            <a type="button" class="btn btn-danger  answerdown btn-xs" id-answer="{{ answer.id }}">Downvote {{ answer.downvote_count}}</a>
+            <a type="button" class="btn btn-success answerup btn-xs" >Upvote {{ answer.upvote_count}}</a>
+            <a type="button" class="btn btn-danger  answerdown btn-xs">Downvote {{ answer.downvote_count}}</a>
             <p class="right"> {{ answer.create_date }} </p>
             <div class="prettyBlock">
                <div class="prettyPrint">
@@ -281,7 +281,6 @@ $('.upvotequestion').click(function(){
               url: "{{ url_for('upvote',  model='question'|string(), id=Question_data.id) }}",
               dataType: "json",
               success: function(response){
-                  //$(scope).text(response.likes);
                   $('.upvotequestion').text(response.likes);
               }
       })
@@ -294,7 +293,6 @@ $('.downvotequestion').click(function(){
               url: "{{ url_for('downvote',  model='question'|string(), id=Question_data.id) }}",
               dataType: "json",
               success: function(response){
-                  //$(scope).text(response.likes);
                   $('.downvotequestion').text(response.likes);
               }
       })

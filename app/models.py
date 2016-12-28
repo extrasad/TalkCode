@@ -241,6 +241,14 @@ class Answer_Downvote(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     id_user = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
+
+
+snippet_has_star = Table('snippet_has_star', db.metadata,
+                          db.Column('user_snippet.id', db.Integer, db.ForeignKey('user_snippet.id')),
+                          db.Column('star_snippet.id', db.Integer, db.ForeignKey('star_snippet.id'))
+                          )
+
+
 class Snippet(db.Model):
     __tablename__ = 'user_snippet'
     id = db.Column(db.Integer, primary_key=True)
@@ -248,7 +256,6 @@ class Snippet(db.Model):
     title = db.Column(db.String(45))
     description = db.Column(db.String(250))
     text_area = db.Column(UnicodeText)
-    star = db.Column(db.Integer, default=0)
     create_date = db.Column(db.DateTime, default=datetime.datetime.now)
 
     def __init__(self, id_user, title, description, text_area):
@@ -256,6 +263,19 @@ class Snippet(db.Model):
         self.title = title
         self.description = description
         self.text_area = text_area
+
+    @aggregated('star', db.Column(db.Integer, default=0))
+    def star_count(self):
+        return func.count('1')
+
+
+    star = db.relationship('Star', secondary=snippet_has_star, backref=db.backref('users_snippet_star'))
+
+
+class Star(db.Model):
+    __tablename__ = 'star_snippet'
+    id = db.Column(db.Integer, primary_key=True)
+    id_user = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
 
 class TagSnippet(db.Model):
