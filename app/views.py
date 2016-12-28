@@ -2,7 +2,7 @@
 #   ------------------------------------- Modules ------------------------------
 from . import app, csrf
 from datetime import date
-from flask import request, render_template, session, redirect, url_for, flash, jsonify, json, g
+from flask import request, render_template, session, redirect, url_for, flash, jsonify, json
 from form import *
 from models import *
 from flask_mysqldb import MySQL
