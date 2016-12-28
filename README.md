@@ -26,3 +26,12 @@ Install packages
 python setup.py install
 
 ```
+
+Run database and migrate repository
+
+
+```python
+python migration.py init
+python migration.py update
+
+```
