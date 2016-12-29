@@ -1,3 +1,4 @@
+@charset "UTF-8";
 .shadow {
   -webkit-box-shadow: -1px -1px 18px -5px rgba(0, 0, 0, 0.85);
   -moz-box-shadow: -1px -1px 18px -5px rgba(0, 0, 0, 0.85);
@@ -428,9 +429,11 @@
     left: 5px;
     top: 0; }
   .tag-question.up {
-    background: #3fa15d; }
+    background: #3fa15d;
+    width: 68%; }
     .tag-question.up::before {
-      content: "+";
+      content: "";
+      font-family: FontAwesome;
       color: white;
       position: absolute;
       width: 4px;
@@ -438,9 +441,10 @@
       top: 0; }
   .tag-question.down {
     background-color: #be6d4f;
-    width: 50px; }
+    width: 68%; }
     .tag-question.down::before {
-      content: "-";
+      content: "";
+      font-family: FontAwesome;
       color: white;
       position: absolute;
       width: 4px;

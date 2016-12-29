@@ -1,33 +1,13 @@
 # coding=utf-8
-from . import app, csrf
-from datetime import date
+from . import app
 from flask import request, render_template, session, redirect, url_for, flash, jsonify, json
 from form import *
 from models import *
 from flask_mysqldb import MySQL
-from flask_admin.contrib.sqla import ModelView
-from flask_admin.form import SecureForm
-from flask_admin import Admin, expose
-from flask_admin.contrib.fileadmin import FileAdmin
 from decorator_and_utils import *
-import os.path
-import pycountry
-from sqlalchemy import desc, asc, and_, or_, not_
+from sqlalchemy import desc
 
 mysql = MySQL()
-admin = Admin(app, name='talkcode', template_mode='bootstrap3')
-admin.add_view(ModelView(User, db.session))
-admin.add_view(ModelView(Personal_User, db.session))
-admin.add_view(ModelView(Curriculum_User, db.session))
-admin.add_view(ModelView(Question, db.session))
-admin.add_view(ModelView(TagQuestion, db.session))
-admin.add_view(ModelView(AnswerLong, db.session))
-admin.add_view(ModelView(Snippet, db.session))
-admin.add_view(ModelView(TagSnippet, db.session))
-admin.add_view(ModelView(CommentSnippet, db.session))
-path = os.path.join(os.path.dirname(__file__), 'static')
-admin.add_view(FileAdmin(path, '/static/', name='Static Files'))
-
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -269,6 +249,9 @@ def questions(id):
     Tag_data = TagQuestion.query.filter_by(id_question=question_data.id).first()  # TAG
     all_Answers = AnswerLong.query.filter_by(id_question=id).all()  # ALL ANSWERS
 
+    for answer in all_Answers:
+        answer.create_date = str(answer.create_date).split(" ")[0]
+
     lang = know_mode_exist(Tag_data.tag_one, Tag_data.tag_two, Tag_data.tag_three)  # Check if exist lang
 
     try:
@@ -310,7 +293,6 @@ def questions(id):
 
 @app.route('/upvote/<string:model>/id/<int:id>', methods=['GET', 'POST'])
 @user_required
-@csrf.exempt
 def upvote(model, id):
     print model
     if request.method == "POST":
@@ -345,10 +327,8 @@ def upvote(model, id):
 
         return json.dumps({'status': 'OK', 'likes': query_model.upvote_count})
 
-
 @app.route('/downvote/<string:model>/id/<int:id>', methods=['GET', 'POST'])
 @user_required
-@csrf.exempt
 def downvote(model, id):
     print model
     if request.method == "POST":
@@ -587,7 +567,6 @@ def delete_snippet(id):
 
 @app.route('/star/<int:id>', methods=['GET', 'POST'])
 @user_required
-@csrf.exempt
 def star(id):
     if request.method == "POST":
         UserSession = User.query.filter_by(username=session['username']).first()

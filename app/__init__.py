@@ -6,13 +6,14 @@ from config import DevelopmentConfig
 from models import db
 from sqlalchemy import create_engine
 from sqlalchemy_utils import database_exists, create_database
+from admin import create_admin
 
 app = Flask(__name__)
 app.config.from_object(DevelopmentConfig)
 csrf = CsrfProtect()
 mysql = MySQL(app)
 engine = create_engine("mysql://root@localhost/talkcode?charset=utf8&use_unicode=0")
-
+create_admin(app)
 
 if not database_exists(engine.url):
     create_database(engine.url)

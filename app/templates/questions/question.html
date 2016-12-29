@@ -2,6 +2,9 @@
 {% set title = 'Question ' %}
 {% block content %}
 
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
+
 {% if lang|string() == 'htmlmixed' %}
 <script src="{{ url_for('static', filename='codemirror/mode/xml/xml.js') }}"/></script>
 {% endif %}
@@ -9,6 +12,7 @@
 <script src="{{ url_for('static', filename='js/counter_letter.js') }}"/></script>
 {% from "macros/_knowmode.html" import knowmode %}
 {% from "macros/_popupmessage.html" import popupmessage %}
+{% from "macros/_ajaxvote.html" import ajax_vote %}
 
   {{ knowmode (lang) }}
 {% if CRUD  %}
@@ -26,8 +30,8 @@
          <li><a href="#" class="tag-question" style="text-decoration:none;">{{Tag.tag_two}}</a></li>
          <li><a href="#" class="tag-question" style="text-decoration:none;">{{Tag.tag_three}}</a></li>
          <li><a href="#" class="tag-question up " style="text-decoration:none;">{{ Question_data.upvote_count}}</a></li>
-         <li><a href="#" class="tag-question down" style="text-decoration:none;">{{ Question_data.downvote_count}}</a></li>
-         <li><a href="#" class="tag-question user" style="text-decoration:none;">{{ User.username }}</a></li>
+         <li><a href="#" class="tag-question down" style="text-decoration:none;"> {{ Question_data.downvote_count}}</a></li>
+         <li><a href="/user/{{ User.username }} "  class="tag-question user" style="text-decoration:none;">{{ User.username }}</a></li>
       </ul>
 
     </div>
@@ -96,7 +100,7 @@
          <li><a href="#" class="tag-question" style="text-decoration:none;">{{Tag.tag_three}}</a></li>
          <li><a href="#" class="tag-question up "  style="text-decoration:none;">{{ Question_data.upvote_count}}</a></li>
          <li><a href="#" class="tag-question down" style="text-decoration:none;">{{ Question_data.downvote_count}}</a></li>
-         <li><a href="#" class="tag-question user" style="text-decoration:none;">{{ User.username }}</a></li>
+         <li><a href="/user/{{ User.username }} " class="tag-question user" style="text-decoration:none;">{{ User.username }}</a></li>
       </ul>
 
     </div>
@@ -183,13 +187,13 @@
    <div class="col-md-8">
       <br>
       <h5><i class="icon-info text-success"></i>
-         {{  answer.answer }} | <a href="/user/{{ answer.id_user }} "class="text-muted"> {{ answer.name_user }}</a>
+         {{  answer.answer }} | <a href="/user/{{ answer.name_user }} " class="text-muted"> {{ answer.name_user }}</a>
       </h5>
       <div class="list-group-item">
          <div class="row-content">
-            <a type="button" class="btn btn-success answerup btn-xs" >Upvote {{ answer.upvote_count}}</a>
-            <a type="button" class="btn btn-danger  answerdown btn-xs">Downvote {{ answer.downvote_count}}</a>
-            <p class="right"> {{ answer.create_date }} </p>
+            <a type="button" class="btn btn-success answerup btn-xs" ><i class="icon-hand-up"></i>{{ answer.upvote_count}}</a>
+            <a type="button" class="btn btn-danger  answerdown btn-xs"><i class="icon-hand-down"></i>{{ answer.downvote_count}}</a>
+            <p class="right"> <i class="icon-time"></i> {{ answer.create_date }} </p>
             <div class="prettyBlock">
                <div class="prettyPrint">
                   <?prettify?>
@@ -202,34 +206,8 @@
          </div>
       </div>
    </div>
-    <script>
-    $('.upvoteanswer').click(function(){
-      var scope = this;
-      $.ajax({
-              type: "POST",
-              url: "{{ url_for('upvote',  model='answer'|string(), id=answer.id) }}",
-              dataType: "json",
-              success: function(response){
-                  $('.upvoteanswer').text(response.likes);
-              }
-      })
-    });
-
-
-
-        $('.downvoteanswer').click(function(){
-          var scope = this;
-          $.ajax({
-              type: "POST",
-              url: "{{ url_for('downvote',  model='answer'|string(), id=answer.id) }}",
-              dataType: "json",
-              success: function(response){
-                  $('.downvoteanswer').text(response.likes);
-              }
-          })
-        });
-    </script>
-   {% endfor %}
+    {{ajax_vote(answer.id)}}
+    {% endfor %}
    {% else %}
    <center>
       <h5><i class="icon-info"></i> No hay Respuestas, responde tu!</h5>
@@ -271,8 +249,16 @@ LetterCounter(description_length[0], description_length[1], description, buttonE
 <script>
 $(".up").addClass('upvotequestion');
 $(".down").addClass('downvotequestion');
-$(".answerup").addClass('upvoteanswer');
-$(".answerdown").addClass('downvoteanswer');
+
+var csrftoken = $('meta[name=csrf-token]').attr('content')
+
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken)
+        }
+    }
+})
 
 $('.upvotequestion').click(function(){
   var scope = this;
