@@ -53,13 +53,15 @@ def know_lang(format):
     if format in ["build", "bzl", "py", "pyw"]: return 'python'
     if format in ["clj", "cljc", "cljx"]: return 'clojure'
     if format in ["cl", "lisp", "el"]: return 'commonlisp'
+    if format in ['scss', 'sass']: return 'sass'
+    if format in ['pm', 'pl']: return 'perl'
+    if format in ['exs', 'ex']: return 'elixir'
+
     if format == 'js': return 'javascript'
     if format == 'cmake': return 'cobol'
     if format == 'squirrel': return 'squirrel'
     if format == 'ceylon': return 'ceylon'
     if format == 'sh': return 'shell'
-    if format == 'pm' or format == 'pl': return 'perl'
-    if format == 'exs' or format == 'ex': return 'elixir'
     if format == 'erl': return 'erlang'
     if format == 'erl': return 'erlang'
     if format == 'coffee': return 'coffeescript'
@@ -72,21 +74,10 @@ def know_lang(format):
     if format == 'rb': return 'ruby'
     if format == 'st': return 'smalltalk'
     if format == 'md': return 'markdown'
-    if format == 'sql': return format
-    if format == 'r': return format
-    if format == 'php': return format
-    if format == 'go': return format
-    if format == 'd': return format
-    if format == 'css': return format
-    if format == 'scss': return format
-    if format == 'sass': return format
-    if format == 'groovy': return format
-    if format == 'yaml': return format
-    if format == 'dart': return format
-    if format == 'lua': return format
-    if format == 'swift': return format
-    if format == 'html': return format
-    if format == 'xml': return format
+
+    if format in ['sql', 'r', 'php', 'go', 'd',
+                  'css', 'groovy', 'yaml', 'dart',
+                  'lua', 'swift', 'html', 'xml']: return format
 
     return 'javascript'  # default mode
 

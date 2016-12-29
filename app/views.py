@@ -1,5 +1,4 @@
 # coding=utf-8
-#   ------------------------------------- Modules ------------------------------
 from . import app, csrf
 from datetime import date
 from flask import request, render_template, session, redirect, url_for, flash, jsonify, json
@@ -15,10 +14,7 @@ import os.path
 import pycountry
 from sqlalchemy import desc, asc, and_, or_, not_
 
-
-#   ------------------------------------- Instances ----------------------------
 mysql = MySQL()
-#   -------------------------------------- Admin -------------------------------
 admin = Admin(app, name='talkcode', template_mode='bootstrap3')
 admin.add_view(ModelView(User, db.session))
 admin.add_view(ModelView(Personal_User, db.session))
@@ -33,42 +29,40 @@ path = os.path.join(os.path.dirname(__file__), 'static')
 admin.add_view(FileAdmin(path, '/static/', name='Static Files'))
 
 
-# Handling request -------------------------------------------------------------
-
-
 @app.errorhandler(404)
 def page_not_found(e):
     """"No found"""
     return render_template('index.html'), 404
 
-
-# Index ------------------------------------------------------------------------
 @app.route('/', methods=['GET'])
 def index():
     if 'username' in session:
         UserDate = User.query.filter_by(username=session['username']).first()
+
         try:
             Questions_by_following = UserDate.followed_question().all()
             Answers_by_following = UserDate.followed_answer().all()
+            Snippets_by_following = UserDate.followed_snippet().all()
+
         except AttributeError:
-            Questions_by_following, Answers_by_following = []
+            Questions_by_following, Answers_by_following, Snippets_by_following = [], [], []
 
         return render_template('index.html',
                                Questions=Questions_by_following,
                                Answers=Answers_by_following,
+                               Snippets=Snippets_by_following,
                                button='btn btn-info, btn-raised',
                                username=session['username']
                                )
     else:
         return render_template('index.html')
 
-
-# User Page --------------------------------------------------------------------
 @app.route('/user/<string:username>', methods=['GET', 'POST'])
 def user(username):
     UserDate = User.query.filter_by(username=username).first()
     PersonalDate = Personal_User.query.filter_by(id_user=UserDate.id).first()
     CurriculumDate = Curriculum_User.query.filter_by(id_user=UserDate.id).first()
+    QuerySkill = db.session.query(Skill.skill_name).filter_by(user_id=UserDate.id).all()
 
     Questions = db.session.query(Question.title, Question.description, Question.create_date). \
         filter_by(id_user=UserDate.id). \
@@ -107,6 +101,7 @@ def user(username):
                                    Snippets=Snippets,
                                    Answers=Answers,
                                    CurriculumDate=CurriculumDate,
+                                   QuerySkill=QuerySkill if QuerySkill is not None else [],
                                    CRUD=True)
     except KeyError:
         pass
@@ -120,11 +115,11 @@ def user(username):
                            Snippets=Snippets,
                            Answers=Answers,
                            CurriculumDate=CurriculumDate,
+                           QuerySkill=QuerySkill if QuerySkill is not None else [],
                            CRUD=False,
                            is_authenticated=True if 'username' in session else False)
 
 
-# Sign in, Sign On, Sign out ---------------------------------------------------
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     new_registerForm = RegisterForm(request.form)
@@ -189,8 +184,6 @@ def logout():
     return redirect(url_for('login'))
 
 
-# User Information Form and More Things ----------------------------------------------
-
 @app.route('/setting/personal_info', methods=['GET', 'POST'])
 @user_required
 def setting_personal():
@@ -229,8 +222,12 @@ def setting_personal():
 @app.route('/setting/curriculum_info', methods=['GET', 'POST'])
 @user_required
 def setting_curriculum():
+    UserSession = User.query.filter_by(id=session['id']).first()
     new_CurriculumForm = CurriculumForm(request.form)
     Curriculum_info = Curriculum_User.query.filter_by(id_user=session['id']).one_or_none()
+    Skill_info = Skill.query.filter_by(user_id=UserSession.id)
+    new_SkillsForm = SkillForm(obj=UserSession)
+
     if request.method == 'POST' and new_CurriculumForm.validate():
         tittle = new_CurriculumForm.tittle.data
         university = new_CurriculumForm.university.data
@@ -249,18 +246,10 @@ def setting_curriculum():
             flash('Your curriculum date update', 'success')
             return redirect(url_for('user', username=session['username']))
     return render_template('user/setting/form_curriculum_user.html',
-                           form=new_CurriculumForm, CurriculumDate=Curriculum_info)
-
-
-# About ----------------------------------------------------
-
-
-@app.route('/about', methods=['GET'])
-def about():
-    return render_template('about.html')
-
-
-# Question  ------------------------------------------------
+                           form=new_CurriculumForm,
+                           CurriculumDate=Curriculum_info,
+                           SkillDate=Skill_info,
+                           formskill=new_SkillsForm)
 
 
 @app.route('/questions', methods=['GET', 'POST'])
@@ -319,16 +308,9 @@ def questions(id):
                            is_authenticated=True if 'username' in session else False)
 
 
-
-
-# row will be deleted from the "secondary" table
-# automatically
-#myparent.children.remove(somechild)
-
-
+@app.route('/upvote/<string:model>/id/<int:id>', methods=['GET', 'POST'])
 @user_required
 @csrf.exempt
-@app.route('/upvote/<string:model>/id/<int:id>', methods=['GET', 'POST'])
 def upvote(model, id):
     print model
     if request.method == "POST":
@@ -364,9 +346,9 @@ def upvote(model, id):
         return json.dumps({'status': 'OK', 'likes': query_model.upvote_count})
 
 
+@app.route('/downvote/<string:model>/id/<int:id>', methods=['GET', 'POST'])
 @user_required
 @csrf.exempt
-@app.route('/downvote/<string:model>/id/<int:id>', methods=['GET', 'POST'])
 def downvote(model, id):
     print model
     if request.method == "POST":
@@ -431,6 +413,7 @@ def create_question(username):
 
 
 @app.route('/questions/edit/id/<int:id>', methods=['GET', 'POST'])
+@user_required
 def edit_question(id):
     QuestionQuerySet = Question.query.filter_by(id=id).one_or_none()
     edited_QuestionForm = QuestionForm(request.form)
@@ -463,14 +446,12 @@ def edit_question(id):
 
 
 @app.route('/questions/delete/id/<int:id>', methods=['GET', 'POST'])
+@user_required
 def delete_question(id):
     delete_Question = db.session.query(Question).filter(Question.id == id).first()
     db.session.delete(delete_Question)
     db.session.commit()
     return redirect(url_for('user', username=session['username']))
-
-
-# Snippets ---------------------------------------------------------------------
 
 
 @app.route('/snippets', methods=['GET', 'POST'])
@@ -535,6 +516,7 @@ def snippets(id):
 
 
 @app.route('/snippets/edit/id/<int:id>', methods=['GET', 'POST'])
+@user_required
 def edit_snippet(id):
     SnippetQuerySet = Snippet.query.filter_by(id=id).one_or_none()
     edited_SnippetForm = SnippetsForm(request.form)
@@ -567,6 +549,7 @@ def edit_snippet(id):
 
 
 @app.route('/snippets/write/user/<string:username>', methods=['GET', 'POST'])
+@user_required
 def create_snippet(username):
     username = session['username']
     new_SnippetForm = SnippetsForm(request.form)
@@ -594,15 +577,17 @@ def create_snippet(username):
 
 
 @app.route('/snippets/delete/id/<int:id>', methods=['GET', 'POST'])
+@user_required
 def delete_snippet(id):
     delete_Snippet = db.session.query(Snippet).filter(Snippet.id == id).first()
     db.session.delete(delete_Snippet)
     db.session.commit()
     return redirect(url_for('user', username=session['username']))
 
+
+@app.route('/star/<int:id>', methods=['GET', 'POST'])
 @user_required
 @csrf.exempt
-@app.route('/star/<int:id>', methods=['GET', 'POST'])
 def star(id):
     if request.method == "POST":
         UserSession = User.query.filter_by(username=session['username']).first()
@@ -618,8 +603,6 @@ def star(id):
             db.session.refresh(QuerySnippet)
         return json.dumps({'status': 'OK', 'likes': QuerySnippet.star_count})
 
-
-# Follow functionality ---------------------------------------------------------
 
 @app.route('/follow/<username>')
 @user_required
@@ -641,6 +624,7 @@ def follow(username):
     flash('You are now following ' + username + '!',  'success')
     return redirect(url_for('user', username=username))
 
+
 @app.route('/unfollow/<username>')
 @user_required
 def unfollow(username):
@@ -661,7 +645,43 @@ def unfollow(username):
     flash('You have stopped following ' + username + '.',  'success')
     return redirect(url_for('user', username=username))
 
-# Query Debbuging  -------------------------------------------------------------
+
+@app.route('/skill/id/<int:id>', methods=['GET', 'POST'])
+@user_required
+def skill(id):
+    UserSession = User.query.filter_by(id=id).first()
+    form = SkillForm(request.form)
+    skill = form.skill_name.data
+
+    if request.method == 'POST' and form.validate():
+        newskill = Skill(UserSession.id, skill)
+        db.session.add(newskill)
+        db.session.commit()
+        flash("Saved Changes", 'success')
+        return redirect(url_for('setting_curriculum'))
+    else:
+        flash("Error", 'danger')
+        return redirect(url_for('setting_curriculum'))
+
+
+@app.route('/skill/delete/id/<int:id>', methods=['GET', 'POST'])
+@user_required
+def delete_skill(id):
+    QuerySkill = Skill.query.filter_by(id=id).one_or_none()
+    skillname = QuerySkill.skill_name
+    if QuerySkill == None:
+        flash('Error', 'warning')
+    else:
+        db.session.delete(QuerySkill)
+        db.session.commit()
+        flash('Skill %s deleted!' % skillname, 'success')
+    return redirect(url_for('setting_curriculum'))
+
+
+@app.route('/about', methods=['GET'])
+def about():
+    return render_template('about.html')
+
 
 @app.route('/query/question')
 def query_question():
@@ -670,4 +690,3 @@ def query_question():
                 user as b where a.id_user = 1 and b.id = 1 order by a.create_date limit 5')
     rv = cur.fetchall()
     return jsonify(questions=rv)
-

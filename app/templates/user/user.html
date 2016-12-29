@@ -23,6 +23,9 @@
     <h6>University: {% if not CurriculumDate %} <spam class="text-info"> Add in curriculum.</spam> {% else  %}{{CurriculumDate.university | capitalize}} {% endif %}</h6>
     <span class="card-text">{{CurriculumDate.description | capitalize}}</span>
 
+
+
+
   {% if CRUD %}
   <a href="http://127.0.0.1:8000/setting/curriculum_info" class=" btn btn-info btn-raised btn-xs">Curriculum</a>
   {% endif %}
@@ -43,6 +46,9 @@
                 <span><a href="{{PersonalDate.repository}}">{{ user_link[1] }}</a></span>
             <p class="card-text"><small class="text-muted">Last updated {{PersonalDate.create_date_personal}} ago</small></p>
         {% endif %}
+        {% for skill in QuerySkill %}
+        <span class="tag-question">{{skill.skill_name}}</span>
+        {% endfor %}
      </div>
   <div class="activity-grid col-md-4">
       <p class="h4"> <i class="icon-question icon-border" style="color:rgb(109,131,153)"> </i>Question</p>

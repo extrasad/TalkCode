@@ -20,6 +20,7 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True)
     password = db.Column(db.String(66))
     create_date = db.Column(db.DateTime, default=datetime.datetime.now)
+    skills = db.relationship('Skill')
     curriculum_date = db.relationship('Curriculum_User')
     personal_date = db.relationship('Personal_User')
     question = db.relationship('Question', backref='userquestion', lazy='dynamic')
@@ -69,11 +70,26 @@ class User(db.Model):
         return Question.query.join(followers, (followers.c.followed_id == Question.id_user)).filter(
             followers.c.follower_id == self.id).order_by(Question.create_date.desc())
 
-
     def followed_answer(self):
         return AnswerLong.query.join(followers, (followers.c.followed_id == AnswerLong.id_user)).filter(
             followers.c.follower_id == self.id).order_by(AnswerLong.create_date.desc())
 
+    def followed_snippet(self):
+        return Snippet.query.join(followers, (followers.c.followed_id == Snippet.id_user)).filter(
+            followers.c.follower_id == self.id).order_by(Snippet.create_date.desc())
+
+
+
+class Skill(db.Model):
+    __tablename__ = 'skills'
+    id = db.Column(db.Integer(), primary_key=True)
+    user_id = db.Column(db.Integer(), db.ForeignKey('user.id'))
+    skill_name = db.Column(db.String(50))
+
+
+    def __init__(self, user_id, skill_name):
+        self.user_id = user_id
+        self.skill_name = skill_name
 
 class Personal_User(db.Model):
     __tablename__ = 'user_personal_info'

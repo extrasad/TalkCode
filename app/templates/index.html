@@ -8,7 +8,10 @@
          {{ question.title }}
          {% endfor %}
          {% for answer in Answers %}
-         {{ answer.title }}
+         {{ answer.answer }}
+         {% endfor %}
+         {% for snippet in Snippets %}
+         {{ snippet.title }}
          {% endfor %}
       </div>
    </div>

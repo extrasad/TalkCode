@@ -108,5 +108,11 @@ class SnippetsForm(Form):
     tag_two = StringField('',    [validators.length(min=1, max=25, message='Max 25')], render_kw={"placeholder": "#Class"})
     tag_three = StringField('',  [validators.length(min=1, max=25, message='Max 25')], render_kw={"placeholder": "#Data Structure"})
 
+
 class SnippetsComment(Form):
     comment = StringField('',      [validators.DataRequired(message='El campo esta vacio.'), validators.length(min=5, max=120, message='Min 5, Max 120')])
+
+
+class SkillForm(Form):
+    skill_name = StringField('Skill name', [validators.DataRequired(message='El campo esta vacio.')])
+
