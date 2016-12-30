@@ -299,29 +299,27 @@ def upvote(model, id):
         if model == 'question':
 
             query_model = Question.query.filter_by(id=id).first()
-            user_in_query_upvote = Upvote.query.filter(Upvote.users_upvote.
-                                                       any(id_user=session['id'])).one_or_none()
+            user_in_query_upvote = query_model.query.filter(Upvote.users_upvote.any(id_user=session['id'])).count() > 0
 
-            if query_model.upvote_count == 0 or user_in_query_upvote == None:
+            if user_in_query_upvote == False:
+                print 'meter'
                 query_model.upvote.append(Upvote(id_user=session['id']))
                 db.session.commit()
             else:
+                print 'sacar'
                 query_model.upvote_count -= 1
-                db.session.delete(user_in_query_upvote)
                 db.session.commit()
                 db.session.refresh(query_model)
 
         elif model == 'answer':
             query_model = AnswerLong.query.filter_by(id=id).first()
-            user_in_query_upvote = Answer_Upvote.query.filter(Answer_Upvote.users_answer_upvote.
-                                                        any(id_user=session['id'])).one_or_none()
+            user_in_query_upvote = query_model.query.filter(Answer_Upvote.users_answer_upvote.any(id_user=session['id'])).count() > 0
 
-            if query_model.upvote_count == 0 or user_in_query_upvote == None:
+            if user_in_query_upvote == False:
                 query_model.upvote.append(Answer_Upvote(id_user=session['id']))
                 db.session.commit()
             else:
                 query_model.upvote_count -= 1
-                db.session.delete(user_in_query_upvote)
                 db.session.commit()
                 db.session.refresh(query_model)
 
@@ -335,29 +333,25 @@ def downvote(model, id):
         if model == 'question':
 
             query_model = Question.query.filter_by(id=id).first()
-            user_in_query_downvote = Downvote.query.filter(Downvote.users_downvote.
-                                                       any(id_user=session['id'])).one_or_none()
+            user_in_query_downvote = query_model.query.filter(Downvote.users_downvote.any(id_user=session['id'])).count() > 0
 
-            if query_model.downvote_count == 0 or user_in_query_downvote == None:
+            if user_in_query_downvote == False:
                 query_model.downvote.append(Downvote(id_user=session['id']))
                 db.session.commit()
             else:
                 query_model.downvote_count -= 1
-                db.session.delete(user_in_query_downvote)
                 db.session.commit()
                 db.session.refresh(query_model)
 
         elif model == 'answer':
             query_model = AnswerLong.query.filter_by(id=id).first()
-            user_in_query_downvote = Answer_Downvote.query.filter(Answer_Downvote.users_answer_downvote.
-                                                        any(id_user=session['id'])).one_or_none()
+            user_in_query_downvote = query_model.query.filter(Answer_Downvote.users_answer_downvote.any(id_user=session['id'])).count() > 0
 
-            if query_model.downvote_count == 0 or user_in_query_downvote == None:
+            if user_in_query_downvote == False:
                 query_model.downvote.append(Answer_Downvote(id_user=session['id']))
                 db.session.commit()
             else:
                 query_model.downvote_count -= 1
-                db.session.delete(user_in_query_downvote)
                 db.session.commit()
                 db.session.refresh(query_model)
 

@@ -1,22 +1,18 @@
 {% extends 'base/base.html' %}
 {% set title = 'Snippets ' %}
 {% block content %}
-
 <div class="container">
-
 {% for snippet in snippets.items %}
-<div class="col-snippet">
-    <div class="col-md-3">
-      <h4 class="text-muted h4">
-        <a href="{{ url_for('snippets', id=snippet.id )}}">{{ snippet.title }}</a>
-      </h4>
-      <h6>{{snippet.create_date}}</h6>
-      <p class="">{{ snippet.description }}</p>
+    <div class="col-md-7">
+          <h4 class="text-muted h4">
+            <a href="{{ url_for('snippets', id=snippet.id )}}">{{ snippet.title }}</a>
+          </h4>
+        <h6>{{snippet.create_date}}</h6>
+        <p class="">{{ snippet.description }}</p>
     </div>
-    <div class="col-md-8 limited-div"><?prettify?>
-      <pre class="prettyprint linenums limited">{{ snippet.text_area }}</pre>
-    </div>
-</div>
+        <div class="col-md-8 limited-div"><?prettify?>
+          <pre class="prettyprint linenums limited">{{ snippet.text_area }}</pre>
+        </div>
 {% endfor %}
 
     <div class="col-md-8">
@@ -32,12 +28,6 @@
         </ul>
             {% else %}
     </div>
-
             {% endif %}
-
-        </div>
-
 </div>
-
-
 {% endblock %}

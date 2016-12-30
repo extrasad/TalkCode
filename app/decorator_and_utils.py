@@ -84,8 +84,9 @@ def know_lang(format):
 
 def know_mode_exist(*args):
     for tag in args:
-        if tag in ['html', 'xml', 'php']:
-            tag = 'htmlmixed'
+        if tag in ['html', 'xml', 'php']: tag = 'htmlmixed'
+        if tag in ['node', 'nodejs', 'expressjs', 'jquery', 'underscorejs', 'canvas']: tag = 'javascript'
+        if tag == 'django': tag = 'python'
         if os.path.exists('./app/static/codemirror/mode/' + tag):
             return tag
     return 'javascript' # BUG:
