@@ -28,7 +28,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='codemirror/lib/codemirror.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='codemirror/lib/ttcn.css') }}">
     <script src="{{ url_for('static', filename='codemirror/lib/codemirror.js') }}"/></script>
-
 </head>
 <body>
             <div class="navbar navbar-default" style="background-color: rgb(205,205,205)">
@@ -65,7 +64,7 @@
                         <li><a href="{{ url_for('create_snippet', username=session['username'])}}">Write Snippet</a></li>
                       </ul>
                     </li>
-                    <li><a class="btns navbarbtnright" href="{{ url_for('user', username=session['username'])}}">Me <i class="icon-user"></i><div class="ripple-container"></div></a></li>
+                    <li><a class="btns navbarbtnright" href="{{ url_for('user', username=session['username'])}}">{{session['username']}}<div class="ripple-container"></div></a></li>
                     <li class="dropdown">
                       <a class="btns navbarbtn setting" href="" data-toggle="dropdown"><i class="icon-gear"></i></a>
                       <ul class="dropdown-menu">

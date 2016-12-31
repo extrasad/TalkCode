@@ -93,7 +93,7 @@ class Skill(db.Model):
 
 class Personal_User(db.Model):
     __tablename__ = 'user_personal_info'
-    id_personal_user = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     id_user = db.Column(db.Integer, db.ForeignKey('user.id'))
     name = db.Column(db.String(100))
     last_name = db.Column(db.String(100))
@@ -130,6 +130,12 @@ class Curriculum_User(db.Model):
         self.university = university
         self.description = description
 
+    @property
+    def get_username(self):
+        username = db.session.query(User.username).filter_by(id=self.id_user).first()
+        return username[0]
+
+
 question_upvote = Table('question_upvote', db.metadata,
                        db.Column('user_question.id', db.Integer, db.ForeignKey('user_question.id')),
                        db.Column('upvote.id', db.Integer, db.ForeignKey('upvote.id'))
@@ -157,19 +163,27 @@ class Question(db.Model):
         self.description = description
         self.text_area = text_area
 
-    @aggregated('upvote', db.Column(db.Integer, default=0))
-    def upvote_count(self):
-        return func.count('1')
+        @aggregated('upvote', db.Column(db.Integer, default=0))
+        def upvote_count(self):
+            return func.count('1')
 
-    @aggregated('downvote', db.Column(db.Integer, default=0))
-    def downvote_count(self):
-        return func.count('1')
+        @aggregated('downvote', db.Column(db.Integer, default=0))
+        def downvote_count(self):
+            return func.count('1')
 
     upvote = db.relationship('Upvote', secondary=question_upvote, backref=db.backref('users_upvote'))
 
     downvote = db.relationship('Downvote', secondary=question_downvote, backref=db.backref('users_downvote'))
 
+    @property
+    def get_createdate(self):
+        return str(self.create_date).split(" ")[0]
 
+    
+    @property
+    def get_username(self):
+        username = db.session.query(User.username).filter_by(id=self.id_user).first()
+        return username[0]
 
 class Upvote(db.Model):
     __tablename__ = 'upvote'
@@ -220,14 +234,12 @@ class AnswerLong(db.Model):
     id_question = db.Column(db.Integer, db.ForeignKey('user_question.id'))
     question = db.relationship('Question', backref=db.backref('user_question_answer',
                                                               cascade="all, delete-orphan"), lazy='joined')
-    name_user = db.Column(db.String(80), nullable=False)
     answer = db.Column(db.String(2000), nullable=False)
     answer_code = db.Column(UnicodeText, nullable=True)
     create_date = db.Column(db.DateTime, default=datetime.datetime.now)
 
-    def __init__(self, id_user, name_user, id_question, answer, answer_code):
+    def __init__(self, id_user, id_question, answer, answer_code):
         self.id_user = id_user
-        self.name_user = name_user
         self.id_question = id_question
         self.answer = answer
         self.answer_code = answer_code
@@ -244,6 +256,16 @@ class AnswerLong(db.Model):
     upvote = db.relationship('Answer_Upvote', secondary=answer_has_upvote, backref=db.backref('users_answer_upvote'))
 
     downvote = db.relationship('Answer_Downvote', secondary=answer_has_downvote, backref=db.backref('users_answer_downvote'))
+
+    @property
+    def get_createdate(self):
+        return str(self.create_date).split(" ")[0]
+
+
+    @property
+    def get_username(self):
+        username = db.session.query(User.username).filter_by(id=self.id_user).first()
+        return username[0]
 
 
 class Answer_Upvote(db.Model):
@@ -288,6 +310,16 @@ class Snippet(db.Model):
     star = db.relationship('Star', secondary=snippet_has_star, backref=db.backref('users_snippet_star'))
 
 
+    @property
+    def get_createdate(self):
+        return str(self.create_date).split(" ")[0]
+
+    @property
+    def get_username(self):
+        username = db.session.query(User.username).filter_by(id=self.id_user).first()
+        return username[0]
+
+
 class Star(db.Model):
     __tablename__ = 'star_snippet'
     id = db.Column(db.Integer, primary_key=True)
@@ -318,12 +350,19 @@ class CommentSnippet(db.Model):
     id_snippet = db.Column(db.Integer, db.ForeignKey('user_snippet.id'), nullable=False)
     tag_relation = db.relationship('Snippet', backref=db.backref('user_snippet_comment',
                                                                  cascade="all, delete-orphan"), lazy='joined')
-    commet_user = db.Column(db.String(80), nullable=False)
     comment_text = db.Column(db.String(120), nullable=False)
     create_date = db.Column(db.DateTime, default=datetime.datetime.now)
 
-    def __init__(self, id_user, id_snippet, commet_user, comment_text):
+    def __init__(self, id_user, id_snippet, comment_text):
         self.id_user = id_user
         self.id_snippet = id_snippet
-        self.commet_user = commet_user
         self.comment_text = comment_text
+
+    @property
+    def get_createdate(self):
+        return str(self.create_date).split(" ")[0]
+
+    @property
+    def get_username(self):
+        username = db.session.query(User.username).filter_by(id=self.id_user).first()
+        return username[0]

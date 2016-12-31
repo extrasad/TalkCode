@@ -151,16 +151,17 @@
 
 
     {% if Comments %}
+      <div class="col-md-12">
+      <div class="col-md-5">
 
       {% for comment in Comments %}
-        <div class="col-md-12">
-          <h4>{{ comment.name_user }}</h4>
-            <br>
+          <h5><a href="{{ url_for('user', username=comment.get_username)}}">{{ comment.get_username }}</a></h5>
+            <hr class="style4">
             <p>{{ comment.comment_text }}</p>
-          <h6>{{ comment.create_date }}</h6>
-        </div>
+          <h6>{{ comment.get_createdate }}</h6>
       {% endfor %}
-
+        </div>
+      </div>
   {% else %}
 
       <div class="col-md-12">
@@ -175,29 +176,23 @@
 
 <script type="text/javascript">
   $(document).ready(function() {
-    //comment LetterCounter
     let buttonComment = $('.btn-counter_letter');
     let textCounterComment = $('.counter');
     let field = $('.comment-area');
 
     LetterCounter(5, 120, field, buttonComment, textCounterComment);
 
-    //edit LetterCounter
     let title= $('.title');
     const title_length = [5, 150];
 
     let description = $('.description');
     const description_length = [15, 250];
 
-    //let textarea = $('.TextArea');
-    //const textarea_length = [5, Infinity]; // BUG
-
     let buttonEdit = $('.btn-edit-counter_letter');
     let textCounterSnippet = $('.counter_snippet_length');
 
     LetterCounter(title_length[0], title_length[1], title, buttonEdit, textCounterSnippet);
     LetterCounter(description_length[0], description_length[1], description, buttonEdit, textCounterSnippet);
-    //LetterCounter(textarea_length[0], textarea_length[1], textarea, buttonEdit, textCounterSnippet);
   });
 </script>
 

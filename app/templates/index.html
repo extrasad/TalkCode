@@ -1,19 +1,135 @@
 {% extends 'base/base.html' %}
 {% block content %}
+<script src="{{ url_for('static', filename='codemirror/mode/javascript/javascript.js') }}"/></script>
+
 <div class="container" style="margin-top:20px">
    <div class="row">
       <div class="col-md-12">
          <h1>Hi! <br> {{ username }}</h1>
-         {% for question in Questions %}
-         {{ question.title }}
-         {% endfor %}
-         {% for answer in Answers %}
-         {{ answer.answer }}
-         {% endfor %}
-         {% for snippet in Snippets %}
-         {{ snippet.title }}
-         {% endfor %}
+         <hr class="style14">
       </div>
+
+      <div class="col-md-4">
+        <div class="bs-component">
+          <div class="well well-sm">
+        <h4>Last Question:</h4>
+        <hr class="style14">
+          {% for question in Questions %}
+            <h5>{{ question.title }}</h5>
+            <span><i class="icon-time"></i> {{ question.get_createdate }}</span>
+          {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="bs-component">
+          <div class="well well-sm">
+        <h4>Last Answer:</h4>
+        <hr class="style14">
+        {% for answer in Answers %}
+            <h5>{{ answer.answer }}</h5>
+            <span><i class="icon-time"></i> {{ answer.get_createdate }}</span>
+          {% endfor %}
+          </div>
+        </div>
+    </div>
+
+      <div class="col-md-4">
+        <div class="bs-component">
+          <div class="well well-sm">
+        <h4>Last Answer:</h4>
+        <hr class="style14">
+        {% for snippet in Snippets %}
+            <h5>{{ snippet.title }}</h5>
+            <span><i class="icon-time"></i> {{ snippet.get_createdate }}</span>
+          {% endfor %}
+          </div>
+        </div>
+       </div>
+   </div>
+
+    <hr class="style14">
+
+   <div class="row">
+     <div class="col-md-5">
+      <h2><i class="icon-code"></i> Snippets</h2>
+        <p>
+          Let others comment your snippets, receive 
+          stars for your coding skill and learn more
+        </p>
+         <button type="" class="btn btn-success btn-raised btn-xs">
+           <a href="{{ url_for('create_snippet', username=session['username'])}}">
+             G o !
+          </a>
+         </button>
+       <hr class="style4">
+
+     <h2><i class="icon-code"></i> Questions</h2>
+        <p>
+         Solve your bug, doubts and mental problems with
+         the help of others and recive votes to have more
+         hierarchy.
+        </p>
+         <button type="" class="btn btn-success btn-raised btn-xs">
+           <a href="{{ url_for('create_snippet', username=session['username'])}}">
+             Wow !
+          </a>
+         </button>
+       <hr class="style4">
+
+      <h2><i class="icon-code"></i> Mini CV</h2>
+          <p>
+            Create a minicurriculum with your
+            information using PDF and be lucky!!
+          </p>
+          <button type="" class="btn btn-success btn-raised btn-xs">
+            <a href="{# url_for('generate_cv', username=session['username']) #}">
+              I´ll Create
+            </a>
+          </button>
+     </div>
+
+     <div class="col-md-7">
+         <textarea id="IndexTextArea">
+var emptygif = require('emptygif');
+var express = require('express');
+var app = express();
+var server = require('http').createServer(app);
+var io = require('socket.io')(server);
+
+app.get('/tpx.gif', function(req, res, next) {
+  io.emit('visit', {
+    ip: req.ip,
+    ua: req.headers['user-agent']
+  });
+
+  emptygif.sendEmptyGif(req, res, {
+    'Content-Type': 'image/gif',
+    'Content-Length': emptygif.emptyGifBufferLength,
+    'Cache-Control': 'public, max-age=0' // or specify expiry to make sure it will call everytime
+  });
+});
+
+app.use(express.static(__dirname + '/public'));
+
+server.listen(1337);
+         </textarea>
+     </div>
    </div>
 </div>
+  <script type="text/javascript">
+                  var myTextArea = document.getElementById('IndexTextArea');
+                  var editor = CodeMirror(function(elt) {
+                    myTextArea.parentNode.replaceChild(elt, myTextArea);
+                  }, {value: myTextArea.innerHTML,
+                      styleActiveLine: true,
+                      lineNumbers:true,
+                      theme: 'ttcn',
+                      indentUnit: 4,
+                      indentWithTabs: true,
+                      lineWrapping: true,
+                      readOnly: false,
+                      });
+</script>
 {% endblock %}

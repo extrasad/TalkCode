@@ -20,9 +20,9 @@ def index():
         UserDate = User.query.filter_by(username=session['username']).first()
 
         try:
-            Questions_by_following = UserDate.followed_question().all()
-            Answers_by_following = UserDate.followed_answer().all()
-            Snippets_by_following = UserDate.followed_snippet().all()
+            Questions_by_following = UserDate.followed_question().limit(5)
+            Answers_by_following = UserDate.followed_answer().limit(5)
+            Snippets_by_following = UserDate.followed_snippet().limit(5)
 
         except AttributeError:
             Questions_by_following, Answers_by_following, Snippets_by_following = [], [], []
@@ -467,7 +467,6 @@ def snippets(id):
         id_snippets = snippet_data.id
         comment_text = new_comment_form.comment.data
         comment_new = CommentSnippet(session['id'], id_snippets,
-                                     session['username'],
                                      comment_text.upper())
 
         db.session.add(comment_new)
