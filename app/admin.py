@@ -26,4 +26,3 @@ def create_admin(app):
 
     path = os.path.join(os.path.dirname(__file__), 'static')
     admin.add_view(FileAdmin(path, '/static/', name='Static Files'))
-

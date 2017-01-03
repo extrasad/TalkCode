@@ -10,6 +10,7 @@ from sqlalchemy.sql import func
 
 mysql = MySQL()
 
+
 @app.errorhandler(404)
 def page_not_found(e):
     """"No found"""
@@ -623,9 +624,11 @@ def unfollow(username):
 @user_required
 def skill(id):
     UserSession = User.query.filter_by(id=id).first()
+    if Skill.query.filter_by(user_id=id).count() == 10:
+        flash("No puedes tener mas de 10 skill", 'warning')
+        return redirect(url_for('setting_curriculum'))
     form = SkillForm(request.form)
     skill = form.skill_name.data
-
     if request.method == 'POST' and form.validate():
         newskill = Skill(UserSession.id, skill)
         db.session.add(newskill)

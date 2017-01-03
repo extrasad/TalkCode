@@ -32,6 +32,7 @@ class User(db.Model):
                                secondaryjoin=(followers.c.followed_id == id),
                                backref=db.backref('followers', lazy='dynamic'),
                                lazy='dynamic')
+            
 
     def __init__(self, username, password, email):
         self.username = username

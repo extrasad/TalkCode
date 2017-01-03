@@ -11,5 +11,6 @@
 *.map
 *.png
 *.jpg
+*.json
 
 migrations/

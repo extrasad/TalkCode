@@ -1,9 +1,8 @@
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-
 class Config(object):
-    SECRET_KEY = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
+    SECRET_KEY = 'A0Zr98j/3yXR~XHH!jmN]LWX/,?RT'
 
 class DevelopmentConfig(Config):
     DEBUG = True

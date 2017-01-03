@@ -1,10 +1,10 @@
 # coding=utf-8
-import re
-import os.path
 from functools import wraps
 from flask import redirect, url_for, session
 from urlparse import urlparse
 import pycountry
+import re
+import os.path
 
 list_website = ['github', 'facebook', 'twitter',
                 'tumblr', 'plus.google', 'google',
@@ -88,7 +88,7 @@ def know_lang(format):
                   'css', 'groovy', 'yaml', 'dart',
                   'lua', 'swift', 'html', 'xml']: return format
 
-    return 'javascript'  # default mode
+    return 'javascript'
 
 
 def know_mode_exist(*args):
@@ -98,4 +98,4 @@ def know_mode_exist(*args):
         if tag == 'django': tag = 'python'
         if os.path.exists('./app/static/codemirror/mode/' + tag):
             return tag
-    return 'javascript' # BUG:
+    return 'javascript'

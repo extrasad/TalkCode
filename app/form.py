@@ -2,8 +2,6 @@
 from wtforms import *
 from wtforms.fields.html5 import EmailField
 from wtforms.widgets import TextArea
-#from datetime import datetime, date
-#from wtforms_components import DateRange
 import pycountry
 
 class Country_list(list):
@@ -115,4 +113,3 @@ class SnippetsComment(Form):
 
 class SkillForm(Form):
     skill_name = StringField('Skill name', [validators.DataRequired(message='El campo esta vacio.')])
-
