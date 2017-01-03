@@ -133,7 +133,7 @@
     {% if is_authenticated %}
     <div class="col-md-8">
        <br>
-       <center><h4 class="text-pre-answer">Comenta</h4></center>
+       <center><h4 class="text-pre-answer">Comenta <i class="icon-comments"></i></h4></center>
        <form class="" method="POST">
           {% from "macros/_macro.html" import render_field %}
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
@@ -164,11 +164,7 @@
       </div>
   {% else %}
 
-      <div class="col-md-12">
-        <center>
-           <h5><i class="icon-info"></i> No hay Comentarios, responde tu!</h5>
-        </center>
-      </div>
+     
 
   {% endif %}
 

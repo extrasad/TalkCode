@@ -541,6 +541,9 @@ hr.style10 {
 .limited {
   height: 110px; }
 
+.well.well-sm {
+  word-wrap: break-word; }
+
 .index-box-title {
   font-family: "Open Sans Condensed", sans-serif;
   font-size: 2.2rem; }

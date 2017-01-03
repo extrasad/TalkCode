@@ -6,7 +6,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
 
 db = SQLAlchemy()
-# falta poner db.metadata
+
+
 followers = db.Table('followers',
     db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
     db.Column('followed_id', db.Integer, db.ForeignKey('user.id'))
@@ -157,33 +158,35 @@ class Question(db.Model):
     text_area = db.Column(UnicodeText)
     create_date = db.Column(db.DateTime, default=datetime.datetime.now)
 
+
     def __init__(self, id_user, title, description, text_area):
         self.id_user = id_user
         self.title = title
         self.description = description
         self.text_area = text_area
 
-        @aggregated('upvote', db.Column(db.Integer, default=0))
-        def upvote_count(self):
-            return func.count('1')
+    @aggregated('upvote', db.Column(db.Integer, default=0))
+    def upvote_count(self):
+        return func.count('1')
 
-        @aggregated('downvote', db.Column(db.Integer, default=0))
-        def downvote_count(self):
-            return func.count('1')
+    @aggregated('downvote', db.Column(db.Integer, default=0))
+    def downvote_count(self):
+        return func.count('1')
 
     upvote = db.relationship('Upvote', secondary=question_upvote, backref=db.backref('users_upvote'))
 
     downvote = db.relationship('Downvote', secondary=question_downvote, backref=db.backref('users_downvote'))
 
+
     @property
     def get_createdate(self):
         return str(self.create_date).split(" ")[0]
 
-    
     @property
     def get_username(self):
         username = db.session.query(User.username).filter_by(id=self.id_user).first()
         return username[0]
+
 
 class Upvote(db.Model):
     __tablename__ = 'upvote'
@@ -256,6 +259,7 @@ class AnswerLong(db.Model):
     upvote = db.relationship('Answer_Upvote', secondary=answer_has_upvote, backref=db.backref('users_answer_upvote'))
 
     downvote = db.relationship('Answer_Downvote', secondary=answer_has_downvote, backref=db.backref('users_answer_downvote'))
+
 
     @property
     def get_createdate(self):

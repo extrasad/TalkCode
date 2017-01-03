@@ -12,7 +12,7 @@
       <div class="col-md-4">
         <div class="bs-component">
           <div class="well well-sm">
-        <h4>Last Question:</h4>
+        <h4>Last Questions:</h4>
         <hr class="style14">
           {% for question in Questions %}
             <h5>{{ question.title }}</h5>
@@ -25,7 +25,7 @@
       <div class="col-md-4">
         <div class="bs-component">
           <div class="well well-sm">
-        <h4>Last Answer:</h4>
+        <h4>Last Answers:</h4>
         <hr class="style14">
         {% for answer in Answers %}
             <h5>{{ answer.answer }}</h5>
@@ -38,7 +38,7 @@
       <div class="col-md-4">
         <div class="bs-component">
           <div class="well well-sm">
-        <h4>Last Answer:</h4>
+        <h4>Last Snippets:</h4>
         <hr class="style14">
         {% for snippet in Snippets %}
             <h5>{{ snippet.title }}</h5>
@@ -58,36 +58,32 @@
           Let others comment your snippets, receive 
           stars for your coding skill and learn more
         </p>
-         <button type="" class="btn btn-success btn-raised btn-xs">
-           <a href="{{ url_for('create_snippet', username=session['username'])}}">
-             G o !
-          </a>
-         </button>
        <hr class="style4">
 
-     <h2><i class="icon-code"></i> Questions</h2>
+     <h2><i class="icon-question"></i> Questions</h2>
         <p>
          Solve your bug, doubts and mental problems with
          the help of others and recive votes to have more
          hierarchy.
         </p>
-         <button type="" class="btn btn-success btn-raised btn-xs">
-           <a href="{{ url_for('create_snippet', username=session['username'])}}">
-             Wow !
-          </a>
-         </button>
-       <hr class="style4">
+      <hr class="style4">
 
-      <h2><i class="icon-code"></i> Mini CV</h2>
+      <h2><i class="icon-lightbulb"></i> Mini CV</h2>
           <p>
             Create a minicurriculum with your
             information using PDF and be lucky!!
           </p>
-          <button type="" class="btn btn-success btn-raised btn-xs">
-            <a href="{# url_for('generate_cv', username=session['username']) #}">
-              I´ll Create
-            </a>
-          </button>
+       <hr class="style4">
+
+      <h2><i class="icon-eye-open"></i> Learn more!</h2>
+          <p>
+            Learn more and more, what are you waiting for?
+            {% if not 'username' in session %}
+            <button type="button" class="btn btn-raised btn-sm" >
+              <a href="{{ url_for('register') }}">Register</a>
+            </button>
+            {% endif %}
+          </p>
      </div>
 
      <div class="col-md-7">
@@ -115,9 +111,23 @@ app.use(express.static(__dirname + '/public'));
 
 server.listen(1337);
          </textarea>
+    <br>
+    <br>
+
      </div>
    </div>
 </div>
+    <br>
+    <br>
+<div class="col-md-12">
+    <center>
+          <hr class="style14">  
+          <h4>Explore other users and their creations, follow those you want</h4>
+          <br>
+          <button class="btn btn-raised"><a href="{# url_for('explorer') #}">Explorer!</a></button>
+    <center>
+</div>
+
   <script type="text/javascript">
                   var myTextArea = document.getElementById('IndexTextArea');
                   var editor = CodeMirror(function(elt) {

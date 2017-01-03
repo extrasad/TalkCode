@@ -6,6 +6,7 @@ from models import *
 from flask_mysqldb import MySQL
 from decorator_and_utils import *
 from sqlalchemy import desc
+from sqlalchemy.sql import func
 
 mysql = MySQL()
 
@@ -19,23 +20,29 @@ def index():
     if 'username' in session:
         UserDate = User.query.filter_by(username=session['username']).first()
 
-        try:
-            Questions_by_following = UserDate.followed_question().limit(5)
-            Answers_by_following = UserDate.followed_answer().limit(5)
-            Snippets_by_following = UserDate.followed_snippet().limit(5)
 
-        except AttributeError:
-            Questions_by_following, Answers_by_following, Snippets_by_following = [], [], []
+    Questions = UserDate.followed_question().limit(5) if 'username' in session \
+                else db.session.query(Question). \
+                                                        order_by(func.avg(Question.create_date)). \
+                                                        limit(5)
 
-        return render_template('index.html',
-                               Questions=Questions_by_following,
-                               Answers=Answers_by_following,
-                               Snippets=Snippets_by_following,
-                               button='btn btn-info, btn-raised',
-                               username=session['username']
-                               )
-    else:
-        return render_template('index.html')
+    Answers = UserDate.followed_answer().limit(5) if 'username' in session \
+                else db.session.query(AnswerLong). \
+                                                        order_by(func.avg(AnswerLong.create_date)). \
+                                                        limit(5)
+
+    Snippets = UserDate.followed_snippet().limit(5) if 'username' in session \
+                else db.session.query(Snippet). \
+                                                        order_by(func.avg(Snippet.create_date)). \
+                                                        limit(5)
+
+    return render_template('index.html',
+                            Questions=Questions,
+                            Answers=Answers,
+                            Snippets=Snippets,
+                            button='btn btn-info, btn-raised',
+                            username=session['username'] if 'username' in session else 'Friend')
+                          
 
 @app.route('/user/<string:username>', methods=['GET', 'POST'])
 def user(username):
@@ -101,6 +108,7 @@ def user(username):
 
 
 @app.route('/register', methods=['GET', 'POST'])
+@anonimous_required
 def register():
     new_registerForm = RegisterForm(request.form)
     if request.method == 'POST' and new_registerForm.validate():
@@ -131,8 +139,8 @@ def register():
     else:
         return render_template('sign/register.html', form=new_registerForm)
 
-
 @app.route('/login', methods=['GET', 'POST'])
+@anonimous_required
 def login():
     new_Loginform = LoginForm(request.form)
     if request.method == 'POST' and new_Loginform.validate():
@@ -271,7 +279,7 @@ def questions(id):
         id_question = question_data.id
         answer_text = new_answer_form.answer_long.data
         answer_code = new_answer_form.text_area.data
-        answer_new = AnswerLong(session['id'], session['username'],
+        answer_new = AnswerLong(session['id'],
                                 id_question, answer_text, answer_code)
 
         db.session.add(answer_new)
@@ -357,9 +365,7 @@ def downvote(model, id):
 
         return json.dumps({'status': 'OK', 'likes': query_model.downvote_count})
 
-
 @app.route('/questions/write/user/<string:username>', methods=['GET', 'POST'])
-@user_required
 def create_question(username):
     username = session['username']
     new_QuestionForm = QuestionForm(request.form)
@@ -387,7 +393,6 @@ def create_question(username):
 
 
 @app.route('/questions/edit/id/<int:id>', methods=['GET', 'POST'])
-@user_required
 def edit_question(id):
     QuestionQuerySet = Question.query.filter_by(id=id).one_or_none()
     edited_QuestionForm = QuestionForm(request.form)
@@ -420,7 +425,6 @@ def edit_question(id):
 
 
 @app.route('/questions/delete/id/<int:id>', methods=['GET', 'POST'])
-@user_required
 def delete_question(id):
     delete_Question = db.session.query(Question).filter(Question.id == id).first()
     db.session.delete(delete_Question)
@@ -489,7 +493,6 @@ def snippets(id):
 
 
 @app.route('/snippets/edit/id/<int:id>', methods=['GET', 'POST'])
-@user_required
 def edit_snippet(id):
     SnippetQuerySet = Snippet.query.filter_by(id=id).one_or_none()
     edited_SnippetForm = SnippetsForm(request.form)
@@ -522,7 +525,6 @@ def edit_snippet(id):
 
 
 @app.route('/snippets/write/user/<string:username>', methods=['GET', 'POST'])
-@user_required
 def create_snippet(username):
     username = session['username']
     new_SnippetForm = SnippetsForm(request.form)
@@ -550,7 +552,6 @@ def create_snippet(username):
 
 
 @app.route('/snippets/delete/id/<int:id>', methods=['GET', 'POST'])
-@user_required
 def delete_snippet(id):
     delete_Snippet = db.session.query(Snippet).filter(Snippet.id == id).first()
     db.session.delete(delete_Snippet)
