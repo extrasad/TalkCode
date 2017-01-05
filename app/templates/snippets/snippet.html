@@ -1,7 +1,21 @@
 {% extends 'base/base.html' %}
 {% set title = 'Snippets | Title' %}
 {% block content  %}
+{% assets "css_cm" %}
+<link rel="stylesheet" href="{{ ASSET_URL }}" type="text/css" />
+{% endassets %}
 
+{% assets "js_cm" %}
+<script src="{{ ASSET_URL }}"/></script>
+{% endassets %}
+
+{% assets "css_pr" %}
+<link rel="stylesheet" href="{{ ASSET_URL }}" type="text/css" />
+{% endassets %}
+
+{% assets "js_pr" %}
+<script src="{{ ASSET_URL }}"/></script>
+{% endassets %}
 <script src="{{ url_for('static', filename='js/counter_letter.js') }}"/></script>
 {% from "macros/_knowmode.html" import knowmode %}
 {% from "macros/_popupmessage.html" import popupmessage %}

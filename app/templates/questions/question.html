@@ -1,10 +1,22 @@
 {% extends 'base/base.html' %}
 {% set title = 'Question ' %}
 {% block content %}
+{% assets "css_cm" %}
+<link rel="stylesheet" href="{{ ASSET_URL }}" type="text/css" />
+{% endassets %}
 
+{% assets "js_cm" %}
+<script src="{{ ASSET_URL }}"/></script>
+{% endassets %}
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
+{% assets "css_pr" %}
+<link rel="stylesheet" href="{{ ASSET_URL }}" type="text/css" />
+{% endassets %}
 
+{% assets "js_pr" %}
+<script src="{{ ASSET_URL }}"/></script>
+{% endassets %}
 {% if lang|string() == 'htmlmixed' %}
 <script src="{{ url_for('static', filename='codemirror/mode/xml/xml.js') }}"/></script>
 {% endif %}

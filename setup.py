@@ -19,6 +19,7 @@ setup(
         'flask>=0.10',
         'flask_mysqldb',
         'flask_sqlalchemy',
+        'flask-assets',
         'sqlalchemy',
         'sqlalchemy_utils',
         'flask_script',
@@ -29,6 +30,7 @@ setup(
         'flask_wtf',
         'wtforms_components',
         'wtforms',
+        'pdfkit',
     ],
     classifiers=[
         'Environment :: Web Environment',

@@ -1,6 +1,13 @@
 {% extends 'base/base.html' %}
 {% set title = 'Snippets | Create' %}
 {% block content  %}
+{% assets "css_cm" %}
+<link rel="stylesheet" href="{{ ASSET_URL }}" type="text/css" />
+{% endassets %}
+
+{% assets "js_cm" %}
+<script src="{{ ASSET_URL }}"/></script>
+{% endassets %}
 <script src="{{ url_for('static', filename='codemirror/mode/javascript/javascript.js') }}"/></script>
 
 <div class="container">

@@ -1,20 +1,21 @@
 # coding=utf-8
 from . import app
-from flask import request, render_template, session, redirect, url_for, flash, jsonify, json
+from flask import request, render_template, session, redirect, url_for, flash, jsonify, json, make_response
 from form import *
 from models import *
 from flask_mysqldb import MySQL
 from decorator_and_utils import *
 from sqlalchemy import desc
 from sqlalchemy.sql import func
+import pdfkit 
+
 
 mysql = MySQL()
-
 
 @app.errorhandler(404)
 def page_not_found(e):
     """"No found"""
-    return render_template('index.html'), 404
+    return redirect(url_for('index')), 404
 
 @app.route('/', methods=['GET'])
 def index():
@@ -44,6 +45,19 @@ def index():
                             button='btn btn-info, btn-raised',
                             username=session['username'] if 'username' in session else 'Friend')
                           
+
+@app.route('/user/<string:username>/curriculum', methods=['GET'])
+def curriculum(username):
+     rendered = render_template('user/pdfcv.html')
+     path_wkthmltopdf = 'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'
+     config = pdfkit.configuration(wkhtmltopdf=path_wkthmltopdf)
+     pdf = pdfkit.from_string(rendered, False, config=config)
+     response = make_response(pdf)
+     response.headers['Content-Type'] = 'application/pdf'
+     response.headers['Content-Disposition'] = 'inline; filename=output.pdf'
+
+     return response
+
 
 @app.route('/user/<string:username>', methods=['GET', 'POST'])
 def user(username):
@@ -239,6 +253,7 @@ def setting_curriculum():
                            CurriculumDate=Curriculum_info,
                            SkillDate=Skill_info,
                            formskill=new_SkillsForm)
+
 
 
 @app.route('/questions', methods=['GET', 'POST'])

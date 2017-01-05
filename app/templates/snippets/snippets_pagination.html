@@ -1,6 +1,13 @@
 {% extends 'base/base.html' %}
 {% set title = 'Snippets ' %}
 {% block content %}
+{% assets "css_pr" %}
+<link rel="stylesheet" href="{{ ASSET_URL }}" type="text/css" />
+{% endassets %}
+
+{% assets "js_pr" %}
+<script src="{{ ASSET_URL }}"/></script>
+{% endassets %}
 <div class="container">
 {% for snippet in snippets.items %}
     <div class="col-md-7">

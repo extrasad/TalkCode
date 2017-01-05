@@ -14,3 +14,4 @@
 *.json
 
 migrations/
+app/static/.webassets-cache/

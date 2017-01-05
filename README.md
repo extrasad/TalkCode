@@ -9,6 +9,8 @@ Packages Required
 * flask>=0.10
 * flask_mysqldb
 * flask_sqlalchemy
+* flask-assets
+* pdfkit
 * sqlalchemy
 * sqlalchemy_utils
 * flask_script
@@ -35,3 +37,5 @@ python migration.py init
 python migration.py update
 
 ```
+
+**Import**: pdfkit need [wkhtmltopdf](http://wkhtmltopdf.org/downloads.html)

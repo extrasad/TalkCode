@@ -1,8 +1,17 @@
 {% extends 'base/base.html' %}
-    {% set title = 'write your question' %}
+{% set title = 'write your question' %}
 
 
-    {% block content %}
+{% block content %}
+
+{% assets "css_cm" %}
+<link rel="stylesheet" href="{{ ASSET_URL }}" type="text/css" />
+{% endassets %}
+
+{% assets "js_cm" %}
+<script src="{{ ASSET_URL }}"/></script>
+{% endassets %}
+
   <script src="{{ url_for('static', filename='codemirror/mode/javascript/javascript.js') }}"/></script>
 
   <div class="container">

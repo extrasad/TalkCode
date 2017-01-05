@@ -16,3 +16,4 @@ class DevelopmentConfig(Config):
     SEND_FILE_MAX_AGE_DEFAULT = 0
     WTF_CSRF_ENABLED = True
     POSTS_PER_PAGE = 3
+    ASSETS_DEBUG = False

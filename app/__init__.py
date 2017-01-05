@@ -2,7 +2,9 @@
 from flask import Flask
 from flask_mysqldb import MySQL
 from flask_wtf import CsrfProtect
+from flask_assets import Environment
 from config import DevelopmentConfig
+from assets import create_assets
 from models import db
 from sqlalchemy import create_engine
 from sqlalchemy_utils import database_exists, create_database
@@ -11,6 +13,8 @@ from admin import create_admin
 app = Flask(__name__)
 app.config.from_object(DevelopmentConfig)
 csrf = CsrfProtect()
+assets = Environment(app)
+create_assets(assets)
 mysql = MySQL(app)
 engine = create_engine("mysql://root@localhost/talkcode?charset=utf8&use_unicode=0")
 create_admin(app)

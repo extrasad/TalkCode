@@ -17,6 +17,7 @@
         <button class="btn btn-raised btn-success btn-xs"><a href="{{ url_for('follow', username=UserDate.username) }}">Follow</a></button>
         <button class="btn btn-raised btn-danger  btn-xs"><a href="{{ url_for('unfollow', username=UserDate.username) }}">Unfollow</a></button>
     {% endif %}
+        <button class="btn btn-raised btn-xs"><a href="{{ url_for('curriculum', username=UserDate.username) }}">See Curriculum PDF</a></button>
     </ul>
   </div>
     <h4 class="h4">{{CurriculumDate.tittle | capitalize}}</h4>
@@ -27,17 +28,14 @@
 
 
   {% if CRUD %}
-  <a href="http://127.0.0.1:8000/setting/curriculum_info" class=" btn btn-info btn-raised btn-xs">Curriculum</a>
+  <a href="http://127.0.0.1:8000/setting/curriculum_info" class=" btn  btn-raised btn-xs">Curriculum</a>
   {% endif %}
         {% if not PersonalDate %}
         <h6 class="text-info">Add your information in setting.</h6>
         {% if CRUD %}
-        <a href=" {{ url_for('setting_personal') }}" class="right btn btn-info btn-raised btn-xs">Personal Setting</a>
+        <a href=" {{ url_for('setting_personal') }}" class="right btn  btn-raised btn-xs">Personal Setting</a>
         {% endif %}
         {% else %}
-        {% if CRUD %}
-        <a href=" {{ url_for('setting_personal') }}" class="right btn btn-info btn-raised btn-xs" style="padding-right:25px;padding-left:25px">Personal Setting</a>
-        {% endif %}
                 <span>{{PersonalDate.name | capitalize + " " + PersonalDate.last_name  | capitalize}}</span>
                 <span>{{country}}</span>
                 <span>{{PersonalDate.sex}}</span>

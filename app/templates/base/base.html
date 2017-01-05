@@ -3,31 +3,26 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    {% if name %}
-		  <title>{{ title }} | {{ name.split(' ')[0].capitalize() }}</title>
-  	{% elif not name%}
-      <title>TalkCode</title>
-	  {% endif %}
+    <title>TalkCode</title>
     <meta name="viewport" content="width=device-width, user-scalable=no">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.css') }}"/>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/ripples.css') }}"/>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}"/>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap-material-design.css') }}"/>
-    <script src="{{ url_for('static', filename='js/jquery-2.2.4.min.js') }}"/></script>
-    <script src="{{ url_for('static', filename='js/bootstrap.js') }}"/></script>
-    <script src="{{ url_for('static', filename='js/ripples.min.js') }}"/></script>
-    <script src="{{ url_for('static', filename='js/material.min.js') }}"/></script>
-    <script src="{{ url_for('static', filename='js/snackbar.js') }}"/></script>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='google-code-prettify/prettify.css') }}"/>
-    <script src="{{ url_for('static', filename='google-code-prettify/run_prettify.js') }}"/></script>
+
+    {% assets "css_main" %}
+    <link rel="stylesheet" href="{{ ASSET_URL }}" type="text/css" />
+    {% endassets %}
+
+    {% assets "js_main" %}
+    <script src="{{ ASSET_URL }}"/></script>
+    {% endassets %}
+
+    {% assets "css_cm" %}
+    <link rel="stylesheet" href="{{ ASSET_URL }}" type="text/css" />
+    {% endassets %}
+
+    {% assets "js_cm" %}
+    <script src="{{ ASSET_URL }}"/></script>
+    {% endassets %}
+
     <link href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300|Raleway" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap-material-datetimepicker.css') }}"/>
-    <script src="{{ url_for('static', filename='js/moment.js') }}"/></script>
-    <script src="{{ url_for('static', filename='js/bootstrap-material-datetime.js') }}"/></script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='codemirror/lib/codemirror.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='codemirror/lib/ttcn.css') }}">
-    <script src="{{ url_for('static', filename='codemirror/lib/codemirror.js') }}"/></script>
 </head>
 <body>
             <div class="navbar navbar-default" style="background-color: rgb(205,205,205)">
@@ -45,12 +40,6 @@
                     <li><a  class="btns navbarbtnleft"   href="{{ url_for('questions_pagination', page=1) }}">Questions</a></li>
                     <li><a  class="btns navbarbtnleft"   href="{{ url_for('snippets_pagination' , page=1) }}">Snippets</a></li>
                   </ul>
-                  <form class="navbar-form navbar-left" >
-                        <div class="label-static" style="display:flex !important">
-                          <input placeholder="Busca algo" id="search"class="search-form">
-                          <button type="submit" style="margin: 0px 5px 0px 0px; height: auto; padding: 0 10px 0 10px;" class="btns btn-search" name="button"><i class="icon-search"></i></button>
-                        </div>
-                  </form>
                   <ul class="nav navbar-nav navbar-right">
                     {% if not 'username' in session %}
                     <li><a class="btns navbarbtnright"  href="{{ url_for('login') }}">Sign In <i class="icon-signin"></i><div class="ripple-container"></div></a></li>
@@ -90,8 +79,6 @@
         {% endfor %}
         </div>
 
-
-
 {% block content%}
 {% endblock %}
 
@@ -105,9 +92,7 @@
      </div>
 
 
-
 <script type="text/javascript">
-document.getElementById('search').autocomplete = "off";
   $.material.init();
   const second = 1750;
   $('.flash-message').show().delay(second).fadeOut();
