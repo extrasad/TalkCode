@@ -28,7 +28,7 @@
 
 
   {% if CRUD %}
-  <a href="http://127.0.0.1:8000/setting/curriculum_info" class=" btn  btn-raised btn-xs">Curriculum</a>
+  <a href="{{ url_for('setting_curriculum') }}" class=" btn  btn-raised btn-xs">Curriculum</a>
   {% endif %}
         {% if not PersonalDate %}
         <h6 class="text-info">Add your information in setting.</h6>
