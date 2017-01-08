@@ -40,6 +40,12 @@
                     <li><a  class="btns navbarbtnleft"   href="{{ url_for('questions_pagination', page=1) }}">Questions</a></li>
                     <li><a  class="btns navbarbtnleft"   href="{{ url_for('snippets_pagination' , page=1) }}">Snippets</a></li>
                   </ul>
+                   <form class="navbar-form navbar-left" >
+                         <div class="label-static" style="display:flex !important">
+                           <input placeholder="Busca algo" id="search"class="search-form">
+                           <button type="submit" style="margin: 0px 5px 0px 0px; height: auto; padding: 0 10px 0 10px;" class="btns btn-search" name="button"><i class="icon-search"></i></button>
+                         </div>
+                   </form>
                   <ul class="nav navbar-nav navbar-right">
                     {% if not 'username' in session %}
                     <li><a class="btns navbarbtnright"  href="{{ url_for('login') }}">Sign In <i class="icon-signin"></i><div class="ripple-container"></div></a></li>
