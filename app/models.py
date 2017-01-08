@@ -1,6 +1,7 @@
 # coding=utf-8
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import UnicodeText, Date, Table, func
+from flask_security import RoleMixin
 from sqlalchemy_utils import aggregated
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
@@ -13,6 +14,24 @@ followers = db.Table('followers',
     db.Column('followed_id', db.Integer, db.ForeignKey('user.id'))
 )
 
+# Define models
+roles_users = db.Table(
+    'roles_users',
+    db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),
+    db.Column('role_id', db.Integer(), db.ForeignKey('role.id'))
+)
+
+
+class Role(db.Model, RoleMixin):
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(80), unique=True)
+    description = db.Column(db.String(255))
+
+    def __str__(self):
+        try:
+            return unicode(self.name)  # python 2
+        except NameError:
+            return str(self.name)  # python 3
 
 class User(db.Model):
     __tablename__ = 'user'
@@ -26,6 +45,7 @@ class User(db.Model):
     personal_date = db.relationship('Personal_User')
     question = db.relationship('Question', backref='userquestion', lazy='dynamic')
     answer_longer = db.relationship('AnswerLong', backref='useranswer', lazy='dynamic')
+    roles = db.relationship('Role', secondary=roles_users, backref=db.backref('users', lazy='dynamic'))
     followed = db.relationship('User',
                                secondary=followers,
                                primaryjoin=(followers.c.follower_id == id),
