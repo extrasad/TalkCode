@@ -49,7 +49,7 @@ def index():
 @app.route('/user/<string:username>/curriculum', methods=['GET'])
 def curriculum(username):
      rendered = render_template('user/pdfcv.html')
-     path_wkthmltopdf = 'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'
+     path_wkthmltopdf = b'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'
      config = pdfkit.configuration(wkhtmltopdf=path_wkthmltopdf)
      pdf = pdfkit.from_string(rendered, False, config=config)
      response = make_response(pdf)
