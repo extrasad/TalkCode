@@ -18,5 +18,14 @@ class DevelopmentConfig(Config):
     WTF_CSRF_ENABLED = True
     POSTS_PER_PAGE = 3
     ASSETS_DEBUG = False
-    SECURITY_PASSWORD_HASH = 'bcrypt'
-    SECURITY_PASSWORD_SALT = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in xrange(32))
+    SECURITY_REGISTERABLE = True
+    SECURITY_TRACKABLE = True
+    SECURITY_SEND_REGISTER_EMAIL = False
+    SECURITY_LOGIN_URL = '/login/'
+    SECURITY_LOGOUT_URL = '/logout/'
+    SECURITY_REGISTER_URL = '/register/'
+    SECURITY_POST_LOGIN_VIEW = "/"
+    SECURITY_POST_LOGOUT_VIEW = "/"
+    SECURITY_POST_REGISTER_VIEW = "/"
+    SECURITY_LOGIN_USER_TEMPLATE = 'security/login.html'
+    SECURITY_REGISTER_USER_TEMPLATE = 'security/register.html'

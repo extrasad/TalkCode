@@ -1,5 +1,5 @@
 # coding=utf-8
-from . import app
+from . import app, user_datastore, security
 from flask import request, render_template, session, redirect, url_for, flash, jsonify, json, make_response
 from form import *
 from models import *
@@ -7,10 +7,39 @@ from flask_mysqldb import MySQL
 from decorator_and_utils import *
 from sqlalchemy import desc
 from sqlalchemy.sql import func
+from flask_security import utils, login_required, current_user
+
 import pdfkit 
 
 
 mysql = MySQL()
+
+@app.before_first_request
+def before_first_request():
+    # Create the Roles "admin" and "end-user" -- unless they already exist
+    user_datastore.find_or_create_role(name='admin', description='Administrator')
+    user_datastore.find_or_create_role(name='end-user', description='End user')
+
+    # Create two Users for testing purposes -- unless they already exists.
+    encrypted_password = utils.encrypt_password('password')
+    if not user_datastore.get_user('someone@example.com'):
+        user_datastore.create_user(username='kathorq',
+                                   password=encrypted_password,
+                                   email='someone@example.com')
+    if not user_datastore.get_user('admin@example.com'):
+        user_datastore.create_user(username='carlosjazz',
+                                   password=encrypted_password,
+                                   email='admin@example.com')
+
+    # Commit any database changes; the User and Roles must exist before we can add a Role to the User
+    db.session.commit()
+
+    # Give one User has the "end-user" role, while the other has the "admin" role. (This will have no effect if the
+    # Users already have these Roles.) Again, commit any database changes.
+    user_datastore.add_role_to_user('someone@example.com', 'end-user')
+    user_datastore.add_role_to_user('admin@example.com', 'admin')
+    db.session.commit()
+
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -19,21 +48,23 @@ def page_not_found(e):
 
 @app.route('/', methods=['GET'])
 def index():
-    if 'username' in session:
-        UserDate = User.query.filter_by(username=session['username']).first()
+    #  if not current_user.is_authenticated:
+
+    if current_user.is_authenticated:
+        UserDate = User.query.filter_by(username=current_user.username).first()
 
 
-    Questions = UserDate.followed_question().limit(5) if 'username' in session \
+    Questions = UserDate.followed_question().limit(5) if current_user.is_authenticated \
                 else db.session.query(Question). \
                                                         order_by(func.avg(Question.create_date)). \
                                                         limit(5)
 
-    Answers = UserDate.followed_answer().limit(5) if 'username' in session \
+    Answers = UserDate.followed_answer().limit(5) if current_user.is_authenticated \
                 else db.session.query(AnswerLong). \
                                                         order_by(func.avg(AnswerLong.create_date)). \
                                                         limit(5)
 
-    Snippets = UserDate.followed_snippet().limit(5) if 'username' in session \
+    Snippets = UserDate.followed_snippet().limit(5) if current_user.is_authenticated \
                 else db.session.query(Snippet). \
                                                         order_by(func.avg(Snippet.create_date)). \
                                                         limit(5)
@@ -43,10 +74,11 @@ def index():
                             Answers=Answers,
                             Snippets=Snippets,
                             button='btn btn-info, btn-raised',
-                            username=session['username'] if 'username' in session else 'Friend')
+                            username=current_user.username if current_user.is_authenticated else 'Friend')
                           
 
 @app.route('/user/<string:username>/curriculum', methods=['GET'])
+@login_required
 def curriculum(username):
      rendered = render_template('user/pdfcv.html')
      path_wkthmltopdf = b'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'
@@ -93,7 +125,7 @@ def user(username):
         user_link = ['', '']
 
     try:
-        if request.method == 'GET' and (session['id'] == UserDate.id):
+        if request.method == 'GET' and current_user.id == UserDate.id:
             return render_template('user/user.html',
                                    user_link=user_link,
                                    PersonalDate=PersonalDate,
@@ -105,7 +137,7 @@ def user(username):
                                    CurriculumDate=CurriculumDate,
                                    QuerySkill=QuerySkill if QuerySkill is not None else [],
                                    CRUD=True)
-    except KeyError:
+    except AttributeError:
         pass
 
     return render_template('user/user.html',
@@ -119,76 +151,14 @@ def user(username):
                            CurriculumDate=CurriculumDate,
                            QuerySkill=QuerySkill if QuerySkill is not None else [],
                            CRUD=False,
-                           is_authenticated=True if 'username' in session else False)
-
-
-@app.route('/register', methods=['GET', 'POST'])
-@anonimous_required
-def register():
-    new_registerForm = RegisterForm(request.form)
-    if request.method == 'POST' and new_registerForm.validate():
-        username = new_registerForm.username.data
-        password = new_registerForm.password.data
-        email = new_registerForm.email.data
-
-        query_validate_username = User.query.filter_by(username=username).first()
-        query_validate_password = User.query.filter_by(password=password).first()
-        query_validate_email = User.query.filter_by(email=email).first()
-
-        if username == password:
-            uri_parameters = 'invalid'
-            flash('Username and Password are very same', 'danger')
-            return redirect(url_for('register', error=uri_parameters))
-        elif query_validate_username is not None or query_validate_password is not None or query_validate_email is not None:
-            uri_parameters = 'invalid'
-            flash('That dates in use', 'danger')
-            return redirect(url_for('register', error=uri_parameters))
-        else:
-            user_new = User(username=username, password=password, email=email)
-            db.session.add(user_new)
-            db.session.commit()
-            db.session.add(user_new.follow(user_new))
-            db.session.commit()
-            flash('Your user commit!', 'success')
-            return redirect(url_for('login'))
-    else:
-        return render_template('sign/register.html', form=new_registerForm)
-
-@app.route('/login', methods=['GET', 'POST'])
-@anonimous_required
-def login():
-    new_Loginform = LoginForm(request.form)
-    if request.method == 'POST' and new_Loginform.validate():
-        username = new_Loginform.username.data
-        password = new_Loginform.password.data
-
-        user = User.query.filter_by(username=username).first()
-
-        if user is not None and user.verify_password(password):
-            session['username'] = username
-            user_id = db.session.query(User.id).filter(User.username == session['username']).first()
-            session['id'] = user_id[0]
-            session['email'] = user.email
-
-            flash('Bienvenido {}'.format(username), 'success')
-            return redirect(url_for('user', username=username))
-
-        else:
-            flash('Username or password invalid', 'danger')
-            return redirect(url_for('login', ))
-
-    return render_template('sign/login.html', form=new_Loginform)
-
+                           is_authenticated=True if current_user.is_authenticated else False) #BUG
 
 @app.route('/logout')
-@user_required
 def logout():
     session.clear()
     return redirect(url_for('login'))
 
-
 @app.route('/setting/personal_info', methods=['GET', 'POST'])
-@user_required
 def setting_personal():
     new_PersonalForm = PersonalForm(request.form)
     Personal_info = Personal_User.query.filter_by(id_user=session['id']).one_or_none()
@@ -223,7 +193,6 @@ def setting_personal():
 
 
 @app.route('/setting/curriculum_info', methods=['GET', 'POST'])
-@user_required
 def setting_curriculum():
     UserSession = User.query.filter_by(id=session['id']).first()
     new_CurriculumForm = CurriculumForm(request.form)
@@ -316,7 +285,6 @@ def questions(id):
 
 
 @app.route('/upvote/<string:model>/id/<int:id>', methods=['GET', 'POST'])
-@user_required
 def upvote(model, id):
     print model
     if request.method == "POST":
@@ -350,7 +318,6 @@ def upvote(model, id):
         return json.dumps({'status': 'OK', 'likes': query_model.upvote_count})
 
 @app.route('/downvote/<string:model>/id/<int:id>', methods=['GET', 'POST'])
-@user_required
 def downvote(model, id):
     print model
     if request.method == "POST":
@@ -576,7 +543,6 @@ def delete_snippet(id):
 
 
 @app.route('/star/<int:id>', methods=['GET', 'POST'])
-@user_required
 def star(id):
     if request.method == "POST":
         UserSession = User.query.filter_by(username=session['username']).first()
@@ -594,7 +560,6 @@ def star(id):
 
 
 @app.route('/follow/<username>')
-@user_required
 def follow(username):
     UserSession = User.query.filter_by(username=session['username']).first()
     user = User.query.filter_by(username=username).first()
@@ -636,7 +601,6 @@ def unfollow(username):
 
 
 @app.route('/skill/id/<int:id>', methods=['GET', 'POST'])
-@user_required
 def skill(id):
     UserSession = User.query.filter_by(id=id).first()
     if Skill.query.filter_by(user_id=id).count() == 10:
@@ -656,7 +620,6 @@ def skill(id):
 
 
 @app.route('/skill/delete/id/<int:id>', methods=['GET', 'POST'])
-@user_required
 def delete_skill(id):
     QuerySkill = Skill.query.filter_by(id=id).one_or_none()
     skillname = QuerySkill.skill_name

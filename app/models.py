@@ -1,9 +1,8 @@
 # coding=utf-8
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import UnicodeText, Date, Table, func
-from flask_security import RoleMixin
+from flask_security import RoleMixin, UserMixin
 from sqlalchemy_utils import aggregated
-from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
 
 db = SQLAlchemy()
@@ -33,13 +32,26 @@ class Role(db.Model, RoleMixin):
         except NameError:
             return str(self.name)  # python 3
 
-class User(db.Model):
+    # __hash__ is required to avoid the exception TypeError: unhashable type: 'Role' when saving a User
+    def __hash__(self):
+        return hash(self.name)
+
+class User(db.Model, UserMixin):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True)
     email = db.Column(db.String(120), unique=True)
     password = db.Column(db.String(66))
+    username = db.Column(db.String(80), unique=True)
+    active = db.Column(db.Boolean())
+    confirmed_at = db.Column(db.DateTime())
     create_date = db.Column(db.DateTime, default=datetime.datetime.now)
+    last_login_at = db.Column(db.DateTime())
+    current_login_at = db.Column(db.DateTime())
+    # Why 45 characters for IP Address ?
+    # See http://stackoverflow.com/questions/166132/maximum-length-of-the-textual-representation-of-an-ipv6-address/166157#166157
+    last_login_ip = db.Column(db.String(45))
+    current_login_ip = db.Column(db.String(45))
+    login_count = db.Column(db.Integer)
     skills = db.relationship('Skill')
     curriculum_date = db.relationship('Curriculum_User')
     personal_date = db.relationship('Personal_User')
@@ -52,22 +64,10 @@ class User(db.Model):
                                secondaryjoin=(followers.c.followed_id == id),
                                backref=db.backref('followers', lazy='dynamic'),
                                lazy='dynamic')
-            
-
-    def __init__(self, username, password, email):
-        self.username = username
-        self.password = self.__create_password(password)
-        self.email = email
 
     def __repr__(self):
         return "<User(id='%s',name='%s', email='%s', password='%s')>" % \
                (self.id, self.username, self.email, self.password)
-
-    def __create_password(self, password):
-        return generate_password_hash(password)
-
-    def verify_password(self, password):
-        return check_password_hash(self.password, password)
 
     def get_id(self):
         try:

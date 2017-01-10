@@ -80,7 +80,7 @@
             Learn more and more, what are you waiting for?
             {% if not 'username' in session %}
             <button type="button" class="btn btn-raised btn-sm" >
-              <a href="{{ url_for('register') }}">Register</a>
+              <a href="{{ url_for('security.register') }}">Register</a>
             </button>
             {% endif %}
           </p>

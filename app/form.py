@@ -1,8 +1,10 @@
 # coding=utf-8
 from wtforms import *
 from wtforms.fields.html5 import EmailField
+from flask_security.forms import RegisterForm
 from wtforms.widgets import TextArea
 import pycountry
+
 
 class Country_list(list):
     """'create choice for html form"""
@@ -22,50 +24,12 @@ class Country_list(list):
 countries = Country_list()
 choices_class = countries.create_choices()
 
-class RegisterForm(Form):
-    username = StringField('',   [
+
+class SecurityRegisterForm(RegisterForm):
+    username = StringField('Username',   [
         validators.Regexp('^\w+$', message="Regex: Username must contain only letters numbers or underscore"),
         validators.DataRequired(message='El campo esta vacio.'),
         validators.length(min=5, message='Min 5 letter, Try Again')])
-
-    password = PasswordField('', [
-        validators.Required(),
-        validators.EqualTo('confirm_password', message='Passwords must match'),
-        validators.Regexp('[A-Za-z0-9@#$%^&+=]{8,}', message="Regex: At least 8 letter"),
-        validators.DataRequired(message='El campo esta vacio.'),
-        validators.length(min=8, message='Min 8 letter, Try Again')])
-
-    confirm_password = PasswordField('Repeat Password')
-
-    email = EmailField('', [
-        validators.Required(),
-        validators.EqualTo('confirm_email', message='Email must match'),
-        validators.Regexp('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', message="Regex: Incorrect format"),
-        validators.Email('Ingrese un email valido'), validators.DataRequired(message='El campo esta vacio.'),
-        validators.length(min=7, message='Min:5, letter, Try Again')])
-
-    confirm_email = EmailField('Repeat Email')
-
-    accept_tos = BooleanField([validators.Required()])
-
-
-    def __init__(self, *args, **kwargs):
-        Form.__init__(self, *args, **kwargs)
-        self.user = None
-
-
-class RegistrationForm(Form):
-    confirm = PasswordField('Repeat Password')
-    accept_tos = BooleanField('I accept the Terms of Service and Privacy Notice (updated Jan 22, 2015)', [validators.Required()])
-
-
-class LoginForm(Form):
-    username = StringField('',   [validators.DataRequired(message='El campo esta vacio.'), validators.length(min=5, message='Min 5 letter, Try Again')])
-    password = PasswordField('', [validators.DataRequired(message='El campo esta vacio.'), validators.length(min=8, message='Min 8 letter, Try Again')])
-
-    def __init__(self, *args, **kwargs):
-        Form.__init__(self, *args, **kwargs)
-        self.user = None
 
 
 class PersonalForm(Form):

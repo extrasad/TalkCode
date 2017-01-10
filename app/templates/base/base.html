@@ -47,9 +47,9 @@
                          </div>
                    </form>
                   <ul class="nav navbar-nav navbar-right">
-                    {% if not 'username' in session %}
-                    <li><a class="btns navbarbtnright"  href="{{ url_for('login') }}">Sign In <i class="icon-signin"></i><div class="ripple-container"></div></a></li>
-                    <li><a class="btns navbarbtnright"  href="{{ url_for('register') }}">Sign Up <i class="icon-hand-left"></i><div class="ripple-container"></div></a></li>
+                    {% if not current_user.is_authenticated %}
+                    <li><a class="btns navbarbtnright"  href="{{ url_for('security.login') }}">Sign In <i class="icon-signin"></i><div class="ripple-container"></div></a></li>
+                    <li><a class="btns navbarbtnright"  href="{{ url_for('security.register') }}">Sign Up <i class="icon-hand-left"></i><div class="ripple-container"></div></a></li>
                     {% else %}
                     <li class="dropdown">
                         <a class="btns navbarbtnright" data-toggle="dropdown">Write... <i class="icon-pencil"></i>
@@ -59,7 +59,7 @@
                         <li><a href="{{ url_for('create_snippet', username=session['username'])}}">Write Snippet</a></li>
                       </ul>
                     </li>
-                    <li><a class="btns navbarbtnright" href="{{ url_for('user', username=session['username'])}}">{{session['username']}}<div class="ripple-container"></div></a></li>
+                    <li><a class="btns navbarbtnright" href="{{ url_for('user', username=current_user.username)}}">{{current_user.username}}<div class="ripple-container"></div></a></li>
                     <li class="dropdown">
                       <a class="btns navbarbtn setting" href="" data-toggle="dropdown"><i class="icon-gear"></i></a>
                       <ul class="dropdown-menu">
@@ -67,7 +67,7 @@
                         <li><a href="{{ url_for('setting_curriculum') }}" style="font-size:13px">Setting Curriculum Date</a></li>
                         <li><a href="{{ url_for('about') }}" style="font-size:13px">About</a></li>
                         <li class="divider"></li>
-                        <li><a href="{{ url_for('logout') }}" style="font-size:13px">Log Out</a></li>
+                        <li><a href="{{ url_for('security.logout') }}" style="font-size:13px">Log Out</a></li>
                       </ul>
                     </li>
                     {% endif %}
