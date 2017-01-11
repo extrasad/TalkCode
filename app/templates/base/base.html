@@ -55,8 +55,8 @@
                         <a class="btns navbarbtnright" data-toggle="dropdown">Write... <i class="icon-pencil"></i>
                         </a>
                       <ul class="dropdown-menu">
-                        <li><a href="{{ url_for('create_question', username=session['username'])}}">Write Question</a></li>
-                        <li><a href="{{ url_for('create_snippet', username=session['username'])}}">Write Snippet</a></li>
+                        <li><a href="{{ url_for('create_question', username=current_user.username)}}">Write Question</a></li>
+                        <li><a href="{{ url_for('create_snippet', username=current_user.username)}}">Write Snippet</a></li>
                       </ul>
                     </li>
                     <li><a class="btns navbarbtnright" href="{{ url_for('user', username=current_user.username)}}">{{current_user.username}}<div class="ripple-container"></div></a></li>

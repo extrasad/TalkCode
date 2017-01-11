@@ -153,17 +153,12 @@ def user(username):
                            CRUD=False,
                            is_authenticated=True if current_user.is_authenticated else False) #BUG
 
-@app.route('/logout')
-def logout():
-    session.clear()
-    return redirect(url_for('login'))
-
 @app.route('/setting/personal_info', methods=['GET', 'POST'])
+@login_required
 def setting_personal():
     new_PersonalForm = PersonalForm(request.form)
-    Personal_info = Personal_User.query.filter_by(id_user=session['id']).one_or_none()
+    Personal_info = Personal_User.query.filter_by(id_user=current_user.id).one_or_none()
     if request.method == 'POST' and new_PersonalForm.validate():
-        id_user = session['id']
         name = new_PersonalForm.name.data
         last_name = new_PersonalForm.last_name.data
         sex = new_PersonalForm.sex.data
@@ -171,32 +166,31 @@ def setting_personal():
         dob = new_PersonalForm.dob.data
         repository = new_PersonalForm.repository.data
         social_red = new_PersonalForm.social_red.data
-        setting_new = Personal_User(id_user, name, last_name, sex,
+        setting_new = Personal_User(current_user.id, name, last_name, sex,
                                     country, dob,
                                     repository, social_red)
         if Personal_info is None:
-            print 'NO HAY INFO, CREAMOS LA INFO'
             db.session.add(setting_new)
             db.session.commit()
             flash('Personal date created', 'success')
-            return redirect(url_for('user', username=session['username']))
+            return redirect(url_for('user', username=current_user.username))
         else:
-            print 'SI HAY DATOS PERSONALES, ELIMINAMOS LOS VIEJOS AGREGAMOS LOS NUEVOS '
             db.session.delete(Personal_info)
             db.session.add(setting_new)
             db.session.commit()
             flash('Personal date update', 'success')
-            return redirect(url_for('user', username=session['username']))
+            return redirect(url_for('user', username=current_user.username))
 
     return render_template('user/setting/form_personal.html',
                            form=new_PersonalForm, PersonalDate=Personal_info)
 
 
 @app.route('/setting/curriculum_info', methods=['GET', 'POST'])
+@login_required
 def setting_curriculum():
-    UserSession = User.query.filter_by(id=session['id']).first()
+    UserSession = User.query.filter_by(id=current_user.id).first()
     new_CurriculumForm = CurriculumForm(request.form)
-    Curriculum_info = Curriculum_User.query.filter_by(id_user=session['id']).one_or_none()
+    Curriculum_info = Curriculum_User.query.filter_by(id_user=UserSession.id).one_or_none()
     Skill_info = Skill.query.filter_by(user_id=UserSession.id)
     new_SkillsForm = SkillForm(obj=UserSession)
 
@@ -204,19 +198,19 @@ def setting_curriculum():
         tittle = new_CurriculumForm.tittle.data
         university = new_CurriculumForm.university.data
         description = new_CurriculumForm.description.data
-        setting_new = Curriculum_User(session['id'], tittle,
+        setting_new = Curriculum_User(current_user.id, tittle,
                                       university, description)
         if Curriculum_info is None:
             db.session.add(setting_new)
             db.session.commit()
             flash('Your curriculum created', 'success')
-            return redirect(url_for('user', username=session['username']))
+            return redirect(url_for('user', username=current_user.username))
         else:
             db.session.delete(Curriculum_info)
             db.session.add(setting_new)
             db.session.commit()
             flash('Your curriculum date update', 'success')
-            return redirect(url_for('user', username=session['username']))
+            return redirect(url_for('user', username=current_user.username))
     return render_template('user/setting/form_curriculum_user.html',
                            form=new_CurriculumForm,
                            CurriculumDate=Curriculum_info,
@@ -247,8 +241,8 @@ def questions(id):
 
     lang = know_mode_exist(Tag_data.tag_one, Tag_data.tag_two, Tag_data.tag_three)  # Check if exist lang
 
-    try:
-        if request.method == 'GET' and (session['id'] == User_data.id):
+    if current_user.is_authenticated:
+        if request.method == 'GET' and current_user.id == User_data.id:
             return render_template('questions/question.html',
                                    Answers=all_Answers,
                                    User=User_data,
@@ -257,14 +251,12 @@ def questions(id):
                                    lang=lang,
                                    new_QuestionForm=new_QuestionForm,
                                    CRUD=True)
-    except KeyError:
-        pass
 
     if request.method == 'POST' and new_answer_form.validate():
         id_question = question_data.id
         answer_text = new_answer_form.answer_long.data
         answer_code = new_answer_form.text_area.data
-        answer_new = AnswerLong(session['id'],
+        answer_new = AnswerLong(current_user.id,
                                 id_question, answer_text, answer_code)
 
         db.session.add(answer_new)
@@ -281,7 +273,7 @@ def questions(id):
                            Tag=Tag_data,
                            lang=lang,
                            CRUD=False,
-                           is_authenticated=True if 'username' in session else False)
+                           is_authenticated=True if current_user.is_authenticated else False)
 
 
 @app.route('/upvote/<string:model>/id/<int:id>', methods=['GET', 'POST'])
@@ -291,11 +283,11 @@ def upvote(model, id):
         if model == 'question':
 
             query_model = Question.query.filter_by(id=id).first()
-            user_in_query_upvote = query_model.query.filter(Upvote.users_upvote.any(id_user=session['id'])).count() > 0
+            user_in_query_upvote = query_model.query.filter(Upvote.users_upvote.any(id_user=current_user.id)).count() > 0
 
             if user_in_query_upvote == False:
                 print 'meter'
-                query_model.upvote.append(Upvote(id_user=session['id']))
+                query_model.upvote.append(Upvote(id_user=current_user.id))
                 db.session.commit()
             else:
                 print 'sacar'
@@ -305,10 +297,10 @@ def upvote(model, id):
 
         elif model == 'answer':
             query_model = AnswerLong.query.filter_by(id=id).first()
-            user_in_query_upvote = query_model.query.filter(Answer_Upvote.users_answer_upvote.any(id_user=session['id'])).count() > 0
+            user_in_query_upvote = query_model.query.filter(Answer_Upvote.users_answer_upvote.any(id_user=current_user.id)).count() > 0
 
             if user_in_query_upvote == False:
-                query_model.upvote.append(Answer_Upvote(id_user=session['id']))
+                query_model.upvote.append(Answer_Upvote(id_user=current_user.id))
                 db.session.commit()
             else:
                 query_model.upvote_count -= 1
@@ -324,10 +316,10 @@ def downvote(model, id):
         if model == 'question':
 
             query_model = Question.query.filter_by(id=id).first()
-            user_in_query_downvote = query_model.query.filter(Downvote.users_downvote.any(id_user=session['id'])).count() > 0
+            user_in_query_downvote = query_model.query.filter(Downvote.users_downvote.any(id_user=current_user.id)).count() > 0
 
             if user_in_query_downvote == False:
-                query_model.downvote.append(Downvote(id_user=session['id']))
+                query_model.downvote.append(Downvote(id_user=current_user.id))
                 db.session.commit()
             else:
                 query_model.downvote_count -= 1
@@ -336,10 +328,10 @@ def downvote(model, id):
 
         elif model == 'answer':
             query_model = AnswerLong.query.filter_by(id=id).first()
-            user_in_query_downvote = query_model.query.filter(Answer_Downvote.users_answer_downvote.any(id_user=session['id'])).count() > 0
+            user_in_query_downvote = query_model.query.filter(Answer_Downvote.users_answer_downvote.any(id_user=current_user.id)).count() > 0
 
             if user_in_query_downvote == False:
-                query_model.downvote.append(Answer_Downvote(id_user=session['id']))
+                query_model.downvote.append(Answer_Downvote(id_user=current_user.id))
                 db.session.commit()
             else:
                 query_model.downvote_count -= 1
@@ -349,33 +341,33 @@ def downvote(model, id):
         return json.dumps({'status': 'OK', 'likes': query_model.downvote_count})
 
 @app.route('/questions/write/user/<string:username>', methods=['GET', 'POST'])
+@login_required
 def create_question(username):
-    username = session['username']
+    username = current_user.username
     new_QuestionForm = QuestionForm(request.form)
     if request.method == 'POST' and new_QuestionForm.validate():
-        query = db.session.query(User.id).filter(User.username == session['username']).first()
-        user_id = query[0]  # long integer delete 'L'
         title = new_QuestionForm.tittle.data
         description = new_QuestionForm.description.data
         text_area = new_QuestionForm.text_area.data
-        question_new = Question(user_id, title, description, text_area)
+        question_new = Question(current_user.id, title, description, text_area)
 
         db.session.add(question_new)
 
-        id_question = db.session.query(Question.id).filter(Question.id_user == session['id'],
+        id_question = db.session.query(Question.id).filter(Question.id_user == current_user.id,
                                                            Question.title == title).first()
         id_question_for_tag = id_question[0]
-        tag_new = TagQuestion(id_question_for_tag, new_QuestionForm.tag_one.data, new_QuestionForm.tag_two.data,
+        tag_new = TagQuestion(id_question[0], new_QuestionForm.tag_one.data, new_QuestionForm.tag_two.data,
                               new_QuestionForm.tag_three.data)
         db.session.add(tag_new)
         db.session.commit()
         flash('Perfect', 'info')
-        id = db.session.query(Question.id).filter(Question.id_user == session['id'], Question.title == title).first()
+        id = db.session.query(Question.id).filter(Question.id_user == current_user.id, Question.title == title).first()
         return redirect(url_for('questions', id=id[0]))
     return render_template('questions/create_question.html', form=new_QuestionForm)
 
 
 @app.route('/questions/edit/id/<int:id>', methods=['GET', 'POST'])
+@login_required
 def edit_question(id):
     QuestionQuerySet = Question.query.filter_by(id=id).one_or_none()
     edited_QuestionForm = QuestionForm(request.form)
@@ -408,11 +400,13 @@ def edit_question(id):
 
 
 @app.route('/questions/delete/id/<int:id>', methods=['GET', 'POST'])
+@login_required
 def delete_question(id):
     delete_Question = db.session.query(Question).filter(Question.id == id).first()
     db.session.delete(delete_Question)
     db.session.commit()
-    return redirect(url_for('user', username=session['username']))
+    flash('Deleted!', 'success')
+    return redirect(url_for('user', username=current_user.username))
 
 
 @app.route('/snippets', methods=['GET', 'POST'])
@@ -435,8 +429,8 @@ def snippets(id):
     create_date = str(snippet_data.create_date).split(" ")[0]  # DATE FORMATE
     lang = know_lang(know_file_extension(snippet_data.title))
 
-    try:
-        if request.method == 'GET' and session['id'] == User_data.id:
+    if current_user.is_authenticated:
+        if request.method == 'GET' and current_user.id == User_data.id:
             all_Comments = CommentSnippet.query.filter_by(id_snippet=id).all()  # ALL COMMENT
             return render_template('snippets/snippet.html',
                                    Comments=all_Comments,
@@ -447,13 +441,11 @@ def snippets(id):
                                    create_date=create_date,
                                    new_SnippetForm=new_SnippetForm,
                                    CRUD=True)
-    except KeyError:
-        pass
 
     if request.method == 'POST' and new_comment_form.validate():
         id_snippets = snippet_data.id
         comment_text = new_comment_form.comment.data
-        comment_new = CommentSnippet(session['id'], id_snippets,
+        comment_new = CommentSnippet(current_user.id, id_snippets,
                                      comment_text.upper())
 
         db.session.add(comment_new)
@@ -472,10 +464,11 @@ def snippets(id):
                            create_date=create_date,
                            new_SnippetForm=new_SnippetForm,
                            CRUD=False,
-                           is_authenticated=True if 'username' in session else False)
+                           is_authenticated=True if current_user.is_authenticated else False)
 
 
 @app.route('/snippets/edit/id/<int:id>', methods=['GET', 'POST'])
+@login_required
 def edit_snippet(id):
     SnippetQuerySet = Snippet.query.filter_by(id=id).one_or_none()
     edited_SnippetForm = SnippetsForm(request.form)
@@ -508,28 +501,27 @@ def edit_snippet(id):
 
 
 @app.route('/snippets/write/user/<string:username>', methods=['GET', 'POST'])
+@login_required
 def create_snippet(username):
-    username = session['username']
     new_SnippetForm = SnippetsForm(request.form)
     if request.method == 'POST' and new_SnippetForm.validate():
-        query = db.session.query(User.id).filter(User.username == session['username']).first()
-        user_id = query[0]
+        query = db.session.query(User.id).filter(User.username == current_user.username).first()
         title = new_SnippetForm.tittle.data
         description = new_SnippetForm.description.data
         text_area = new_SnippetForm.text_area.data
-        snippet_new = Snippet(user_id, title, description, text_area)
+        snippet_new = Snippet(current_user.id, title, description, text_area)
 
         db.session.add(snippet_new)
 
-        id_snippet = db.session.query(Snippet.id).filter(Snippet.id_user == session['id'],
+        id_snippet = db.session.query(Snippet.id).filter(Snippet.id_user == current_user.id,
                                                          Snippet.title == title).first()
         id_snippet_for_tag = id_snippet[0]
-        tag_new = TagSnippet(id_snippet_for_tag, new_SnippetForm.tag_one.data, new_SnippetForm.tag_two.data,
+        tag_new = TagSnippet(id_snippet[0], new_SnippetForm.tag_one.data, new_SnippetForm.tag_two.data,
                              new_SnippetForm.tag_three.data)
         db.session.add(tag_new)
         db.session.commit()
         flash('Perfect', 'info')
-        id = db.session.query(Snippet.id).filter(Snippet.id_user == session['id'], Snippet.title == title).first()
+        id = db.session.query(Snippet.id).filter(Snippet.id_user == current_user.id, Snippet.title == title).first()
         return redirect(url_for('snippets', id=id[0]))
     return render_template('snippets/create_snippet.html', form=new_SnippetForm)
 
@@ -539,18 +531,19 @@ def delete_snippet(id):
     delete_Snippet = db.session.query(Snippet).filter(Snippet.id == id).first()
     db.session.delete(delete_Snippet)
     db.session.commit()
-    return redirect(url_for('user', username=session['username']))
+    flash('Deleted!', 'success')
+    return redirect(url_for('user', username=current_user.username))
 
 
 @app.route('/star/<int:id>', methods=['GET', 'POST'])
 def star(id):
     if request.method == "POST":
-        UserSession = User.query.filter_by(username=session['username']).first()
+        UserSession = User.query.filter_by(username=current_user.username).first()
         QuerySnippet = Snippet.query.filter_by(id=id).first()
         user_in_query_star = Star.query.filter(Star.users_snippet_star.any(id_user=UserSession.id)).one_or_none()
 
         if user_in_query_star == None:
-            QuerySnippet.star.append(Star(id_user=session['id']))
+            QuerySnippet.star.append(Star(id_user=current_user.id))
             db.session.commit()
         else:
             QuerySnippet.star_count -= 1
@@ -560,8 +553,9 @@ def star(id):
 
 
 @app.route('/follow/<username>')
+@login_required
 def follow(username):
-    UserSession = User.query.filter_by(username=session['username']).first()
+    UserSession = User.query.filter_by(username=current_user.username).first()
     user = User.query.filter_by(username=username).first()
     if user is None:
         flash('User %s not found.' % username,  'danger')
@@ -580,9 +574,9 @@ def follow(username):
 
 
 @app.route('/unfollow/<username>')
-@user_required
+@login_required
 def unfollow(username):
-    UserSession = User.query.filter_by(username=session['username']).first()
+    UserSession = User.query.filter_by(username=current_user.id).first()
     user = User.query.filter_by(username=username).first()
     if user is None:
         flash('User %s not found.' % username,  'danger')
@@ -620,6 +614,7 @@ def skill(id):
 
 
 @app.route('/skill/delete/id/<int:id>', methods=['GET', 'POST'])
+@login_required
 def delete_skill(id):
     QuerySkill = Skill.query.filter_by(id=id).one_or_none()
     skillname = QuerySkill.skill_name

@@ -19,6 +19,7 @@ setup(
         'flask>=0.10',
         'flask_mysqldb',
         'flask_sqlalchemy',
+        'flask-security',
         'flask-assets',
         'sqlalchemy',
         'sqlalchemy_utils',

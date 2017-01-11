@@ -10,6 +10,7 @@ Packages Required
 * flask_mysqldb
 * flask_sqlalchemy
 * flask-assets
+* flask-security
 * pdfkit
 * sqlalchemy
 * sqlalchemy_utils

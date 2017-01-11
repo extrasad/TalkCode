@@ -11,25 +11,6 @@ list_website = ['github', 'facebook', 'twitter',
                 'linkedin', 'reddit']
 
 
-def user_required(f):
-    @wraps(f)
-    def wrap(*args, **kwargs):
-        if 'username' in session:
-            return f(*args, **kwargs)
-        else:
-            return redirect(url_for('login'))
-    return wrap
-
-def anonimous_required(f):
-    @wraps(f)
-    def wrap(*args, **kwargs):
-        if 'username' in session:
-            return redirect(url_for('logout'))
-        else:
-            return f(*args, **kwargs)
-    return wrap
-
-
 def know_website(anchor):
     for site in list_website:
         if anchor.__contains__(site):

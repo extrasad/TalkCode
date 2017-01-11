@@ -14,10 +14,14 @@
           <div class="well well-sm">
         <h4>Last Questions:</h4>
         <hr class="style14">
-          {% for question in Questions %}
-            <h5>{{ question.title }}</h5>
-            <span><i class="icon-time"></i> {{ question.get_createdate }}</span>
+        {% if Questions %}
+          {% for q in Questions %}
+              <h5>{{ q.title }}</h5>
+              <span><i class="icon-time"></i> {{ q.get_createdate }}</span>
+          {% else %}
+              <h5>Follow more people for see questions..</h5>
           {% endfor %}
+        {% endif %}
           </div>
         </div>
       </div>
@@ -27,10 +31,14 @@
           <div class="well well-sm">
         <h4>Last Answers:</h4>
         <hr class="style14">
-        {% for answer in Answers %}
-            <h5>{{ answer.answer }}</h5>
-            <span><i class="icon-time"></i> {{ answer.get_createdate }}</span>
-          {% endfor %}
+          {% if Answers %}
+            {% for a in Answers %}
+            <h5>{{ a.answer }}</h5>
+            <span><i class="icon-time"></i> {{ a.get_createdate }}</span>
+            {%else%}
+                <h5>Follow more people for see answer..</h5>
+            {% endfor %}
+          {%endif%}
           </div>
         </div>
     </div>
@@ -40,10 +48,14 @@
           <div class="well well-sm">
         <h4>Last Snippets:</h4>
         <hr class="style14">
-        {% for snippet in Snippets %}
-            <h5>{{ snippet.title }}</h5>
-            <span><i class="icon-time"></i> {{ snippet.get_createdate }}</span>
+        {% if Snippets %}
+          {% for s in Snippets %}
+            <h5>{{ s.title }}</h5>
+            <span><i class="icon-time"></i> {{ s.get_createdate }}</span>
+            {%else%}
+                <h5>Follow more people for see snippets..</h5>
           {% endfor %}
+        {%endif%}
           </div>
         </div>
        </div>
