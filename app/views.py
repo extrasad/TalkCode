@@ -1,6 +1,6 @@
 # coding=utf-8
 from . import app, user_datastore, security
-from flask import request, render_template, session, redirect, url_for, flash, jsonify, json, make_response
+from flask import request, render_template, session, redirect, url_for, flash, jsonify, json, make_response, current_app
 from form import *
 from models import *
 from flask_mysqldb import MySQL
@@ -81,9 +81,9 @@ def index():
 @login_required
 def curriculum(username):
      rendered = render_template('user/pdfcv.html')
-     path_wkthmltopdf = b'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'
+     path_wkthmltopdf = b'C:\Program Files\wkhtmltopdf\\bin\wkhtmltopdf.exe'
      config = pdfkit.configuration(wkhtmltopdf=path_wkthmltopdf)
-     pdf = pdfkit.from_string(rendered, False, config=config)
+     pdf = pdfkit.from_string(rendered, output_path=False, configuration=config)
      response = make_response(pdf)
      response.headers['Content-Type'] = 'application/pdf'
      response.headers['Content-Disposition'] = 'inline; filename=output.pdf'
