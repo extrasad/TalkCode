@@ -68,7 +68,6 @@ def know_lang(format):
     if format in ['sql', 'r', 'php', 'go', 'd',
                   'css', 'groovy', 'yaml', 'dart',
                   'lua', 'swift', 'html', 'xml']: return format
-
     return 'javascript'
 
 
