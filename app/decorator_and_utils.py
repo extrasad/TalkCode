@@ -39,7 +39,7 @@ def know_lang(format):
         return 'javascript'
 
     format = format.lower()
-    if format in ['cs', 'c', 'cpp', 'mm', 'm', 'kt', 'java', 'nut', 'scala']: return 'clike'
+    if format in ['cs', 'c', 'cpp', 'mm', 'm', 'kt', 'java', 'x-jsp', 'nut', 'scala']: return 'clike'
     if format in ["build", "bzl", "py", "pyw"]: return 'python'
     if format in ["clj", "cljc", "cljx"]: return 'clojure'
     if format in ["cl", "lisp", "el"]: return 'commonlisp'

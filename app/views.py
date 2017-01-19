@@ -238,7 +238,7 @@ def questions(id):
 
     for answer in all_Answers:
         answer.create_date = str(answer.create_date).split(" ")[0]
-
+        
     lang = know_mode_exist(Tag_data.tag_one, Tag_data.tag_two, Tag_data.tag_three)  # Check if exist lang
 
     if current_user.is_authenticated:
@@ -350,14 +350,17 @@ def create_question(username):
         description = new_QuestionForm.description.data
         text_area = new_QuestionForm.text_area.data
         question_new = Question(current_user.id, title, description, text_area)
+        list_tags = [new_QuestionForm.tag_one.data, new_QuestionForm.tag_two.data, new_QuestionForm.tag_three.data]
+        
+        if len(list_tags) > len(set(list_tags)):
+            flash('Tags must be different', 'danger')
+            return render_template('questions/create_question.html', form=new_QuestionForm)
 
         db.session.add(question_new)
-
         id_question = db.session.query(Question.id).filter(Question.id_user == current_user.id,
                                                            Question.title == title).first()
         id_question_for_tag = id_question[0]
-        tag_new = TagQuestion(id_question[0], new_QuestionForm.tag_one.data, new_QuestionForm.tag_two.data,
-                              new_QuestionForm.tag_three.data)
+        tag_new = TagQuestion(id_question[0], list_tags[0], list_tags[1], list_tags[2])
         db.session.add(tag_new)
         db.session.commit()
         flash('Perfect', 'info')
@@ -510,14 +513,17 @@ def create_snippet(username):
         description = new_SnippetForm.description.data
         text_area = new_SnippetForm.text_area.data
         snippet_new = Snippet(current_user.id, title, description, text_area)
+        list_tags = [new_SnippetForm.tag_one.data, new_SnippetForm.tag_two.data, new_SnippetForm.tag_three.data]
+        
+        if len(list_tags) > len(set(list_tags)):
+            flash('Tags must be different', 'danger')
+            return render_template('snippets/create_snippet.html', form=new_SnippetForm)
 
         db.session.add(snippet_new)
-
         id_snippet = db.session.query(Snippet.id).filter(Snippet.id_user == current_user.id,
                                                          Snippet.title == title).first()
         id_snippet_for_tag = id_snippet[0]
-        tag_new = TagSnippet(id_snippet[0], new_SnippetForm.tag_one.data, new_SnippetForm.tag_two.data,
-                             new_SnippetForm.tag_three.data)
+        tag_new = TagSnippet(id_snippet[0], list_tags[0], list_tags[1], list_tags[2] )
         db.session.add(tag_new)
         db.session.commit()
         flash('Perfect', 'info')
@@ -541,11 +547,13 @@ def star(id):
         UserSession = User.query.filter_by(username=current_user.username).first()
         QuerySnippet = Snippet.query.filter_by(id=id).first()
         user_in_query_star = Star.query.filter(Star.users_snippet_star.any(id_user=UserSession.id)).one_or_none()
-
+        print user_in_query_star
         if user_in_query_star == None:
+            print user_in_query_star
             QuerySnippet.star.append(Star(id_user=current_user.id))
             db.session.commit()
         else:
+            print user_in_query_star
             QuerySnippet.star_count -= 1
             db.session.commit()
             db.session.refresh(QuerySnippet)
