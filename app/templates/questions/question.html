@@ -24,7 +24,6 @@
 <script src="{{ url_for('static', filename='js/counter_letter.js') }}"/></script>
 {% from "macros/_knowmode.html" import knowmode %}
 {% from "macros/_popupmessage.html" import popupmessage %}
-{% from "macros/_ajaxvote.html" import ajax_vote %}
 
   {{ knowmode (lang) }}
 {% if CRUD  %}
@@ -41,8 +40,12 @@
          <li><a href="#" class="tag-question" style="text-decoration:none;">{{Tag.tag_one}}</a></li>
          <li><a href="#" class="tag-question" style="text-decoration:none;">{{Tag.tag_two}}</a></li>
          <li><a href="#" class="tag-question" style="text-decoration:none;">{{Tag.tag_three}}</a></li>
-         <li><a href="#" class="tag-question up " style="text-decoration:none;">{{ Question_data.upvote_count}}</a></li>
-         <li><a href="#" class="tag-question down" style="text-decoration:none;"> {{ Question_data.downvote_count}}</a></li>
+         <li><a href="#" class="tag-question " style="text-decoration:none;">
+             {{ Question_data.upvote_count}}
+         </a></li>
+         <li><a href="#" class="tag-question " style="text-decoration:none;" model-id="{{ Question_data.id }}" model-class="question">
+             {{ Question_data.downvote_count}}
+         </a></li>
          <li><a href="/user/{{ User.username }} "  class="tag-question user" style="text-decoration:none;">{{ User.username }}</a></li>
       </ul>
 
@@ -110,8 +113,12 @@
          <li><a href="#" class="tag-question" style="text-decoration:none;">{{Tag.tag_one}}</a></li>
          <li><a href="#" class="tag-question" style="text-decoration:none;">{{Tag.tag_two}}</a></li>
          <li><a href="#" class="tag-question" style="text-decoration:none;">{{Tag.tag_three}}</a></li>
-         <li><a href="#" class="tag-question up "  style="text-decoration:none;">{{ Question_data.upvote_count}}</a></li>
-         <li><a href="#" class="tag-question down" style="text-decoration:none;">{{ Question_data.downvote_count}}</a></li>
+         <li><a href="#" class="tag-question up " style="text-decoration:none;" model-id="{{ Question_data.id }}" model-class="question">
+             {{ Question_data.upvote_count}}
+         </a></li>
+         <li><a href="#" class="tag-question down" style="text-decoration:none;" model-id="{{ Question_data.id }}" model-class="question">
+             {{ Question_data.downvote_count}}
+         </a></li>
          <li><a href="/user/{{ User.username }} " class="tag-question user" style="text-decoration:none;">{{ User.username }}</a></li>
       </ul>
 
@@ -199,12 +206,16 @@
    <div class="col-md-8">
       <br>
       <h5><i class="icon-info text-success"></i>
-         {{  answer.answer }} | <a href="/user/{{ answer.name_user }} " class="text-muted"> {{ answer.name_user }}</a>
+         {{  answer.answer }} | <a href="/user/{{ answer.name_user }} " class="text-muted"> {{ answer.get_username }}</a>
       </h5>
       <div class="list-group-item">
          <div class="row-content">
-            <a type="button" class="btn btn-success answerup btn-xs" ><i class="icon-hand-up"></i>{{ answer.upvote_count}}</a>
-            <a type="button" class="btn btn-danger  answerdown btn-xs"><i class="icon-hand-down"></i>{{ answer.downvote_count}}</a>
+            <a type="button" class="btn btn-success upvote btn-xs" model-id="{{ answer.id }}" model-class="answer">
+                <i class="icon-hand-up"></i>{{ answer.upvote_count}}
+            </a>
+            <a type="button" class="btn btn-danger  downvote btn-xs" model-id="{{ answer.id }}" model-class="answer">
+                <i class="icon-hand-down"></i>{{ answer.downvote_count}}
+            </a>
             <p class="right"> <i class="icon-time"></i> {{ answer.create_date }} </p>
             <div class="prettyBlock">
                <div class="prettyPrint">
@@ -218,7 +229,7 @@
          </div>
       </div>
    </div>
-    {{ajax_vote(answer.id)}}
+
     {% endfor %}
    {% else %}
    <center>
@@ -249,8 +260,8 @@ LetterCounter(description_length[0], description_length[1], description, buttonE
    {% if is_authenticated  %}
 
 <script>
-$(".up").addClass('upvotequestion');
-$(".down").addClass('downvotequestion');
+$(".up").addClass('upvote');
+$(".down").addClass('downvote');
 
 var csrftoken = $('meta[name=csrf-token]').attr('content')
 
@@ -262,28 +273,54 @@ $.ajaxSetup({
     }
 })
 
-$('.upvotequestion').click(function(){
+$('.upvote').click(function(){
   var scope = this;
       $.ajax({
-              type: "POST",
-              url: "{{ url_for('upvote',  model='question'|string(), id=Question_data.id) }}",
-              dataType: "json",
-              success: function(response){
-                  $('.upvotequestion').text(response.likes);
-              }
+              type: "GET",
+              url: "/upvote",
+              data:{
+                    id: $(scope).attr('model-id'),
+                    model: $(scope).attr('model-class')
+              },
+              //contentType: 'application/json;charset=UTF-8'
+              dataType: "json"
+
       })
+     .done(function(response) {
+         console.log( "done!", response.likes );
+         $(scope).text(response.likes);
+     })
+     .fail(function() {
+         console.log( "error" );
+     })
+     .always(function() {
+        console.log( "console", $(scope).attr('model-id'), $(scope).attr('model-class') );
+     });
 });
 
-$('.downvotequestion').click(function(){
+$('.downvote').click(function(){
   var scope = this;
       $.ajax({
-              type: "POST",
-              url: "{{ url_for('downvote',  model='question'|string(), id=Question_data.id) }}",
-              dataType: "json",
-              success: function(response){
-                  $('.downvotequestion').text(response.likes);
-              }
+              type: "GET",
+              url: "/downvote",
+              data:{
+                    id: $(scope).attr('model-id'),
+                    model: $(scope).attr('model-class')
+              },
+              //contentType: 'application/json;charset=UTF-8'
+              dataType: "json"
+
       })
+     .done(function(response) {
+         console.log( "done!" , response.likes);
+         $(scope).text(response.likes);
+     })
+     .fail(function() {
+         console.log( "error" );
+     })
+     .always(function() {
+        console.log( "console", $(scope).attr('model-id'), $(scope).attr('model-class') );
+     });
 });
 
 

@@ -276,10 +276,14 @@ def questions(id):
                            is_authenticated=True if current_user.is_authenticated else False)
 
 
-@app.route('/upvote/<string:model>/id/<int:id>', methods=['GET', 'POST'])
-def upvote(model, id):
-    print model
-    if request.method == "POST":
+@app.route('/upvote', methods=['GET'])
+def upvote():
+    if request.method == "GET":
+
+        id = request.args.get('id')
+        model = request.args.get('model')
+        print id, model
+
         if model == 'question':
 
             query_model = Question.query.filter_by(id=id).first()
@@ -307,12 +311,17 @@ def upvote(model, id):
                 db.session.commit()
                 db.session.refresh(query_model)
 
+        print query_model.downvote_count
         return json.dumps({'status': 'OK', 'likes': query_model.upvote_count})
 
-@app.route('/downvote/<string:model>/id/<int:id>', methods=['GET', 'POST'])
-def downvote(model, id):
-    print model
-    if request.method == "POST":
+@app.route('/downvote', methods=['GET'])
+def downvote():
+    if request.method == "GET":
+
+        id = request.args.get('id')
+        model = request.args.get('model')
+        print id, model
+
         if model == 'question':
 
             query_model = Question.query.filter_by(id=id).first()
@@ -338,6 +347,7 @@ def downvote(model, id):
                 db.session.commit()
                 db.session.refresh(query_model)
 
+        print query_model.downvote_count
         return json.dumps({'status': 'OK', 'likes': query_model.downvote_count})
 
 @app.route('/questions/write/user/<string:username>', methods=['GET', 'POST'])
