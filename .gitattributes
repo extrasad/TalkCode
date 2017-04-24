@@ -1,2 +1,12 @@
 ./app/static/google-code-prettify/* linguist-vendored
 ./app/static/codemirror/* linguist-vendored
+./app/static/codemirror/lib/* linguist-vendored
+./app/static/js/bootstrap-material-datetime.js linguist-vendored=false
+./app/static/js/bootstrap.js linguist-vendored=false
+./app/static/js/cm.js linguist-vendored=false
+./app/static/js/datapicker.js linguist-vendored=false
+./app/static/js/prettify.js linguist-vendored=false
+./app/static/js/ripples.min.js linguist-vendored=false
+./app/static/js/moment.js linguist-vendored=false
+./app/static/js/material.min.js linguist-vendored=false
+./app/static/js/jquery-2.2.4.min.js linguist-vendored=false
