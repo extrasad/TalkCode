@@ -1,3 +1,2 @@
-linguist-language=Python
-codemirror/* linguist-vendored
-google-code-prettify/* linguist-vendored
+./app/static/codemirror/* linguist-vendored
+./app/static/google-code-prettify/* linguist-vendored
