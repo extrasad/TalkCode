@@ -1,1 +1,3 @@
 linguist-language=Python
+codemirror/* linguist-vendored
+google-code-prettify/* linguist-vendored
