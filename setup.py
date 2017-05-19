@@ -27,7 +27,7 @@ setup(
         'flask_migrate',
         'flask-login',
         'alembic',
-        'pycountry',
+        'pycountry==1.5',
         'flask_wtf',
         'wtforms_components',
         'wtforms',

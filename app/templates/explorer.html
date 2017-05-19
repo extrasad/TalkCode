@@ -1,0 +1,16 @@
+{% extends 'base/base.html' %}
+    {% set title = 'Explorer' %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <ul>
+            {% if users %}
+                {% for user in users %}
+                <li><a href="{{ url_for('user', username=user.username) }}">{{user.username}}</a></li>
+                {% endfor %}
+            {% endif %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

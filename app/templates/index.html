@@ -16,11 +16,14 @@
         <hr class="style14">
         {% if Questions %}
           {% for q in Questions %}
-              <h5>{{ q.title }}</h5>
-              <span><i class="icon-time"></i> {{ q.get_createdate }}</span>
-          {% else %}
-              <h5>Follow more people for see questions..</h5>
+              <h5><a href=" {{ url_for('questions', id=q.id) }}">{{q.title }}</a></h5>
+              {% if q.get_createdate%}
+                <span><i class="icon-time"></i> {{ q.get_createdate }}</span>
+              {% endif %}
+              <hr>
           {% endfor %}
+          {%else%}
+              <h5>Follow more people for see questions..</h5>
         {% endif %}
           </div>
         </div>
@@ -31,14 +34,17 @@
           <div class="well well-sm">
         <h4>Answers:</h4>
         <hr class="style14">
-          {% if Answers %}
-            {% for a in Answers %}
-            <h5>{{ a.answer }}</h5>
-            <span><i class="icon-time"></i> {{ a.get_createdate }}</span>
-            {%else%}
-                <h5>Follow more people for see answer..</h5>
-            {% endfor %}
-          {%endif%}
+        {% if Answers %}
+          {% for q in Answers %}
+              <h5><a href=" {{ url_for('questions', id=q.id_question) }}">{{ q.answer }}</a></h5>
+              {% if q.get_createdate%}
+                <span><i class="icon-time"></i> {{ q.get_createdate }}</span>
+              {% endif %}
+              <hr>
+          {% endfor %}
+          {%else%}
+              <h5>Follow more people for see answers..</h5>
+        {% endif %}
           </div>
         </div>
     </div>
@@ -49,13 +55,16 @@
         <h4>Snippets:</h4>
         <hr class="style14">
         {% if Snippets %}
-          {% for s in Snippets %}
-            <h5>{{ s.title }}</h5>
-            <span><i class="icon-time"></i> {{ s.get_createdate }}</span>
-            {%else%}
-                <h5>Follow more people for see snippets..</h5>
+          {% for q in Snippets %}
+              <h5><a href="{{ url_for('snippets', id=q.id) }}">{{q.title }}</a></h5>
+              {% if q.get_createdate%}
+                <span><i class="icon-time"></i> {{ q.get_createdate }}</span>
+              {% endif %}
+              <hr>
           {% endfor %}
-        {%endif%}
+          {%else%}
+              <h5>Follow more people for see snippets..</h5>
+        {% endif %}
           </div>
         </div>
        </div>
@@ -136,7 +145,7 @@ server.listen(1337);
           <hr class="style14">  
           <h4>Explore other users and their creations, follow those you want</h4>
           <br>
-          <button class="btn btn-raised"><a href="{# url_for('explorer') #}">Explorer!</a></button>
+          <button class="btn btn-raised"><a href="{{ url_for('explorer') }}">Explorer!</a></button>
     <center>
 </div>
 

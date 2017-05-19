@@ -7,11 +7,21 @@ class Config(object):
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = 'mysql://root@localhost/talkcode?charset=utf8&use_unicode=0'
+    SQLALCHEMY_DATABASE_URI = 'mysql://root:123456@localhost/talkcode?charset=utf8&use_unicode=0'
     SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'migrations')
+    PDF_PATH = b'C:\Program Files\wkhtmltopdf\\bin\wkhtmltopdf.exe'
     MYSQL_USER = 'root'
-    MYSQL_PASSWORD = ''
+    MYSQL_PASSWORD = '123456'
     MYSQL_DB = 'talkcode'
+    MYSQL_HOST = 'localhost'
+    MYSQL_PORT = 3306
+    MYSQL_CONNECT_TIMEOUT = 10
+    MYSQL_UNIX_SOCKET = None
+    MYSQL_READ_DEFAULT_FILE = None
+    MYSQL_CHARSET = "utf8"
+    MYSQL_USE_UNICODE = True
+    MYSQL_SQL_MODE = None
+    MYSQL_CURSORCLASS = None
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ECHO = False
     SEND_FILE_MAX_AGE_DEFAULT = 0

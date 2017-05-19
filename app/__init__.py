@@ -22,16 +22,14 @@ csrf = CsrfProtect()
 assets = Environment(app)
 create_assets(assets)
 
-engine = create_engine("mysql://root@localhost/talkcode?charset=utf8&use_unicode=0")
+engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
 if not database_exists(engine.url):
     create_database(engine.url)
 
 db.init_app(app)
 csrf.init_app(app)
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
-security = Security(app, user_datastore,
-                    register_form=SecurityRegisterForm)
-
+security = Security(app, user_datastore, register_form=SecurityRegisterForm)
 create_security_admin(app=app, path=path)
 
 with app.app_context():

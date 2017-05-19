@@ -18,7 +18,7 @@ Packages Required
 * flask_migrate
 * flask-login
 * alembic
-* pycountry
+* pycountry==1.5
 * flask_wtf
 * wtforms_components
 * wtforms
@@ -34,8 +34,8 @@ Run database and migrate repository
 
 
 ```python
-python migration.py init
-python migration.py update
+python manage.py db init
+python manage.py db upgrade
 
 ```
 

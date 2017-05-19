@@ -3,16 +3,12 @@ from . import app, user_datastore, security
 from flask import request, render_template, session, redirect, url_for, flash, jsonify, json, make_response, current_app
 from form import *
 from models import *
-from flask_mysqldb import MySQL
 from decorator_and_utils import *
 from sqlalchemy import desc
 from sqlalchemy.sql import func
 from flask_security import utils, login_required, current_user
 
 import pdfkit 
-
-
-mysql = MySQL()
 
 @app.before_first_request
 def before_first_request():
@@ -43,51 +39,37 @@ def before_first_request():
 
 @app.errorhandler(404)
 def page_not_found(e):
-    """"No found"""
-    return redirect(url_for('index')), 404
+    return redirect(url_for('index')), 404 # No found
+
 
 @app.route('/', methods=['GET'])
 def index():
-    #  if not current_user.is_authenticated:
-
     if current_user.is_authenticated:
         UserDate = User.query.filter_by(username=current_user.username).first()
-
-
     Questions = UserDate.followed_question().limit(5) if current_user.is_authenticated \
-                else db.session.query(Question). \
-                                                        order_by(func.avg(Question.create_date)). \
-                                                        limit(5)
-
+                    else exec_query('SELECT * FROM user_question ORDER BY user_question.create_date DESC LIMIT 5')
     Answers = UserDate.followed_answer().limit(5) if current_user.is_authenticated \
-                else db.session.query(AnswerLong). \
-                                                        order_by(func.avg(AnswerLong.create_date)). \
-                                                        limit(5)
-
+                    else exec_query('SELECT * FROM user_answer_long ORDER BY user_answer_long.create_date DESC LIMIT 5')
     Snippets = UserDate.followed_snippet().limit(5) if current_user.is_authenticated \
-                else db.session.query(Snippet). \
-                                                        order_by(func.avg(Snippet.create_date)). \
-                                                        limit(5)
+                    else exec_query('SELECT * FROM user_snippet ORDER BY user_snippet.create_date DESC LIMIT 5')
 
     return render_template('index.html',
                             Questions=Questions,
                             Answers=Answers,
                             Snippets=Snippets,
-                            button='btn btn-info, btn-raised',
                             username=current_user.username if current_user.is_authenticated else 'Friend')
-                          
 
+                          
 @app.route('/user/<string:username>/curriculum', methods=['GET'])
 @login_required
 def curriculum(username):
      rendered = render_template('user/pdfcv.html')
-     path_wkthmltopdf = b'C:\Program Files\wkhtmltopdf\\bin\wkhtmltopdf.exe'
+     path_wkthmltopdf = app.config['PDF_PATH']
      config = pdfkit.configuration(wkhtmltopdf=path_wkthmltopdf)
      pdf = pdfkit.from_string(rendered, output_path=False, configuration=config)
      response = make_response(pdf)
      response.headers['Content-Type'] = 'application/pdf'
      response.headers['Content-Disposition'] = 'inline; filename=output.pdf'
-
      return response
 
 
@@ -645,15 +627,11 @@ def delete_skill(id):
     return redirect(url_for('setting_curriculum'))
 
 
+@app.route('/explorer', methods=['GET'])
+def explorer():
+    users = db.session.query(User).all()
+    return render_template('explorer.html', users=users)
+
 @app.route('/about', methods=['GET'])
 def about():
     return render_template('about.html')
-
-
-@app.route('/query/question')
-def query_question():
-    cur = mysql.connection.cursor()
-    cur.execute('Select a.title, a.create_date from user_question as a,\
-                user as b where a.id_user = 1 and b.id = 1 order by a.create_date limit 5')
-    rv = cur.fetchall()
-    return jsonify(questions=rv)

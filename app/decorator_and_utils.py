@@ -1,14 +1,24 @@
 # coding=utf-8
+from flask_mysqldb import MySQL
+from flask import jsonify
 from functools import wraps
 from flask import redirect, url_for, session
 from urlparse import urlparse
-import pycountry
-import re
-import os.path
+import json, pycountry, re, os.path
+
+mysql = MySQL()
 
 list_website = ['github', 'facebook', 'twitter',
                 'tumblr', 'plus.google', 'google',
                 'linkedin', 'reddit']
+
+
+def exec_query(query_string):
+    cur = mysql.connection.cursor()
+    cur.execute(query_string)
+    r = [dict((cur.description[i][0], value) for i, value in enumerate(row)) for row in cur.fetchall()]
+    cur.close()
+    return r
 
 
 def know_website(anchor):

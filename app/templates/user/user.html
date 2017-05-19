@@ -24,9 +24,6 @@
     <h6>University: {% if not CurriculumDate %} <spam class="text-info"> Add in curriculum.</spam> {% else  %}{{CurriculumDate.university | capitalize}} {% endif %}</h6>
     <span class="card-text">{{CurriculumDate.description | capitalize}}</span>
 
-
-
-
   {% if CRUD %}
   <a href="{{ url_for('setting_curriculum') }}" class=" btn  btn-raised btn-xs">Curriculum</a>
   {% endif %}

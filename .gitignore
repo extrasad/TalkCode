@@ -12,6 +12,7 @@
 *.png
 *.jpg
 *.json
-
+build/
+dist/
 migrations/
 app/static/.webassets-cache/
