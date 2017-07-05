@@ -60,19 +60,6 @@ def index():
                             username=current_user.username if current_user.is_authenticated else 'Friend')
 
                           
-@app.route('/user/<string:username>/curriculum', methods=['GET'])
-@login_required
-def curriculum(username):
-     rendered = render_template('user/pdfcv.html')
-     path_wkthmltopdf = app.config['PDF_PATH']
-     config = pdfkit.configuration(wkhtmltopdf=path_wkthmltopdf)
-     pdf = pdfkit.from_string(rendered, output_path=False, configuration=config)
-     response = make_response(pdf)
-     response.headers['Content-Type'] = 'application/pdf'
-     response.headers['Content-Disposition'] = 'inline; filename=output.pdf'
-     return response
-
-
 @app.route('/user/<string:username>', methods=['GET', 'POST'])
 def user(username):
     UserDate = User.query.filter_by(username=username).first()
@@ -331,6 +318,7 @@ def downvote():
 
         print query_model.downvote_count
         return json.dumps({'status': 'OK', 'likes': query_model.downvote_count})
+
 
 @app.route('/questions/write/user/<string:username>', methods=['GET', 'POST'])
 @login_required
@@ -631,6 +619,7 @@ def delete_skill(id):
 def explorer():
     users = db.session.query(User).all()
     return render_template('explorer.html', users=users)
+
 
 @app.route('/about', methods=['GET'])
 def about():
