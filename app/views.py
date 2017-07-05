@@ -8,7 +8,6 @@ from sqlalchemy import desc
 from sqlalchemy.sql import func
 from flask_security import utils, login_required, current_user
 
-import pdfkit 
 
 @app.before_first_request
 def before_first_request():
