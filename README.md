@@ -11,7 +11,6 @@ Packages Required
 * flask_sqlalchemy
 * flask-assets
 * flask-security
-* pdfkit
 * sqlalchemy
 * sqlalchemy_utils
 * flask_script
@@ -38,5 +37,3 @@ python manage.py db init
 python manage.py db upgrade
 
 ```
-
-**Import**: pdfkit need [wkhtmltopdf](http://wkhtmltopdf.org/downloads.html)
