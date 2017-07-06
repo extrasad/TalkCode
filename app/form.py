@@ -3,6 +3,8 @@ from wtforms import *
 from wtforms.fields.html5 import EmailField
 from flask_security.forms import RegisterForm
 from wtforms.widgets import TextArea
+from app import db, User
+
 import pycountry
 
 
@@ -30,6 +32,19 @@ class SecurityRegisterForm(RegisterForm):
         validators.Regexp('^\w+$', message="Regex: Username must contain only letters numbers or underscore"),
         validators.DataRequired(message='El campo esta vacio.'),
         validators.length(min=5, message='Min 5 letter, Try Again')])
+
+    def validate(self):
+        #check for username because is unique
+        if db.session.query(User).filter(User.username == self.username.data.strip()).first():
+            self.username.errors = list(self.username.errors)
+            self.username.errors.append('The username already use')
+            return False
+
+        #now check for Flask-Security validate functions
+        if not super(SecurityRegisterForm, self).validate():
+            return False
+
+        return True
 
 
 class PersonalForm(Form):

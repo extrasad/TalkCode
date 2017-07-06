@@ -17,7 +17,6 @@
         <button class="btn btn-raised btn-success btn-xs"><a href="{{ url_for('follow', username=UserDate.username) }}">Follow</a></button>
         <button class="btn btn-raised btn-danger  btn-xs"><a href="{{ url_for('unfollow', username=UserDate.username) }}">Unfollow</a></button>
     {% endif %}
-        <button class="btn btn-raised btn-xs"><a href="{{ url_for('curriculum', username=UserDate.username) }}">See Curriculum PDF</a></button>
     </ul>
   </div>
     <h4 class="h4">{{CurriculumDate.tittle | capitalize}}</h4>
