@@ -219,76 +219,64 @@ def questions(id):
 
 @app.route('/upvote', methods=['GET'])
 def upvote():
+    double_click = False # Flow control, if there is already a like of the user then no other like
+
     if request.method == "GET":
 
         id = request.args.get('id')
         model = request.args.get('model')
-        print id, model
 
         if model == 'question':
-
             query_model = Question.query.filter_by(id=id).first()
-            user_in_query_upvote = query_model.query.filter(Upvote.users_upvote.any(id_user=current_user.id)).count() > 0
-
-            if user_in_query_upvote == False:
-                print 'meter'
-                query_model.upvote.append(Upvote(id_user=current_user.id))
-                db.session.commit()
-            else:
-                print 'sacar'
-                query_model.upvote_count -= 1
-                db.session.commit()
-                db.session.refresh(query_model)
-
         elif model == 'answer':
             query_model = AnswerLong.query.filter_by(id=id).first()
-            user_in_query_upvote = query_model.query.filter(Answer_Upvote.users_answer_upvote.any(id_user=current_user.id)).count() > 0
 
-            if user_in_query_upvote == False:
+        for record in query_model.upvote:
+            if record.id_user == current_user.id:
+                query_model.upvote.remove(record)
+                db.session.commit()
+
+                double_click = True
+
+        if not double_click:
+            if isinstance(query_model, AnswerLong):
                 query_model.upvote.append(Answer_Upvote(id_user=current_user.id))
-                db.session.commit()
-            else:
-                query_model.upvote_count -= 1
-                db.session.commit()
-                db.session.refresh(query_model)
+            elif isinstance(query_model, Question):
+                query_model.upvote.append(Upvote(id_user=current_user.id))
 
-        print query_model.downvote_count
+            db.session.commit()
+
         return json.dumps({'status': 'OK', 'likes': query_model.upvote_count})
 
 @app.route('/downvote', methods=['GET'])
 def downvote():
+    double_click = False # Flow control, if there is already a like of the user then no other like
+
     if request.method == "GET":
 
         id = request.args.get('id')
         model = request.args.get('model')
-        print id, model
 
         if model == 'question':
-
             query_model = Question.query.filter_by(id=id).first()
-            user_in_query_downvote = query_model.query.filter(Downvote.users_downvote.any(id_user=current_user.id)).count() > 0
-
-            if user_in_query_downvote == False:
-                query_model.downvote.append(Downvote(id_user=current_user.id))
-                db.session.commit()
-            else:
-                query_model.downvote_count -= 1
-                db.session.commit()
-                db.session.refresh(query_model)
-
         elif model == 'answer':
             query_model = AnswerLong.query.filter_by(id=id).first()
-            user_in_query_downvote = query_model.query.filter(Answer_Downvote.users_answer_downvote.any(id_user=current_user.id)).count() > 0
 
-            if user_in_query_downvote == False:
+        for record in query_model.downvote:
+            if record.id_user == current_user.id:
+                query_model.downvote.remove(record)
+                db.session.commit()
+
+                double_click = True
+
+        if not double_click:
+            if isinstance(query_model, AnswerLong):
                 query_model.downvote.append(Answer_Downvote(id_user=current_user.id))
-                db.session.commit()
-            else:
-                query_model.downvote_count -= 1
-                db.session.commit()
-                db.session.refresh(query_model)
+            elif isinstance(query_model, Question):
+                query_model.downvote.append(Downvote(id_user=current_user.id))
 
-        print query_model.downvote_count
+            db.session.commit()
+
         return json.dumps({'status': 'OK', 'likes': query_model.downvote_count})
 
 
@@ -495,19 +483,20 @@ def delete_snippet(id):
 @app.route('/star/<int:id>', methods=['GET', 'POST'])
 def star(id):
     if request.method == "POST":
-        UserSession = User.query.filter_by(username=current_user.username).first()
+        double_click = False
         QuerySnippet = Snippet.query.filter_by(id=id).first()
-        user_in_query_star = Star.query.filter(Star.users_snippet_star.any(id_user=UserSession.id)).one_or_none()
-        print user_in_query_star
-        if user_in_query_star == None:
-            print user_in_query_star
+
+        for record in QuerySnippet.star:
+            if record.id_user == current_user.id:
+                QuerySnippet.star.remove(record)
+                db.session.commit()
+
+                double_click = True
+
+        if not double_click:
             QuerySnippet.star.append(Star(id_user=current_user.id))
             db.session.commit()
-        else:
-            print user_in_query_star
-            QuerySnippet.star_count -= 1
-            db.session.commit()
-            db.session.refresh(QuerySnippet)
+
         return json.dumps({'status': 'OK', 'likes': QuerySnippet.star_count})
 
 

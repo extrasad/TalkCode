@@ -194,9 +194,11 @@ class Question(db.Model):
     def downvote_count(self):
         return func.count('1')
 
-    upvote = db.relationship('Upvote', secondary=question_upvote, backref=db.backref('users_upvote'))
+    upvote = db.relationship('Upvote', secondary=question_upvote,
+                             backref=db.backref('users_upvote'))
 
-    downvote = db.relationship('Downvote', secondary=question_downvote, backref=db.backref('users_downvote'))
+    downvote = db.relationship('Downvote', secondary=question_downvote,
+                               backref=db.backref('users_downvote'))
 
 
     @property
@@ -331,9 +333,7 @@ class Snippet(db.Model):
     def star_count(self):
         return func.count('1')
 
-
     star = db.relationship('Star', secondary=snippet_has_star, backref=db.backref('users_snippet_star'))
-
 
     @property
     def get_createdate(self):
