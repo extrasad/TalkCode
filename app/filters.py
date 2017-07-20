@@ -1,7 +1,3 @@
-from . import app
-import re
-
-@app.template_filter('superwordwrap')
 def superwordwrap(text,  width=79, break_long_words=True):
     """
        Return a copy of the string passed to the filter wrapped after
@@ -9,7 +5,7 @@ def superwordwrap(text,  width=79, break_long_words=True):
        parameter.  If you set the second parameter to `false` Jinja will not
        split words apart if they are longer than `width`.
        """
-    import textwrap
+    import textwrap, re
     accumulator = []
     for component in re.split(r"\r?\n", text):
         # textwrap will eat empty strings for breakfirst. Therefore we route them around it.

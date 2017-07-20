@@ -1,12 +1,7 @@
 # coding=utf-8
-from app import app
+from app import create_app, socketio
 
-def run_https():
-    from werkzeug.serving import make_ssl_devcert
-    make_ssl_devcert('./ssl', host='localhost')
-    app.run(debug=True, ssl_context=('./ssl.crt', './ssl.key'))
+app = create_app()
 
-def run_http():
-    app.run(port=8000, debug=True)
-
-run_http()
+if __name__ == '__main__':
+    socketio.run(app, debug=True, port=8000)

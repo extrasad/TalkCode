@@ -2,11 +2,15 @@
    <div class="label-static">
       {% for skill in SkillDate %}
          <input type="text" class="form-litle" style="display:inline-block; width:85%; margin:0 5px 10px 5px" disabled value="{{skill.skill_name}}">
-         <button class="btn btn-danger btn-sm btn-raised" type="button" ><a href="{{ url_for('delete_skill', id=skill.id) }}"><i class="icon-remove"></i></a></button>
+         <button class="btn btn-danger btn-sm btn-raised" type="button" >
+             <a href="{{ url_for('main.delete_skill', id=skill.id) }}">
+                 <i class="icon-remove"></i>
+             </a>
+         </button>
       {% endfor %}
    </div>
    <hr>
-   <form action="{{ url_for('skill', id=current_user.id) }}" method="POST">
+   <form action="{{ url_for('main.skill', id=current_user.id) }}" method="POST">
      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
             {{ formskill.skill_name(class='form-control', value='Python') }}
    <button class="btn btn-sm btn-raised" type="submit">Save Your Skill!</button>

@@ -60,6 +60,13 @@ def create_assets(assets):
         output='js/prettify.js'
     )
 
+    socketsjs = Bundle(
+        'js/socket.io.js',
+        'js/app.js',
+        filters='rjsmin',
+        output='js/socket_application.js'
+    )
+
 
     assets.register('js_main', js)
     assets.register('css_main', css)
@@ -72,3 +79,5 @@ def create_assets(assets):
     
     assets.register('css_pr', codepretiffycss)
     assets.register('js_pr', codecodepretiffyjs)
+
+    assets.register('js_socket', socketsjs)

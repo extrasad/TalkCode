@@ -1,43 +1,16 @@
 # coding=utf-8
-from . import app, user_datastore
-from flask import request, render_template, flash, json
+from flask import request, render_template, flash, json,\
+    Blueprint, redirect, url_for, jsonify
+
+from flask_security import login_required, current_user
+
 from form import *
 from models import *
-from decorator_and_utils import *
+from utils import *
 from sqlalchemy import desc
-from flask_security import utils, login_required, current_user
 
 
-@app.before_first_request
-def before_first_request():
-    # Create the Roles "admin" and "end-user" -- unless they already exist
-    user_datastore.find_or_create_role(name='admin', description='Administrator')
-    user_datastore.find_or_create_role(name='end-user', description='End user')
-
-    # Create two Users for testing purposes -- unless they already exists.
-    encrypted_password = utils.encrypt_password('password')
-    if not user_datastore.get_user('someone@example.com'):
-        user_datastore.create_user(username='kathorq',
-                                   password=encrypted_password,
-                                   email='someone@example.com')
-    if not user_datastore.get_user('admin@example.com'):
-        user_datastore.create_user(username='carlosjazz',
-                                   password=encrypted_password,
-                                   email='admin@example.com')
-
-    # Commit any database changes; the User and Roles must exist before we can add a Role to the User
-    db.session.commit()
-
-    # Give one User has the "end-user" role, while the other has the "admin" role. (This will have no effect if the
-    # Users already have these Roles.) Again, commit any database changes.
-    user_datastore.add_role_to_user('someone@example.com', 'end-user')
-    user_datastore.add_role_to_user('admin@example.com', 'admin')
-    db.session.commit()
-
-
-@app.errorhandler(404)
-def page_not_found(e):
-    return redirect(url_for('index')), 404 # No found
+app = Blueprint('main', __name__)
 
 
 @app.route('/', methods=['GET'])
@@ -131,7 +104,7 @@ def setting_personal():
     if request.method == 'POST':
         if form.validate(model):
             flash('Personal information update', 'success')
-            return redirect(url_for('user', username=current_user.username))
+            return redirect(url_for('main.user', username=current_user.username))
         else:
             flash('Any field empty?', 'danger')
 
@@ -149,7 +122,7 @@ def setting_curriculum():
     if request.method == 'POST':
         if form.validate(model):
             flash('Curriculum information update', 'success')
-            return redirect(url_for('user', username=current_user.username))
+            return redirect(url_for('main.user', username=current_user.username))
         else:
             flash('Any field empty?', 'danger')
 
@@ -178,7 +151,7 @@ def questions(id):
     all_Answers = AnswerLong.query.filter_by(id_question=id).all()  # ALL ANSWERS
 
     for answer in all_Answers:
-        answer.create_date = str(answer.create_date).split(" ")[0]
+        answer.create_date = answer.create_date.get_createdate
         
     lang = know_mode_exist(Tag_data.tag_one, Tag_data.tag_two, Tag_data.tag_three)  # Check if exist lang
 
@@ -203,7 +176,7 @@ def questions(id):
         db.session.add(answer_new)
         db.session.commit()
         flash('New answer!', 'success')
-        return redirect(url_for('questions', id=id))
+        return redirect(url_for('main.questions', id=id))
 
     return render_template('questions/question.html',
                            Answers=all_Answers,
@@ -218,6 +191,7 @@ def questions(id):
 
 
 @app.route('/upvote', methods=['GET'])
+@login_required
 def upvote():
     double_click = False # Flow control, if there is already a like of the user then no other like
 
@@ -249,6 +223,7 @@ def upvote():
         return json.dumps({'status': 'OK', 'likes': query_model.upvote_count})
 
 @app.route('/downvote', methods=['GET'])
+@login_required
 def downvote():
     double_click = False # Flow control, if there is already a like of the user then no other like
 
@@ -307,7 +282,7 @@ def create_question(username):
 
         flash('Perfect', 'info')
 
-        return redirect(url_for('questions', id=question_new.id))
+        return redirect(url_for('main.questions', id=question_new.id))
     return render_template('questions/create_question.html', form=new_QuestionForm)
 
 
@@ -335,13 +310,13 @@ def edit_question(id):
             db.session.add(QuestionQuerySet)
             db.session.commit()
         flash('Edit ready!', 'success')
-        return redirect(url_for('questions', id=id))
+        return redirect(url_for('main.questions', id=id))
     elif len(new) < 3:
         flash('Forgot a field?', 'danger')
-        return redirect(url_for('questions', id=id))
+        return redirect(url_for('main.questions', id=id))
     else:
         flash('Are you sure you made any changes?', 'danger')
-        return redirect(url_for('questions', id=id))
+        return redirect(url_for('main.questions', id=id))
 
 
 @app.route('/questions/delete/id/<int:id>', methods=['GET', 'POST'])
@@ -351,7 +326,7 @@ def delete_question(id):
     db.session.delete(delete_Question)
     db.session.commit()
     flash('Deleted!', 'success')
-    return redirect(url_for('user', username=current_user.username))
+    return redirect(url_for('main.user', username=current_user.username))
 
 
 @app.route('/snippets', methods=['GET', 'POST'])
@@ -371,7 +346,6 @@ def snippets(id):
     snippet_data = db.session.query(Snippet).filter(Snippet.id == id).first()  # SNIPPET
     User_data = User.query.filter_by(id=snippet_data.id_user).first()  # USER
     Tag_data = TagSnippet.query.filter_by(id_snippet=snippet_data.id).first()  # TAG
-    create_date = str(snippet_data.create_date).split(" ")[0]  # DATE FORMATE
     lang = know_lang(know_file_extension(snippet_data.title))
 
     if current_user.is_authenticated:
@@ -383,19 +357,9 @@ def snippets(id):
                                    Snippet_data=snippet_data,
                                    Tag=Tag_data,
                                    lang=lang,
-                                   create_date=create_date,
+                                   create_date=snippet_data.get_createdate,
                                    new_SnippetForm=new_SnippetForm,
                                    CRUD=True)
-
-    if request.method == 'POST' and new_comment_form.validate():
-        comment_text = new_comment_form.comment.data
-        comment_new = CommentSnippet(current_user.id, snippet_data.id,
-                                     comment_text.upper())
-
-        db.session.add(comment_new)
-        db.session.commit()
-        flash('New comment!', 'success')
-        return redirect(url_for('snippets', id=id))
 
     all_Comments = CommentSnippet.query.filter_by(id_snippet=id).all()  # ALL COMMENT
     return render_template('snippets/snippet.html',
@@ -405,7 +369,7 @@ def snippets(id):
                            Snippet_data=snippet_data,
                            Tag=Tag_data,
                            lang=lang,
-                           create_date=create_date,
+                           create_date=snippet_data.get_createdate,
                            new_SnippetForm=new_SnippetForm,
                            CRUD=False,
                            is_authenticated=True if current_user.is_authenticated else False)
@@ -435,13 +399,13 @@ def edit_snippet(id):
             db.session.add(SnippetQuerySet)
             db.session.commit()
         flash('Edit ready!', 'success')
-        return redirect(url_for('snippets', id=id))
+        return redirect(url_for('main.snippets', id=id))
     elif len(new) < 3:
         flash('Forgot a field?', 'danger')
-        return redirect(url_for('snippets', id=id))
+        return redirect(url_for('main.snippets', id=id))
     else:
         flash('Are you sure you made any changes?', 'danger')
-        return redirect(url_for('snippets', id=id))
+        return redirect(url_for('main.snippets', id=id))
 
 
 @app.route('/snippets/write/user/<string:username>', methods=['GET', 'POST'])
@@ -467,20 +431,54 @@ def create_snippet(username):
         db.session.commit()
         flash('Perfect', 'info')
         id = db.session.query(Snippet.id).filter(Snippet.id_user == current_user.id, Snippet.title == title).first()
-        return redirect(url_for('snippets', id=id[0]))
+        return redirect(url_for('main.snippets', id=id[0]))
     return render_template('snippets/create_snippet.html', form=new_SnippetForm)
 
 
 @app.route('/snippets/delete/id/<int:id>', methods=['GET', 'POST'])
+@login_required
 def delete_snippet(id):
     delete_Snippet = db.session.query(Snippet).filter(Snippet.id == id).first()
     db.session.delete(delete_Snippet)
     db.session.commit()
     flash('Deleted!', 'success')
-    return redirect(url_for('user', username=current_user.username))
+    return redirect(url_for('main.user', username=current_user.username))
+
+
+@app.route('/snippets/<int:id>/comment', methods=['POST'])
+def create_comment_snippet(id):
+    # Create snippet comment via Ajax
+    comment = request.get_json()
+
+    # Create comment
+    comment_new = CommentSnippet(current_user.id, id, comment['comment_text'])
+    db.session.add(comment_new)
+    db.session.commit()
+
+    id_user = db.session.query(Snippet.id_user).filter_by(id=id).first()
+
+    # Create notification for the user
+    notification_state = create_notification(id_user[0],
+                        "%s commented on your snippet" % current_user.username,
+                        "/snippets/id/%s" % id)
+
+    if notification_state[0] is not False:
+        socketNotification = True
+        notification = notification_state[1]
+    else:
+        socketNotification = False
+        notification = False
+
+    return jsonify({
+        "create": True,
+        "socketNotification": socketNotification, # If true the client should emit socket event
+        "notification": notification,
+        "sid": notification_state[0]
+    }), 200
 
 
 @app.route('/star/<int:id>', methods=['GET', 'POST'])
+@login_required
 def star(id):
     if request.method == "POST":
         double_click = False
@@ -507,18 +505,18 @@ def follow(username):
     user = User.query.filter_by(username=username).first()
     if user is None:
         flash('User %s not found.' % username,  'danger')
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
     if user.id == UserSession.id:
         flash('You can\'t follow yourself!',  'danger')
-        return redirect(url_for('user', username=username))
+        return redirect(url_for('main.user', username=username))
     u = UserSession.follow(user)
     if u is None:
         flash('Cannot follow ' + username + '.',  'danger')
-        return redirect(url_for('user', username=username))
+        return redirect(url_for('main.user', username=username))
     db.session.add(u)
     db.session.commit()
     flash('You are now following ' + username + '!',  'success')
-    return redirect(url_for('user', username=username))
+    return redirect(url_for('main.user', username=username))
 
 
 @app.route('/unfollow/<username>')
@@ -528,26 +526,27 @@ def unfollow(username):
     user = User.query.filter_by(username=username).first()
     if user is None:
         flash('User %s not found.' % username,  'danger')
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
     if user.id == UserSession.id:
         flash('You can\'t unfollow yourself!',  'danger')
-        return redirect(url_for('user', username=username))
+        return redirect(url_for('main.user', username=username))
     u = UserSession.unfollow(user)
     if u is None:
         flash('Cannot unfollow ' + username + '.',  'danger')
-        return redirect(url_for('user', username=username))
+        return redirect(url_for('main.user', username=username))
     db.session.add(u)
     db.session.commit()
     flash('You have stopped following ' + username + '.',  'success')
-    return redirect(url_for('user', username=username))
+    return redirect(url_for('main.user', username=username))
 
 
 @app.route('/skill/id/<int:id>', methods=['GET', 'POST'])
+@login_required
 def skill(id):
     UserSession = User.query.filter_by(id=id).first()
     if Skill.query.filter_by(user_id=id).count() == 10:
         flash("You can not have more than 10 skill", 'warning')
-        return redirect(url_for('setting_curriculum'))
+        return redirect(url_for('main.setting_curriculum'))
     form = SkillForm(request.form)
     skill = form.skill_name.data
     if request.method == 'POST' and form.validate():
@@ -555,10 +554,10 @@ def skill(id):
         db.session.add(newskill)
         db.session.commit()
         flash("Saved Changes", 'success')
-        return redirect(url_for('setting_curriculum'))
+        return redirect(url_for('main.setting_curriculum'))
     else:
         flash("Error", 'danger')
-        return redirect(url_for('setting_curriculum'))
+        return redirect(url_for('main.setting_curriculum'))
 
 
 @app.route('/skill/delete/id/<int:id>', methods=['GET', 'POST'])
@@ -572,7 +571,7 @@ def delete_skill(id):
         db.session.delete(QuerySkill)
         db.session.commit()
         flash('Skill %s deleted!' % skillname, 'success')
-    return redirect(url_for('setting_curriculum'))
+    return redirect(url_for('main.setting_curriculum'))
 
 
 @app.route('/explorer', methods=['GET'])

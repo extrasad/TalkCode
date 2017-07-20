@@ -1,10 +1,14 @@
 # coding=utf-8
 from flask_mysqldb import MySQL
-from flask import jsonify
-from functools import wraps
-from flask import redirect, url_for, session
+from flask_security import current_user
+
 from urlparse import urlparse
-import json, pycountry, re, os.path
+
+from models import Notification, db
+from events import redis_store
+
+import pycountry, re, os.path
+
 
 mysql = MySQL()
 
@@ -12,6 +16,19 @@ list_website = ['github', 'facebook', 'twitter',
                 'tumblr', 'plus.google', 'google',
                 'linkedin', 'reddit']
 
+
+def create_notification(id_user, text, url):
+    # Create and check if redis have the user sid
+    notification = Notification(id_user=id_user, text=text, url=url)
+    db.session.add(notification)
+    db.session.commit()
+
+    socket_id = redis_store.get("user-%s" % id_user)
+
+    if redis_store.get("user-%s" % id_user) != 'nil':
+        return [socket_id, notification.serialize]
+    else:
+        return [False]
 
 def exec_query(query_string):
     cur = mysql.connection.cursor()

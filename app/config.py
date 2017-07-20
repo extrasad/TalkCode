@@ -8,6 +8,7 @@ class Config(object):
 class DevelopmentConfig(Config):
     SECRET_KEY = '123456'
     DEBUG = True
+    REDIS_URL = "redis://:@localhost:6379/0"
     SQLALCHEMY_DATABASE_URI = 'mysql://root:123456@localhost/talkcode?charset=utf8&use_unicode=0'
     SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'migrations')
     MYSQL_USER = 'root'

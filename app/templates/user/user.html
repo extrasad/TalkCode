@@ -14,8 +14,8 @@
     <li class="text-warning" style=""><i class="icon-chevron-down"></i> 0</li>
     <li class="text-success" style=""><i class="icon-chevron-up"></i> 0</li>
     {% if is_authenticated %}
-        <button class="btn btn-raised btn-success btn-xs"><a href="{{ url_for('follow', username=UserDate.username) }}">Follow</a></button>
-        <button class="btn btn-raised btn-danger  btn-xs"><a href="{{ url_for('unfollow', username=UserDate.username) }}">Unfollow</a></button>
+        <button class="btn btn-raised btn-success btn-xs"><a href="{{ url_for('main.follow', username=UserDate.username) }}">Follow</a></button>
+        <button class="btn btn-raised btn-danger  btn-xs"><a href="{{ url_for('main.unfollow', username=UserDate.username) }}">Unfollow</a></button>
     {% endif %}
     </ul>
   </div>
@@ -24,12 +24,12 @@
     <span class="card-text">{{CurriculumDate.description | capitalize}}</span>
 
   {% if CRUD %}
-  <a href="{{ url_for('setting_curriculum') }}" class=" btn  btn-raised btn-xs">Curriculum</a>
+  <a href="{{ url_for('main.setting_curriculum') }}" class=" btn  btn-raised btn-xs">Curriculum</a>
   {% endif %}
         {% if not PersonalDate %}
         <h6 class="text-info">Add your information in setting.</h6>
         {% if CRUD %}
-        <a href=" {{ url_for('setting_personal') }}" class="right btn  btn-raised btn-xs">Personal Setting</a>
+        <a href=" {{ url_for('main.setting_personal') }}" class="right btn  btn-raised btn-xs">Personal Setting</a>
         {% endif %}
         {% else %}
                 <span>{{PersonalDate.name | capitalize + " " + PersonalDate.last_name  | capitalize}}</span>

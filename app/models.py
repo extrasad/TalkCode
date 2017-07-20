@@ -1,9 +1,11 @@
 # coding=utf-8
 from flask_sqlalchemy import SQLAlchemy
+from flask_security import RoleMixin, UserMixin, current_user
+
 from sqlalchemy import UnicodeText, Date, Table, func
-from flask_security import RoleMixin, UserMixin
 from sqlalchemy_utils import aggregated
-import datetime
+
+import datetime, json
 
 db = SQLAlchemy()
 
@@ -47,14 +49,13 @@ class User(db.Model, UserMixin):
     create_date = db.Column(db.DateTime, default=datetime.datetime.now)
     last_login_at = db.Column(db.DateTime())
     current_login_at = db.Column(db.DateTime())
-    # Why 45 characters for IP Address ?
-    # See http://stackoverflow.com/questions/166132/maximum-length-of-the-textual-representation-of-an-ipv6-address/166157#166157
     last_login_ip = db.Column(db.String(45))
     current_login_ip = db.Column(db.String(45))
     login_count = db.Column(db.Integer)
     skills = db.relationship('Skill')
     curriculum_date = db.relationship('Curriculum_User')
     personal_date = db.relationship('Personal_User')
+    notifications = db.relationship('Notification')
     question = db.relationship('Question', backref='userquestion', lazy='dynamic')
     answer_longer = db.relationship('AnswerLong', backref='useranswer', lazy='dynamic')
     roles = db.relationship('Role', secondary=roles_users, backref=db.backref('users', lazy='dynamic'))
@@ -66,7 +67,7 @@ class User(db.Model, UserMixin):
                                lazy='dynamic')
 
     def __repr__(self):
-        return "<User(id='%s',name='%s', email='%s', password='%s')>" % \
+        return "<User(id='%s', name='%s', email='%s', password='%s')>" % \
                (self.id, self.username, self.email, self.password)
 
     def get_id(self):
@@ -112,6 +113,7 @@ class Skill(db.Model):
     def __init__(self, user_id, skill_name):
         self.user_id = user_id
         self.skill_name = skill_name
+
 
 class Personal_User(db.Model):
     __tablename__ = 'user_personal_info'
@@ -283,7 +285,6 @@ class AnswerLong(db.Model):
 
     downvote = db.relationship('Answer_Downvote', secondary=answer_has_downvote, backref=db.backref('users_answer_downvote'))
 
-
     @property
     def get_createdate(self):
         return str(self.create_date).split(" ")[0]
@@ -391,3 +392,20 @@ class CommentSnippet(db.Model):
     def get_username(self):
         username = db.session.query(User.username).filter_by(id=self.id_user).first()
         return username[0]
+
+
+class Notification(db.Model):
+    __tablename__ = 'notification'
+    id = db.Column(db.Integer, primary_key=True)
+    id_user = db.Column(db.Integer, db.ForeignKey('user.id'))
+    text = db.Column(db.String(160))
+    url = db.Column(db.String(480))
+    create_date = db.Column(db.DateTime, default=datetime.datetime.now)
+
+    @property
+    def serialize(self):
+        return json.dumps({
+            'text': self.text,
+            'url': self.url,
+            'date': str(self.create_date)
+        })

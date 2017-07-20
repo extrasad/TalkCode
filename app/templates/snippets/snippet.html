@@ -29,7 +29,7 @@
   {{ popupmessage('snippet', Snippet_data.id) }}
   <br>
   <div class="col-md-6">
-      <form action="{{ url_for('edit_snippet', id=Snippet_data.id) }}"  method="POST" >
+      <form action="{{ url_for('main.edit_snippet', id=Snippet_data.id) }}"  method="POST" >
       {% from "macros/_macro.html" import render_field %}
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
       {{ render_field(new_SnippetForm.tittle, class='form-snippet title', value=Snippet_data.title, disabled=false ) }}
@@ -38,7 +38,7 @@
      <li class="tag-question">{{Tag.tag_two}}</li>
      <li class="tag-question">{{Tag.tag_three}}</li>
      <li class="tag-question">{{ create_date }}</li>
-     <li class="tag-question user"><a style="color:white;" href="{{ url_for('user', username=User.username)}}">{{ User.username }}</a></li>
+     <li class="tag-question user"><a style="color:white;" href="{{ url_for('main.user', username=User.username)}}">{{ User.username }}</a></li>
      <li class="tag-question user">{{ Snippet_data.star_count }}</li>
   </div>
   <div class="col-md-2" style="margin-top:10px">
@@ -104,7 +104,7 @@
      <li class="tag-question">{{Tag.tag_two}}</li>
      <li class="tag-question">{{Tag.tag_three}}</li>
      <li class="tag-question">{{ create_date }}</li>
-     <li class="tag-question user"><a style="color:white;" href="{{ url_for('user', username=User.username)}}">{{ User.username }}</a></li>
+     <li class="tag-question user"><a style="color:white;" href="{{ url_for('main.user', username=User.username)}}">{{ User.username }}</a></li>
      <a class="tag-question user star">{{ Snippet_data.star_count }}</a>
   </div>
   <br>
@@ -143,7 +143,7 @@
     <div class="col-md-8">
        <br>
        <center><h4 class="text-pre-answer">Comenta <i class="icon-comments"></i></h4></center>
-       <form class="" method="POST">
+       <form id="form_comment_snippet" method="POST">
           {% from "macros/_macro.html" import render_field %}
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
           <div class="form-group">
@@ -164,7 +164,7 @@
       <div class="col-md-5">
 
       {% for comment in Comments %}
-          <h5><a href="{{ url_for('user', username=comment.get_username)}}">{{ comment.get_username }}</a></h5>
+          <h5><a href="{{ url_for('main.user', username=comment.get_username)}}">{{ comment.get_username }}</a></h5>
             <hr class="style4">
             <p>{{ comment.comment_text }}</p>
           <h6>{{ comment.get_createdate }}</h6>
@@ -201,26 +201,34 @@
   });
 </script>
 
-<script>
-    var csrftoken = $('meta[name=csrf-token]').attr('content')
+{% if current_user.is_authenticated %}
 
-    $.ajaxSetup({
-        beforeSend: function(xhr, settings) {
-            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
-                xhr.setRequestHeader("X-CSRFToken", csrftoken)
-            }
-        }
-    })
-$('.star').click(function(){
-  var scope = this;
-      $.ajax({
-              type: "POST",
-              url: "{{ url_for('star', id=Snippet_data.id) }}",
-              dataType: "json",
-              success: function(response){
-                  $('.star').text(response.likes);
-              }
-      })
-});
+    <script>
+        $(document).ready(function(){
+            var csrftoken = $('meta[name=csrf-token]').attr('content')
+            $.ajaxSetup({
+                beforeSend: function(xhr, settings) {
+                    if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken)
+                    }
+                }
+            });
+
+            App.form_comment_snippet({{ Snippet_data.id }});
+
+            $('.star').click(function(){
+                  $.ajax({
+                          type: "POST",
+                          url: "{{ url_for('main.star', id=Snippet_data.id) }}",
+                          dataType: "json",
+                          success: function(response){
+                              $('.star').text(response.likes);
+                          }
+                  })
+            });
+        });
 </script>
+
+{% endif %}
+
 {% endblock  %}

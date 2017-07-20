@@ -1,9 +1,11 @@
 # coding=utf-8
 from wtforms import *
+from wtforms.widgets import TextArea
+
 from flask_security import current_user
 from flask_security.forms import RegisterForm
-from wtforms.widgets import TextArea
-from app import db, User, Personal_User, Curriculum_User, Question
+
+from models import db, User, Personal_User, Curriculum_User
 
 import pycountry
 

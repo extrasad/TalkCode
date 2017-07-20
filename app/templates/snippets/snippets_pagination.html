@@ -12,7 +12,7 @@
 {% for snippet in snippets.items %}
     <div class="col-md-7">
           <h4 class="text-muted h4">
-            <a href="{{ url_for('snippets', id=snippet.id )}}">{{ snippet.title }}</a>
+            <a href="{{ url_for('main.snippets', id=snippet.id )}}">{{ snippet.title }}</a>
           </h4>
         <h6>{{snippet.create_date}}</h6>
         <p class="">{{ snippet.description }}</p>
@@ -25,13 +25,13 @@
     <div class="col-md-8">
         <ul class="pagination pagination-lg">
             {% if snippets.has_prev %}
-          <li><a href="{{ url_for('snippets_pagination', page=snippets.prev_num)}}"><i class="icon-chevron-left"></i></a></li>
+          <li><a href="{{ url_for('main.snippets_pagination', page=snippets.prev_num)}}"><i class="icon-chevron-left"></i></a></li>
             {% else %}
             {% endif %}
 
 
             {% if snippets.has_next %}
-          <li><a href="{{ url_for('snippets_pagination', page=snippets.next_num) }}"><i class="icon-chevron-right"></i></a></li>
+          <li><a href="{{ url_for('main.snippets_pagination', page=snippets.next_num) }}"><i class="icon-chevron-right"></i></a></li>
         </ul>
             {% else %}
     </div>

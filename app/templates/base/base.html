@@ -25,77 +25,68 @@
     <link href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300|Raleway" rel="stylesheet">
 </head>
 <body>
-            <div class="navbar navbar-default" style="background-color: rgb(205,205,205)">
-              <header class="container-fluid">
-                <div class="navbar-header">
-                  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                  </button>
-                  <a style="font-family:'Raleway'"class="navbar-brand" href="{{ url_for('index') }}">T a l k C o d e<div class="ripple-container"></div></a>
-                </div>
-                <div class="navbar-collapse navbar-responsive-collapse collapse" aria-expanded="false" style="height: 1px;">
-                  <ul class="nav navbar-nav">
-                    <li><a  class="btns navbarbtnleft"   href="{{ url_for('questions_pagination', page=1) }}">Questions</a></li>
-                    <li><a  class="btns navbarbtnleft"   href="{{ url_for('snippets_pagination' , page=1) }}">Snippets</a></li>
-                  </ul>
-                   <form class="navbar-form navbar-left" >
-                         <div class="label-static" style="display:flex !important">
-                           <input placeholder="Busca algo" id="search"class="search-form">
-                           <button type="submit" style="margin: 0px 5px 0px 0px; height: auto; padding: 0 10px 0 10px;" class="btns btn-search" name="button"><i class="icon-search"></i></button>
-                         </div>
-                   </form>
-                  <ul class="nav navbar-nav navbar-right">
-                    {% if not current_user.is_authenticated %}
-                    <li><a class="btns navbarbtnright"  href="{{ url_for('security.login') }}">Sign In <i class="icon-signin"></i><div class="ripple-container"></div></a></li>
-                    <li><a class="btns navbarbtnright"  href="{{ url_for('security.register') }}">Sign Up <i class="icon-hand-left"></i><div class="ripple-container"></div></a></li>
-                    {% else %}
-                    <li class="dropdown">
-                        <a class="btns navbarbtnright" data-toggle="dropdown">Write... <i class="icon-pencil"></i>
-                        </a>
-                      <ul class="dropdown-menu">
-                        <li><a href="{{ url_for('create_question', username=current_user.username)}}">Write Question</a></li>
-                        <li><a href="{{ url_for('create_snippet', username=current_user.username)}}">Write Snippet</a></li>
-                      </ul>
-                    </li>
-                    <li><a class="btns navbarbtnright" href="{{ url_for('user', username=current_user.username)}}">{{current_user.username}}<div class="ripple-container"></div></a></li>
-                    <li class="dropdown">
-                      <a class="btns navbarbtn setting" href="" data-toggle="dropdown"><i class="icon-gear"></i></a>
-                      <ul class="dropdown-menu">
-                        <li><a href="{{ url_for('setting_personal') }}"  style="font-size:13px">Setting Personal Date</a></li>
-                        <li><a href="{{ url_for('setting_curriculum') }}" style="font-size:13px">Setting Curriculum Date</a></li>
-                        <li><a href="{{ url_for('about') }}" style="font-size:13px">About</a></li>
-                        <li class="divider"></li>
-                        <li><a href="{{ url_for('security.logout') }}" style="font-size:13px">Log Out</a></li>
-                      </ul>
-                    </li>
-                    {% endif %}
-                  </ul>
-                </div>
-              </header>
-            </div>
-
-        <div class="container">
-        {% for category, message in get_flashed_messages(with_categories=true) %}
-          <div class="flash-message alert alert-dismissible alert-{{ category }}">
-            <button type="button" class="close" data-dismiss="alert">×</button>
-            <strong>{{ message }}!</strong>
-          </div>
-        {% endfor %}
+    <div class="navbar navbar-default" style="background-color: rgb(205,205,205)">
+      <header class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a style="font-family:'Raleway'"class="navbar-brand" href="{{ url_for('main.index') }}">T a l k C o d e<div class="ripple-container"></div></a>
         </div>
+        <div class="navbar-collapse navbar-responsive-collapse collapse" aria-expanded="false" style="height: 1px;">
+          <ul class="nav navbar-nav">
+            <li><a  class="btns navbarbtnleft"   href="{{ url_for('main.questions_pagination', page=1) }}">Questions</a></li>
+            <li><a  class="btns navbarbtnleft"   href="{{ url_for('main.snippets_pagination' , page=1) }}">Snippets</a></li>
+          </ul>
+           <form class="navbar-form navbar-left" >
+                 <div class="label-static" style="display:flex !important">
+                   <input placeholder="Busca algo" id="search"class="search-form">
+                   <button type="submit" style="margin: 0px 5px 0px 0px; height: auto; padding: 0 10px 0 10px;" class="btns btn-search" name="button"><i class="icon-search"></i></button>
+                 </div>
+           </form>
+          <ul class="nav navbar-nav navbar-right">
+            {% if not current_user.is_authenticated %}
+            <li><a class="btns navbarbtnright"  href="{{ url_for('security.login') }}">Sign In <i class="icon-signin"></i><div class="ripple-container"></div></a></li>
+            <li><a class="btns navbarbtnright"  href="{{ url_for('security.register') }}">Sign Up <i class="icon-hand-left"></i><div class="ripple-container"></div></a></li>
+            {% else %}
+            <li class="dropdown">
+                <a class="btns navbarbtnright" data-toggle="dropdown">Write... <i class="icon-pencil"></i>
+                </a>
+              <ul class="dropdown-menu">
+                <li><a href="{{ url_for('main.create_question', username=current_user.username)}}">Write Question</a></li>
+                <li><a href="{{ url_for('main.create_snippet', username=current_user.username)}}">Write Snippet</a></li>
+              </ul>
+            </li>
+            <li><a class="btns navbarbtnright" href="{{ url_for('main.user', username=current_user.username)}}">{{current_user.username}}<div class="ripple-container"></div></a></li>
+            <li class="dropdown">
+              <a class="btns navbarbtn setting" href="" data-toggle="dropdown"><i class="icon-gear"></i></a>
+              <ul class="dropdown-menu">
+                <li><a href="{{ url_for('main.setting_personal') }}"  style="font-size:13px">Setting Personal Date</a></li>
+                <li><a href="{{ url_for('main.setting_curriculum') }}" style="font-size:13px">Setting Curriculum Date</a></li>
+                <li><a href="{{ url_for('main.about') }}" style="font-size:13px">About</a></li>
+                <li class="divider"></li>
+                <li><a href="{{ url_for('security.logout') }}" style="font-size:13px">Log Out</a></li>
+              </ul>
+            </li>
+            {% endif %}
+          </ul>
+        </div>
+      </header>
+    </div>
+
+    <div class="container">
+    {% for category, message in get_flashed_messages(with_categories=true) %}
+      <div class="flash-message alert alert-dismissible alert-{{ category }}">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        <strong>{{ message }}!</strong>
+      </div>
+    {% endfor %}
+    </div>
 
 {% block content%}
 {% endblock %}
-
-      <div id="footer-base">
-        <div class="container-fluid">
-          <div class="col-md-12  text-info text-footer">
-            <center><h6 class="tooltip-inner text-xs-center text-sm-center text-md-center">Page
-              <span style="color:rgb(144,161,134)">in</span> Flask <br><br>Desarrollada por Carlos Azuaje</h6><center>
-          </div>
-        </div>
-     </div>
 
 
 <script type="text/javascript">
@@ -103,6 +94,13 @@
   const second = 1750;
   $('.flash-message').show().delay(second).fadeOut();
 </script>
+
+{% if current_user.is_authenticated %}
+    {% assets "js_socket" %}
+    <script src="{{ ASSET_URL }}"/></script>
+    {% endassets %}
+{% endif %}
+
 
 </body>
 </html>

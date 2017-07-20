@@ -17,3 +17,9 @@ dist/
 migrations/
 app/static/.webassets-cache/
 .idea/
+/env/
+/app/static/js/cm.js
+/app/static/js/libs.js
+/app/static/js/socket_application.js
+/app/static/css/min.css
+/app/static/css/cm.css

@@ -7,7 +7,7 @@
 {% for question in questions.items %}
     <div class="col-md-8">
     <h4 class="h4">
-      <a href="{{ url_for('questions', id=question.id )}}">{{ question.title | title }}</a>
+      <a href="{{ url_for('main.questions', id=question.id )}}">{{ question.title | title }}</a>
     </h4>
       <ul class="tags right">
          <li><a  class="tag-question upvote up " style="text-decoration:none;"> {{ question.upvote_count }}</a></li>
@@ -20,13 +20,13 @@
     <div class="col-md-8">
         <ul class="pagination pagination-lg">
             {% if questions.has_prev %}
-          <li><a href="{{ url_for('questions_pagination', page=questions.prev_num)}}"><i class="icon-chevron-left"></i></a></li>
+          <li><a href="{{ url_for('main.questions_pagination', page=questions.prev_num)}}"><i class="icon-chevron-left"></i></a></li>
             {% else %}
             {% endif %}
 
 
             {% if questions.has_next %}
-          <li><a href="{{ url_for('questions_pagination', page=questions.next_num) }}"><i class="icon-chevron-right"></i></a></li>
+          <li><a href="{{ url_for('main.questions_pagination', page=questions.next_num) }}"><i class="icon-chevron-right"></i></a></li>
         </ul>
             {% else %}
     </div>

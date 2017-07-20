@@ -16,7 +16,7 @@
         <hr class="style14">
         {% if Questions %}
           {% for q in Questions %}
-              <h5><a href=" {{ url_for('questions', id=q.id) }}">{{q.title }}</a></h5>
+              <h5><a href=" {{ url_for('main.questions', id=q.id) }}">{{q.title }}</a></h5>
               {% if q.get_createdate%}
                 <span><i class="icon-time"></i> {{ q.get_createdate }}</span>
               {% endif %}
@@ -36,7 +36,7 @@
         <hr class="style14">
         {% if Answers %}
           {% for q in Answers %}
-              <h5><a href=" {{ url_for('questions', id=q.id_question) }}">{{ q.answer }}</a></h5>
+              <h5><a href=" {{ url_for('main.questions', id=q.id_question) }}">{{ q.answer }}</a></h5>
               {% if q.get_createdate%}
                 <span><i class="icon-time"></i> {{ q.get_createdate }}</span>
               {% endif %}
@@ -56,7 +56,7 @@
         <hr class="style14">
         {% if Snippets %}
           {% for q in Snippets %}
-              <h5><a href="{{ url_for('snippets', id=q.id) }}">{{q.title }}</a></h5>
+              <h5><a href="{{ url_for('main.snippets', id=q.id) }}">{{q.title }}</a></h5>
               {% if q.get_createdate%}
                 <span><i class="icon-time"></i> {{ q.get_createdate }}</span>
               {% endif %}
@@ -145,7 +145,7 @@ server.listen(1337);
           <hr class="style14">  
           <h4>Explore other users and their creations, follow those you want</h4>
           <br>
-          <button class="btn btn-raised"><a href="{{ url_for('explorer') }}">Explorer!</a></button>
+          <button class="btn btn-raised"><a href="{{ url_for('main.explorer') }}">Explorer!</a></button>
     <center>
 </div>
 

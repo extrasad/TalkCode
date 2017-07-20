@@ -31,7 +31,7 @@
   {{ popupmessage('question', Question_data.id) }}
   <br>
    <div class="col-md-6">
-     <form  action="{{ url_for('edit_question', id=Question_data.id) }}" method="POST">
+     <form  action="{{ url_for('main.edit_question', id=Question_data.id) }}" method="POST">
          {% from "macros/_macro.html" import render_field %}
          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                {{ render_field(new_QuestionForm.tittle, class='form-litle title', value=Question_data.title ) }}
@@ -121,36 +121,29 @@
          </a></li>
          <li><a href="/user/{{ User.username }} " class="tag-question user" style="text-decoration:none;">{{ User.username }}</a></li>
       </ul>
-
     </div>
-
-      <div class="col-md-2" style="margin-top:10px">
-        <button class="btn btn-sm btn-raised" type="submit" name="share_submit">
-          SHARE
-        </button>
-      </div>
       <br>
-                                  <script type="text/javascript">
-                                    $('.description-area').val({{Question_data.description | tojson}}).css('resize', 'none');
-                                    $(document).ready(function () {
-                                      var myCodeQuestion = $('.CodeQuestion')[0];
-                                      var myCodeMirror = CodeMirror.fromTextArea(myCodeQuestion,{
-                                        styleActiveLine: true,
-                                        lineNumbers:true,
-                                        theme: 'ttcn',
-                                        lineWrapping: true,
-                                        matchBrackets: true,
-                                        indentUnit: 4,
-                                        indentWithTabs: true,
-                                        readOnly: true
-                                      });
-                                      myCodeMirror.setOption('mode', {{lang|tojson}});
-                                      myCodeMirror.getDoc().setValue({{Question_data.text_area | tojson}});
-                                      setTimeout(function() {
-                                        myCodeMirror.refresh();
-                                      },1);
-                                    });
-                                  </script>
+      <script type="text/javascript">
+        $('.description-area').val({{Question_data.description | tojson}}).css('resize', 'none');
+        $(document).ready(function () {
+          var myCodeQuestion = $('.CodeQuestion')[0];
+          var myCodeMirror = CodeMirror.fromTextArea(myCodeQuestion,{
+            styleActiveLine: true,
+            lineNumbers:true,
+            theme: 'ttcn',
+            lineWrapping: true,
+            matchBrackets: true,
+            indentUnit: 4,
+            indentWithTabs: true,
+            readOnly: true
+          });
+          myCodeMirror.setOption('mode', {{lang|tojson}});
+          myCodeMirror.getDoc().setValue({{Question_data.text_area | tojson}});
+          setTimeout(function() {
+            myCodeMirror.refresh();
+          },1);
+        });
+      </script>
       <div class="col-md-8">
         <div class="area-text-question">
           {{ render_field(new_QuestionForm.text_area, class='CodeQuestion') }}
