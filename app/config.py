@@ -6,10 +6,10 @@ class Config(object):
     SECRET_KEY = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in xrange(32))
 
 class DevelopmentConfig(Config):
+    SECRET_KEY = '123456'
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = 'mysql://root:123456@localhost/talkcode?charset=utf8&use_unicode=0'
     SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'migrations')
-    PDF_PATH = b'C:\Program Files\wkhtmltopdf\\bin\wkhtmltopdf.exe'
     MYSQL_USER = 'root'
     MYSQL_PASSWORD = '123456'
     MYSQL_DB = 'talkcode'

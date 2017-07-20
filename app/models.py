@@ -117,7 +117,7 @@ class Personal_User(db.Model):
     __tablename__ = 'user_personal_info'
     id = db.Column(db.Integer, primary_key=True)
     id_user = db.Column(db.Integer, db.ForeignKey('user.id'))
-    name = db.Column(db.String(100))
+    first_name = db.Column(db.String(100))
     last_name = db.Column(db.String(100))
     sex = db.Column(db.String(1))
     country = db.Column(db.String(45))
@@ -126,9 +126,9 @@ class Personal_User(db.Model):
     social_red = db.Column(db.String(150))
     create_date_personal = db.Column(db.DateTime, default=datetime.datetime.now)
 
-    def __init__(self, id_user, name, last_name, sex, country, dob, repository, social_red):
+    def __init__(self, id_user, first_name, last_name, sex, country, dob, repository, social_red):
         self.id_user = id_user
-        self.name = name
+        self.first_name = first_name
         self.last_name = last_name
         self.sex = sex
         self.country = country

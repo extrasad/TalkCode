@@ -1,11 +1,10 @@
 # coding=utf-8
-from . import app, user_datastore, security
-from flask import request, render_template, session, redirect, url_for, flash, jsonify, json, make_response, current_app
+from . import app, user_datastore
+from flask import request, render_template, flash, json
 from form import *
 from models import *
 from decorator_and_utils import *
 from sqlalchemy import desc
-from sqlalchemy.sql import func
 from flask_security import utils, login_required, current_user
 
 
@@ -121,70 +120,44 @@ def user(username):
                            CRUD=False,
                            is_authenticated=True if current_user.is_authenticated else False) #BUG
 
+
 @app.route('/setting/personal_info', methods=['GET', 'POST'])
 @login_required
 def setting_personal():
-    new_PersonalForm = PersonalForm(request.form)
-    Personal_info = Personal_User.query.filter_by(id_user=current_user.id).one_or_none()
-    if request.method == 'POST' and new_PersonalForm.validate():
-        name = new_PersonalForm.name.data
-        last_name = new_PersonalForm.last_name.data
-        sex = new_PersonalForm.sex.data
-        country = new_PersonalForm.country.data
-        dob = new_PersonalForm.dob.data
-        repository = new_PersonalForm.repository.data
-        social_red = new_PersonalForm.social_red.data
-        setting_new = Personal_User(current_user.id, name, last_name, sex,
-                                    country, dob,
-                                    repository, social_red)
-        if Personal_info is None:
-            db.session.add(setting_new)
-            db.session.commit()
-            flash('Personal date created', 'success')
+    model = Personal_User.query.filter_by(id_user=current_user.id).one_or_none()
+
+    form = PersonalForm(request.form)
+
+    if request.method == 'POST':
+        if form.validate(model):
+            flash('Personal information update', 'success')
             return redirect(url_for('user', username=current_user.username))
         else:
-            db.session.delete(Personal_info)
-            db.session.add(setting_new)
-            db.session.commit()
-            flash('Personal date update', 'success')
-            return redirect(url_for('user', username=current_user.username))
+            flash('Any field empty?', 'danger')
 
     return render_template('user/setting/form_personal.html',
-                           form=new_PersonalForm, PersonalDate=Personal_info)
+                           form=form, PersonalDate=model)
 
 
 @app.route('/setting/curriculum_info', methods=['GET', 'POST'])
 @login_required
 def setting_curriculum():
-    UserSession = User.query.filter_by(id=current_user.id).first()
-    new_CurriculumForm = CurriculumForm(request.form)
-    Curriculum_info = Curriculum_User.query.filter_by(id_user=UserSession.id).one_or_none()
-    Skill_info = Skill.query.filter_by(user_id=UserSession.id)
-    new_SkillsForm = SkillForm(obj=UserSession)
+    form = CurriculumForm(request.form)
+    model = Curriculum_User.query.filter_by(id_user=current_user.id).one_or_none()
+    skills = Skill.query.filter_by(user_id=current_user.id)
 
-    if request.method == 'POST' and new_CurriculumForm.validate():
-        tittle = new_CurriculumForm.tittle.data
-        university = new_CurriculumForm.university.data
-        description = new_CurriculumForm.description.data
-        setting_new = Curriculum_User(current_user.id, tittle,
-                                      university, description)
-        if Curriculum_info is None:
-            db.session.add(setting_new)
-            db.session.commit()
-            flash('Your curriculum created', 'success')
+    if request.method == 'POST':
+        if form.validate(model):
+            flash('Curriculum information update', 'success')
             return redirect(url_for('user', username=current_user.username))
         else:
-            db.session.delete(Curriculum_info)
-            db.session.add(setting_new)
-            db.session.commit()
-            flash('Your curriculum date update', 'success')
-            return redirect(url_for('user', username=current_user.username))
-    return render_template('user/setting/form_curriculum_user.html',
-                           form=new_CurriculumForm,
-                           CurriculumDate=Curriculum_info,
-                           SkillDate=Skill_info,
-                           formskill=new_SkillsForm)
+            flash('Any field empty?', 'danger')
 
+    return render_template('user/setting/form_curriculum_user.html',
+                           form=form,
+                           CurriculumDate=model,
+                           SkillDate=skills,
+                           formskill=SkillForm())
 
 
 @app.route('/questions', methods=['GET', 'POST'])
@@ -322,29 +295,31 @@ def downvote():
 @app.route('/questions/write/user/<string:username>', methods=['GET', 'POST'])
 @login_required
 def create_question(username):
-    username = current_user.username
     new_QuestionForm = QuestionForm(request.form)
     if request.method == 'POST' and new_QuestionForm.validate():
-        title = new_QuestionForm.tittle.data
-        description = new_QuestionForm.description.data
-        text_area = new_QuestionForm.text_area.data
-        question_new = Question(current_user.id, title, description, text_area)
         list_tags = [new_QuestionForm.tag_one.data, new_QuestionForm.tag_two.data, new_QuestionForm.tag_three.data]
-        
+
         if len(list_tags) > len(set(list_tags)):
             flash('Tags must be different', 'danger')
             return render_template('questions/create_question.html', form=new_QuestionForm)
 
+        title = new_QuestionForm.tittle.data
+        description = new_QuestionForm.description.data
+        text_area = new_QuestionForm.text_area.data
+
+        question_new = Question(current_user.id, title, description, text_area)
+
         db.session.add(question_new)
-        id_question = db.session.query(Question.id).filter(Question.id_user == current_user.id,
-                                                           Question.title == title).first()
-        id_question_for_tag = id_question[0]
-        tag_new = TagQuestion(id_question[0], list_tags[0], list_tags[1], list_tags[2])
+        db.session.commit()
+
+        tag_new = TagQuestion(question_new.id, list_tags[0], list_tags[1], list_tags[2])
+
         db.session.add(tag_new)
         db.session.commit()
+
         flash('Perfect', 'info')
-        id = db.session.query(Question.id).filter(Question.id_user == current_user.id, Question.title == title).first()
-        return redirect(url_for('questions', id=id[0]))
+
+        return redirect(url_for('questions', id=question_new.id))
     return render_template('questions/create_question.html', form=new_QuestionForm)
 
 
@@ -374,10 +349,10 @@ def edit_question(id):
         flash('Edit ready!', 'success')
         return redirect(url_for('questions', id=id))
     elif len(new) < 3:
-        flash('Wow...! Olvidaste algun campo?', 'danger')
+        flash('Forgot a field?', 'danger')
         return redirect(url_for('questions', id=id))
     else:
-        flash('Wow...! Seguro hiciste algun cambio?', 'danger')
+        flash('Are you sure you made any changes?', 'danger')
         return redirect(url_for('questions', id=id))
 
 
@@ -425,9 +400,8 @@ def snippets(id):
                                    CRUD=True)
 
     if request.method == 'POST' and new_comment_form.validate():
-        id_snippets = snippet_data.id
         comment_text = new_comment_form.comment.data
-        comment_new = CommentSnippet(current_user.id, id_snippets,
+        comment_new = CommentSnippet(current_user.id, snippet_data.id,
                                      comment_text.upper())
 
         db.session.add(comment_new)
@@ -475,10 +449,10 @@ def edit_snippet(id):
         flash('Edit ready!', 'success')
         return redirect(url_for('snippets', id=id))
     elif len(new) < 3:
-        flash('Wow...! Olvidaste algun campo?', 'danger')
+        flash('Forgot a field?', 'danger')
         return redirect(url_for('snippets', id=id))
     else:
-        flash('Wow...! Seguro hiciste algun cambio?', 'danger')
+        flash('Are you sure you made any changes?', 'danger')
         return redirect(url_for('snippets', id=id))
 
 
@@ -487,7 +461,6 @@ def edit_snippet(id):
 def create_snippet(username):
     new_SnippetForm = SnippetsForm(request.form)
     if request.method == 'POST' and new_SnippetForm.validate():
-        query = db.session.query(User.id).filter(User.username == current_user.username).first()
         title = new_SnippetForm.tittle.data
         description = new_SnippetForm.description.data
         text_area = new_SnippetForm.text_area.data
@@ -501,7 +474,6 @@ def create_snippet(username):
         db.session.add(snippet_new)
         id_snippet = db.session.query(Snippet.id).filter(Snippet.id_user == current_user.id,
                                                          Snippet.title == title).first()
-        id_snippet_for_tag = id_snippet[0]
         tag_new = TagSnippet(id_snippet[0], list_tags[0], list_tags[1], list_tags[2] )
         db.session.add(tag_new)
         db.session.commit()
@@ -542,7 +514,7 @@ def star(id):
 @app.route('/follow/<username>')
 @login_required
 def follow(username):
-    UserSession = User.query.filter_by(username=current_user.username).first()
+    UserSession = User.query.filter_by(id=current_user.id).first()
     user = User.query.filter_by(username=username).first()
     if user is None:
         flash('User %s not found.' % username,  'danger')
@@ -563,7 +535,7 @@ def follow(username):
 @app.route('/unfollow/<username>')
 @login_required
 def unfollow(username):
-    UserSession = User.query.filter_by(username=current_user.id).first()
+    UserSession = User.query.filter_by(id=current_user.id).first()
     user = User.query.filter_by(username=username).first()
     if user is None:
         flash('User %s not found.' % username,  'danger')
@@ -585,7 +557,7 @@ def unfollow(username):
 def skill(id):
     UserSession = User.query.filter_by(id=id).first()
     if Skill.query.filter_by(user_id=id).count() == 10:
-        flash("No puedes tener mas de 10 skill", 'warning')
+        flash("You can not have more than 10 skill", 'warning')
         return redirect(url_for('setting_curriculum'))
     form = SkillForm(request.form)
     skill = form.skill_name.data
