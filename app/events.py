@@ -3,8 +3,6 @@ from flask_security import current_user
 from flask_socketio import SocketIO, emit
 from flask_redis import FlaskRedis
 
-from models import User, db
-
 
 redis_store = FlaskRedis()
 socketio = SocketIO()

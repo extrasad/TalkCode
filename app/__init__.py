@@ -3,7 +3,6 @@ from flask import Flask, redirect, url_for, request
 from flask_wtf import CSRFProtect
 from flask_assets import Environment
 from flask_security import SQLAlchemyUserDatastore, Security, utils as security_utils
-from flask_redis import FlaskRedis
 
 from config import DevelopmentConfig
 from assets import create_assets

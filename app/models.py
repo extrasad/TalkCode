@@ -1,6 +1,6 @@
 # coding=utf-8
 from flask_sqlalchemy import SQLAlchemy
-from flask_security import RoleMixin, UserMixin, current_user
+from flask_security import RoleMixin, UserMixin
 
 from sqlalchemy import UnicodeText, Date, Table, func
 from sqlalchemy_utils import aggregated

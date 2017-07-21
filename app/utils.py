@@ -1,6 +1,5 @@
 # coding=utf-8
 from flask_mysqldb import MySQL
-from flask_security import current_user
 
 from urlparse import urlparse
 
