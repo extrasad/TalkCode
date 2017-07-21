@@ -54,129 +54,117 @@
   <div class="row">
     <div class="col-md-8">
       <div class="area-text-question">
-                {{ render_field(new_SnippetForm.text_area, class='TextArea textarea') }}
+        {{ render_field(new_SnippetForm.text_area, class='TextArea textarea') }}
       </div>
     </div>
   </div>
       </form>
-                <script type="text/javascript">
-                  $(document).ready(function () {
-                    var myTextArea = $('.TextArea')[0];
-                    var myCodeMirror = CodeMirror.fromTextArea(myTextArea,{
-                      styleActiveLine: true,
-                      lineNumbers:true,
-                      theme: 'ttcn',
-                      indentUnit: 4,
-                      indentWithTabs: true,
-                      lineWrapping: true,
-                      readOnly: false
-                    });
+  <script type="text/javascript">
+    $(document).ready(function () {
+      var myTextArea = $('.TextArea')[0];
+      var myCodeMirror = CodeMirror.fromTextArea(myTextArea,{
+        styleActiveLine: true,
+        lineNumbers:true,
+        theme: 'ttcn',
+        indentUnit: 4,
+        indentWithTabs: true,
+        lineWrapping: true,
+        readOnly: false
+      });
 
-                    myCodeMirror.setOption('mode', {{lang|tojson}});
-                    myCodeMirror.getDoc().setValue({{Snippet_data.text_area | tojson }});
-                    let buttonEdit = $('.btn-edit-counter_letter');
-                    let textCounterSnippet = $('.counter_snippet_length');
-                    let textarea = $('.TextArea');
-                    const textarea_length = [5, 2000]; // BUG
-                    myCodeMirror.on("change", function(){
-                      var value_length = myCodeMirror.getValue().length;
-                      LetterCounter(textarea_length[0], textarea_length[1], value_length, buttonEdit, textCounterSnippet);
-                    });
+      myCodeMirror.setOption('mode', {{lang|tojson}} );
+      myCodeMirror.getDoc().setValue( {{Snippet_data.text_area | tojson }} );
+      let buttonEdit = $('.btn-edit-counter_letter');
+      let textCounterSnippet = $('.counter_snippet_length');
+      let textarea = $('.TextArea');
+      const textarea_length = [5, 2000]; // BUG
+      myCodeMirror.on("change", function(){
+        var value_length = myCodeMirror.getValue().length;
+        LetterCounter(textarea_length[0], textarea_length[1], value_length, buttonEdit, textCounterSnippet);
+      });
 
+      setTimeout(function() {
+        myCodeMirror.refresh();
+      },1);
 
-                    setTimeout(function() {
-                      myCodeMirror.refresh();
-                    },1);
-
-
-                  });
-                </script>
+    });
+  </script>
 {% else %}
 
 <div class="container">
   <div class="col-md-6">
-      <form method="POST">
-      {% from "macros/_macro.html" import render_field %}
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-      {{ render_field(new_SnippetForm.tittle, class='form-snippet', value=Snippet_data.title, disabled=true ) }}
-      {{ render_field(new_SnippetForm.description, class='form-snippet description-snippet ', value=Snippet_data.description,  disabled=true ) }}
-     <li class="tag-question">{{Tag.tag_one}}</li>
-     <li class="tag-question">{{Tag.tag_two}}</li>
-     <li class="tag-question">{{Tag.tag_three}}</li>
-     <li class="tag-question">{{ create_date }}</li>
-     <li class="tag-question user"><a style="color:white;" href="{{ url_for('main.user', username=User.username)}}">{{ User.username }}</a></li>
-     <a class="tag-question user star">{{ Snippet_data.star_count }}</a>
+    <form method="POST">
+    {% from "macros/_macro.html" import render_field %}
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    {{ render_field(new_SnippetForm.tittle, class='form-snippet', value=Snippet_data.title, disabled=true ) }}
+    {{ render_field(new_SnippetForm.description, class='form-snippet description-snippet ', value=Snippet_data.description,  disabled=true ) }}
+    <li class="tag-question">{{Tag.tag_one}}</li>
+    <li class="tag-question">{{Tag.tag_two}}</li>
+    <li class="tag-question">{{Tag.tag_three}}</li>
+    <li class="tag-question">{{ create_date }}</li>
+    <li class="tag-question user"><a style="color:white;" href="{{ url_for('main.user', username=User.username)}}">{{ User.username }}</a></li>
+    <a class="tag-question user star">{{ Snippet_data.star_count }}</a>
   </div>
   <br>
   <div class="row">
     <div class="col-md-8">
       <div class="area-text-question">
-                {{ render_field(new_SnippetForm.text_area, class='TextArea') }}
-                <script type="text/javascript">
-                  $(document).ready(function () {
-                    var myTextArea = $('.TextArea')[0];
-                    var myCodeMirror = CodeMirror.fromTextArea(myTextArea,{
-                      styleActiveLine: true,
-                      lineNumbers:true,
-                      lineWrapping: true,
-                      matchBrackets: true,
-                      indentUnit: 4,
-                      indentWithTabs: true,
-                      readOnly: true
-                    });
-                    myCodeMirror.setOption('mode', {{lang|tojson}});
-                    myCodeMirror.getDoc().setValue({{Snippet_data.text_area | tojson }});
-                    setTimeout(function() {
-                      myCodeMirror.refresh();
-                    },1);
-                  });
-                </script>
+        {{ render_field(new_SnippetForm.text_area, class='TextArea') }}
+        <script type="text/javascript">
+          $(document).ready(function () {
+            var myTextArea = $('.TextArea')[0];
+            var myCodeMirror = CodeMirror.fromTextArea(myTextArea,{
+              styleActiveLine: true,
+              lineNumbers:true,
+              lineWrapping: true,
+              matchBrackets: true,
+              indentUnit: 4,
+              indentWithTabs: true,
+              readOnly: true
+            });
+            myCodeMirror.setOption('mode', {{lang|tojson}});
+            myCodeMirror.getDoc().setValue({{Snippet_data.text_area | tojson }});
+            setTimeout(function() {
+              myCodeMirror.refresh();
+            },1);
+          });
+        </script>
       </div>
     </div>
   </div>
-      </form>
-
+  </form>
 
 {% endif %}
 
-    {% if is_authenticated %}
-    <div class="col-md-8">
-       <br>
-       <center><h4 class="text-pre-answer">Comenta <i class="icon-comments"></i></h4></center>
-       <form id="form_comment_snippet" method="POST">
-          {% from "macros/_macro.html" import render_field %}
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-          <div class="form-group">
-             {{ render_field(comment_form.comment, class='form-control comment-area' ) }}
-             <p class="help-block">Escribe tu comentario</p>
-             <br>
-          </div>
-          <button type="submit" class="btn-counter_letter right  btn btn-raised btn-sm btn-success">Submit <p class="counter"></p> </button>
-       </form>
-    </div>
-    {% else %}
-    </br>
-    {% endif %}
-
-
-    {% if Comments %}
-      <div class="col-md-12">
-      <div class="col-md-5">
-
-      {% for comment in Comments %}
-          <h5><a href="{{ url_for('main.user', username=comment.get_username)}}">{{ comment.get_username }}</a></h5>
-            <hr class="style4">
-            <p>{{ comment.comment_text }}</p>
-          <h6>{{ comment.get_createdate }}</h6>
-      {% endfor %}
+{% if is_authenticated %}
+  <div class="col-md-8">
+      <br>
+      <center><h4 class="text-pre-answer">Comenta <i class="icon-comments"></i></h4></center>
+      <form id="form_comment_snippet" method="POST">
+        {% from "macros/_macro.html" import render_field %}
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <div class="form-group">
+            {{ render_field(comment_form.comment, class='form-control comment-area' ) }}
+            <p class="help-block">Escribe tu comentario</p>
+            <br>
         </div>
-      </div>
-  {% else %}
+        <button type="submit" class="btn-counter_letter right  btn btn-raised btn-sm btn-success">Submit <p class="counter"></p> </button>
+      </form>
+  </div>
+{% else %}
+  </br>
+{% endif %}
 
-     
-
-  {% endif %}
-
+{% if Comments %}
+  <div class="col-md-5">
+  {% for comment in Comments %}
+      <h5><a href="{{ url_for('main.user', username=comment.get_username)}}">{{ comment.get_username }}</a></h5>
+        <hr class="style4">
+        <p>{{ comment.comment_text }}</p>
+      <h6>{{ comment.get_createdate }}</h6>
+  {% endfor %}
+  </div>
+{% endif %}
 </div>
 
 <script type="text/javascript">
@@ -203,30 +191,30 @@
 
 {% if current_user.is_authenticated %}
 
-    <script>
-        $(document).ready(function(){
-            var csrftoken = $('meta[name=csrf-token]').attr('content')
-            $.ajaxSetup({
-                beforeSend: function(xhr, settings) {
-                    if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
-                        xhr.setRequestHeader("X-CSRFToken", csrftoken)
-                    }
-                }
-            });
+<script>
+  $(document).ready(function(){
+      var csrftoken = $('meta[name=csrf-token]').attr('content')
+      $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+          if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+              xhr.setRequestHeader("X-CSRFToken", csrftoken)
+          }
+        }
+      });
 
-            App.form_comment_snippet({{ Snippet_data.id }});
+      App.form_comment_snippet( {{ Snippet_data.id }} );
 
-            $('.star').click(function(){
-                  $.ajax({
-                          type: "POST",
-                          url: "{{ url_for('main.star', id=Snippet_data.id) }}",
-                          dataType: "json",
-                          success: function(response){
-                              $('.star').text(response.likes);
-                          }
-                  })
-            });
-        });
+      $('.star').click(function(){
+        $.ajax({
+          type: "POST",
+          url: "{{ url_for('main.star', id=Snippet_data.id) }}",
+          dataType: "json",
+          success: function(response){
+            $('.star').text(response.likes);
+          }
+        })
+      });
+  });
 </script>
 
 {% endif %}

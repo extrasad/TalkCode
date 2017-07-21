@@ -40,3 +40,5 @@ class DevelopmentConfig(Config):
     SECURITY_POST_REGISTER_VIEW = "/"
     SECURITY_LOGIN_USER_TEMPLATE = 'security/login.html'
     SECURITY_REGISTER_USER_TEMPLATE = 'security/register.html'
+    SECURITY_PASSWORD_SALT = "123456789"
+    SECURITY_PASSWORD_HASH = "bcrypt"

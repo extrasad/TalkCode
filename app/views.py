@@ -141,7 +141,7 @@ def questions_pagination(page=1):
                            questions=query_questions)
 
 
-@app.route('/questions/id/<int:id>', methods=['GET', 'POST'])
+@app.route('/questions/<int:id>', methods=['GET', 'POST'])
 def questions(id):
     new_QuestionForm = QuestionForm(request.form)  # EDIT QUESTION
     new_answer_form = AnswerForm(request.form)  # FORM ANSWER
@@ -151,7 +151,7 @@ def questions(id):
     all_Answers = AnswerLong.query.filter_by(id_question=id).all()  # ALL ANSWERS
 
     for answer in all_Answers:
-        answer.create_date = answer.create_date.get_createdate
+        answer.create_date = answer.get_createdate
         
     lang = know_mode_exist(Tag_data.tag_one, Tag_data.tag_two, Tag_data.tag_three)  # Check if exist lang
 
@@ -166,18 +166,6 @@ def questions(id):
                                    new_QuestionForm=new_QuestionForm,
                                    CRUD=True)
 
-    if request.method == 'POST' and new_answer_form.validate():
-        id_question = question_data.id
-        answer_text = new_answer_form.answer_long.data
-        answer_code = new_answer_form.text_area.data
-        answer_new = AnswerLong(current_user.id,
-                                id_question, answer_text, answer_code)
-
-        db.session.add(answer_new)
-        db.session.commit()
-        flash('New answer!', 'success')
-        return redirect(url_for('main.questions', id=id))
-
     return render_template('questions/question.html',
                            Answers=all_Answers,
                            answer_long=new_answer_form,
@@ -188,6 +176,39 @@ def questions(id):
                            lang=lang,
                            CRUD=False,
                            is_authenticated=True if current_user.is_authenticated else False)
+
+
+@app.route('/question/<int:id>/answer', methods=['POST'])
+def create_answer(id):
+    # Create answervia Ajax
+    answer = request.get_json()
+    print answer
+    answer_new = AnswerLong(current_user.id, id,
+                            answer['answer_text'],
+                            answer['answer_code'])
+    db.session.add(answer_new)
+    db.session.commit()
+
+    id_user = db.session.query(Question.id_user).filter_by(id=id).first()
+
+    # Create notification for the user
+    notification_state = create_notification(id_user[0],
+                                             "%s answered your snippet" % current_user.username,
+                                             "/question/%s" % id)
+
+    if notification_state[0] is not False:
+        socketNotification = True
+        notification = notification_state[1]
+    else:
+        socketNotification = False
+        notification = False
+
+    return jsonify({
+        "create": True,
+        "socketNotification": socketNotification,  # If true the client should emit socket event
+        "notification": notification,
+        "sid": notification_state[0]
+    }), 200
 
 
 @app.route('/upvote', methods=['GET'])
@@ -286,7 +307,7 @@ def create_question(username):
     return render_template('questions/create_question.html', form=new_QuestionForm)
 
 
-@app.route('/questions/edit/id/<int:id>', methods=['GET', 'POST'])
+@app.route('/questions/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
 def edit_question(id):
     QuestionQuerySet = Question.query.filter_by(id=id).one_or_none()
@@ -319,7 +340,7 @@ def edit_question(id):
         return redirect(url_for('main.questions', id=id))
 
 
-@app.route('/questions/delete/id/<int:id>', methods=['GET', 'POST'])
+@app.route('/questions/delete/<int:id>', methods=['GET', 'POST'])
 @login_required
 def delete_question(id):
     delete_Question = db.session.query(Question).filter(Question.id == id).first()
@@ -339,7 +360,7 @@ def snippets_pagination(page=1):
                            snippets=query_snippets)
 
 
-@app.route('/snippets/id/<int:id>', methods=['GET', 'POST'])
+@app.route('/snippets/<int:id>', methods=['GET', 'POST'])
 def snippets(id):
     new_SnippetForm = SnippetsForm(request.form)  # FORM SNIPPET
     new_comment_form = SnippetsComment(request.form)  # FORM COMMENT
@@ -435,7 +456,7 @@ def create_snippet(username):
     return render_template('snippets/create_snippet.html', form=new_SnippetForm)
 
 
-@app.route('/snippets/delete/id/<int:id>', methods=['GET', 'POST'])
+@app.route('/snippets/delete/<int:id>', methods=['GET', 'POST'])
 @login_required
 def delete_snippet(id):
     delete_Snippet = db.session.query(Snippet).filter(Snippet.id == id).first()
@@ -460,7 +481,7 @@ def create_comment_snippet(id):
     # Create notification for the user
     notification_state = create_notification(id_user[0],
                         "%s commented on your snippet" % current_user.username,
-                        "/snippets/id/%s" % id)
+                        "/snippets/%s" % id)
 
     if notification_state[0] is not False:
         socketNotification = True

@@ -158,7 +158,7 @@
    <div class="col-md-8">
       <br>
       <center><h4 class="text-pre-answer">Responde</h4></center>
-      <form class="" method="POST">
+      <form id="form_answer_question" method="POST">
          {% from "macros/_macro.html" import render_field %}
          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
          <div class="form-group">
@@ -172,24 +172,24 @@
          <button type="submit" class="btn-counter_letter right  btn btn-raised btn-sm btn-success">Submit <p class="counter"></p> </button>
       </form>
    </div>
-                                   <script type="text/javascript">
-                                     $(document).ready(function () {
-                                       var myTextArea = $('.TextArea')[0];
-                                       var myCodeMirror = CodeMirror.fromTextArea(myTextArea,{
-                                         styleActiveLine: true,
-                                         lineNumbers:true,
-                                         theme: 'ttcn',
-                                         lineWrapping: true,
-                                         viewportMargin: Infinity,
-                                       });
-                                       myCodeMirror.setOption('mode', {{lang|tojson}});
-                                       myCodeMirror.setSize(710, '20%');
-                                       var button = $('.btn-counter_letter');
-                                       var textCounter = $('.counter');
-                                       var field = $('.answer-area');
-                                       LetterCounter(1, 250, field, button, textCounter);
-                                     });
-                                   </script>
+       <script type="text/javascript">
+         $(document).ready(function () {
+           var myTextArea = $('.TextArea')[0];
+           var myCodeMirror = CodeMirror.fromTextArea(myTextArea,{
+             styleActiveLine: true,
+             lineNumbers:true,
+             theme: 'ttcn',
+             lineWrapping: true,
+             viewportMargin: Infinity,
+           });
+           myCodeMirror.setOption('mode', {{lang|tojson}});
+           myCodeMirror.setSize(710, '20%');
+           var button = $('.btn-counter_letter');
+           var textCounter = $('.counter');
+           var field = $('.answer-area');
+           LetterCounter(1, 250, field, button, textCounter);
+         });
+       </script>
    {% else %}
    <br>
    {% endif %}
@@ -250,74 +250,76 @@ LetterCounter(description_length[0], description_length[1], description, buttonE
 </script>
 
 
-   {% if is_authenticated  %}
+{% if is_authenticated  %}
 
 <script>
-$(".up").addClass('upvote');
-$(".down").addClass('downvote');
+    $(document).ready(function() {
+        $(".up").addClass('upvote');
+        $(".down").addClass('downvote');
 
-var csrftoken = $('meta[name=csrf-token]').attr('content')
+        var csrftoken = $('meta[name=csrf-token]').attr('content')
 
-$.ajaxSetup({
-    beforeSend: function(xhr, settings) {
-        if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
-            xhr.setRequestHeader("X-CSRFToken", csrftoken)
-        }
-    }
-})
+        $.ajaxSetup({
+            beforeSend: function (xhr, settings) {
+                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken)
+                }
+            }
+        });
 
-$('.upvote').click(function(){
-  var scope = this;
-      $.ajax({
-              type: "GET",
-              url: "/upvote",
-              data:{
+        App.form_answer_question( {{ Question_data.id }} );
+
+        $('.upvote').click(function () {
+            var scope = this;
+            $.ajax({
+                type: "GET",
+                url: "/upvote",
+                data: {
                     id: $(scope).attr('model-id'),
                     model: $(scope).attr('model-class')
-              },
-              dataType: "json"
+                },
+                dataType: "json"
 
-      })
-     .done(function(response) {
-         console.log( "done!", response.likes );
-         $(scope).text(response.likes);
-     })
-     .fail(function() {
-         console.log( "error" );
-     })
-     .always(function() {
-        console.log( "console", $(scope).attr('model-id'), $(scope).attr('model-class') );
-     });
-});
+            })
+            .done(function (response) {
+                console.log("done!", response.likes);
+                $(scope).text(response.likes);
+            })
+            .fail(function () {
+                console.log("error");
+            })
+            .always(function () {
+                console.log("console", $(scope).attr('model-id'), $(scope).attr('model-class'));
+            });
+        });
 
-$('.downvote').click(function(){
-  var scope = this;
-      $.ajax({
-              type: "GET",
-              url: "/downvote",
-              data:{
+        $('.downvote').click(function () {
+            var scope = this;
+            $.ajax({
+                type: "GET",
+                url: "/downvote",
+                data: {
                     id: $(scope).attr('model-id'),
                     model: $(scope).attr('model-class')
-              },
-              dataType: "json"
+                },
+                dataType: "json"
 
-      })
-     .done(function(response) {
-         console.log( "done!" , response.likes);
-         $(scope).text(response.likes);
-     })
-     .fail(function() {
-         console.log( "error" );
-     })
-     .always(function() {
-        console.log( "console", $(scope).attr('model-id'), $(scope).attr('model-class') );
-     });
-});
+            })
+            .done(function (response) {
+                console.log("done!", response.likes);
+                $(scope).text(response.likes);
+            })
+            .fail(function () {
+                console.log("error");
+            })
+            .always(function () {
+                console.log("console", $(scope).attr('model-id'), $(scope).attr('model-class'));
+            });
+        });
 
-
+    });
 
 </script>
-
-   {% endif %}
+{% endif %}
 
 {% endblock %}

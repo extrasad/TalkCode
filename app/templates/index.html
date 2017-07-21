@@ -99,7 +99,7 @@
       <h2><i class="icon-eye-open"></i> Learn more!</h2>
           <p>
             Learn more and more, what are you waiting for?
-            {% if not 'username' in session %}
+            {% if not current_user.is_authenticated %}
             <button type="button" class="btn btn-raised btn-sm" >
               <a href="{{ url_for('security.register') }}">Register</a>
             </button>

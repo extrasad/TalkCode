@@ -39,8 +39,32 @@ var App =  (function () {
                       }
                 });
             });
-        }
+        },
 
+        form_answer_question: function (id_question) {
+            $('#form_answer_question').submit(function (event) {
+                event.preventDefault();
+                answer_text = $("#form_answer_question textarea.answer-area").val();
+                answer_code = $("#form_answer_question textarea.TextArea").val();
+                $.ajax({
+                      type: "POST",
+                      url: `/question/${id_question}/answer`,
+                      contentType: 'application/json;charset=UTF-8',
+                      data: JSON.stringify({
+                          answer_text: answer_text,
+                          answer_code: answer_code
+                      }),
+                      success: function(response){
+                          if (response.create == true && response.socketNotification == true){
+                            socket.emit('send_notification', {
+                                notification: response.notification,
+                                sid: response.sid
+                            });
+                          }
+                      }
+                });
+            });
+        }
     }
 
 }());
