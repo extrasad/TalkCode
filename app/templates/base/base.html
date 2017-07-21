@@ -84,6 +84,10 @@
       </div>
     {% endfor %}
     </div>
+    <div class="flash-notification flash-message alert alert-dismissible alert-danger hidden">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        <a id="anchor-notification" href=""><strong id="text-notification"></strong><a>
+    </div>
 
 {% block content%}
 {% endblock %}
@@ -92,7 +96,7 @@
 <script type="text/javascript">
   $.material.init();
   const second = 1750;
-  $('.flash-message').show().delay(second).fadeOut();
+  $('.flash-message:not(".flash-notification")').show().delay(second).fadeOut();
 </script>
 
 {% if current_user.is_authenticated %}

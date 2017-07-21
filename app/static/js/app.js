@@ -13,7 +13,10 @@ var App =  (function () {
     });
 
     socket.on('new_notification', function(data) {
-        window.alert(data);
+        data = JSON.parse(data);
+        $('.flash-notification').removeClass("hidden").show().delay(4500).fadeOut();
+        $('#anchor-notification').attr('href', data.url);
+        $('#text-notification').text(data.text + '!');
     });
 
     return {

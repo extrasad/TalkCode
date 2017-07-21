@@ -182,7 +182,6 @@ def questions(id):
 def create_answer(id):
     # Create answervia Ajax
     answer = request.get_json()
-    print answer
     answer_new = AnswerLong(current_user.id, id,
                             answer['answer_text'],
                             answer['answer_code'])
@@ -193,8 +192,8 @@ def create_answer(id):
 
     # Create notification for the user
     notification_state = create_notification(id_user[0],
-                                             "%s answered your snippet" % current_user.username,
-                                             "/question/%s" % id)
+                                             "%s answered your question" % current_user.username,
+                                             "/questions/%s" % id)
 
     if notification_state[0] is not False:
         socketNotification = True
