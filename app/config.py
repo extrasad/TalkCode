@@ -9,5 +9,5 @@ class DevelopmentConfig(Config):
     SECRET_KEY = '123456'
     DEBUG = True
     REDIS_URL = "redis://:@localhost:6379/0"
-    SQLALCHEMY_DATABASE_URI = 'sqlite:////' + basedir  + '/../tmp/test.db'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:////' + basedir  + '/../tmp/talkcode.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = True

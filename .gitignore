@@ -22,3 +22,4 @@ app/static/.webassets-cache/
 /app/static/js/socket_application.js
 /app/static/css/min.css
 /app/static/css/cm.css
+*.db
