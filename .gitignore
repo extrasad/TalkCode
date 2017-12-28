@@ -24,3 +24,4 @@ app/static/.webassets-cache/
 /app/static/css/cm.css
 *.db
 /__pycache__/
+.cache/

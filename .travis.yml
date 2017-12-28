@@ -3,7 +3,6 @@ sudo: false  # http://docs.travis-ci.com/user/migrating-from-legacy/
 language: python
 env:
 - export FLASK_APP="$TRAVIS_BUILD_DIR/run.py"
-- export FLASK_DEBUG=1
 python:
   - 2.7
 install: pip install -r requirements.txt
