@@ -1,5 +1,5 @@
 # Config file for automatic testing at travis-ci.org
-sudo: true  # http://docs.travis-ci.com/user/migrating-from-legacy/
+sudo: false  # http://docs.travis-ci.com/user/migrating-from-legacy/
 language: python
 env:
 - export FLASK_APP="$TRAVIS_BUILD_DIR/run.py"
