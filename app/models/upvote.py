@@ -1,6 +1,6 @@
-from ..database import db, Model, Column, relationship, backref, metadata
+from ..database import db, Model, Column
 
 class Upvote(db.Model):
     __tablename__ = 'upvote'
-    id = db.Column(db.Integer, primary_key=True)
+    id      = db.Column(db.Integer, primary_key=True)
     id_user = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)

@@ -1,1 +1,4 @@
-{}
+{
+  "tests/models/test_snippet.py::TestQuestion::()::test_serialization_with_marshmallow": true, 
+  "tests/models/test_snippet.py::TestQuestion::()::test_star": true
+}

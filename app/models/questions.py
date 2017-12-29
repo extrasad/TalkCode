@@ -4,8 +4,6 @@ from ..extensions import marshmallow
 from sqlalchemy_utils import Timestamp, aggregated
 from sqlalchemy import UnicodeText, Table, func
 
-import datetime
-
 # Many to Many Relationship betweeen Question and Upvote/DownVote
 
 question_upvote = Table('question_upvote', metadata,
@@ -20,9 +18,9 @@ question_downvote = Table('question_downvote', metadata,
 
 class Question(Model, Timestamp):
     __tablename__ = 'question'
-    id = Column(db.Integer, primary_key=True)
-    id_user = Column(db.Integer, db.ForeignKey('user.id'))
-    text = Column(UnicodeText(2048), nullable=False)
+    id      = Column(db.Integer, primary_key=True)
+    id_user = Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    text    = Column(UnicodeText(2048), nullable=False)
 
     @aggregated('upvote', db.Column(db.Integer, default=0))
     def upvote_count(self):
