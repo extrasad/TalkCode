@@ -8,5 +8,5 @@ TEST_PATH = os.path.join(PROJECT_ROOT, 'tests')
 def test():
     """Run the tests."""
     import pytest
-    rv = pytest.main([TEST_PATH, '--verbose'])
+    rv = pytest.main([TEST_PATH, '--verbose', '--capture=no'])
     exit(rv)

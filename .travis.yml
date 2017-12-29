@@ -1,9 +1,16 @@
 # Config file for automatic testing at travis-ci.org
 sudo: false  # http://docs.travis-ci.com/user/migrating-from-legacy/
 language: python
-env:
-- export FLASK_APP="$TRAVIS_BUILD_DIR/run.py"
 python:
   - 2.7
+before_install:
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS talkcode;'
 install: pip install -r requirements.txt
+before_script:
+  - export FLASK_APP="$TRAVIS_BUILD_DIR/run.py"
+  - export SECRET_KEY="123456789"
+  - export FLASK_DEBUG=1
+  - export REDIS_URL="redis://:@localhost:6379/0"
+  - export SECRET_KEY="123456789"
+  - export SQLALCHEMY_DATABASE_URI="mysql://travis@localhost/talkcode?charset=utf8&use_unicode=0"
 script: flask test

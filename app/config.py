@@ -4,7 +4,10 @@ APP_DIR = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config(object):
-    SECRET_KEY = 'TODO, Enviroment Variable'
+    REDIS_URL = os.environ['REDIS_URL']
+    SQLALCHEMY_DATABASE_URI = os.environ['SQLALCHEMY_DATABASE_URI']
+    SECRET_KEY = os.environ['SECRET_KEY']
+    PASSWORD_SCHEMES = 'pbkdf2_sha512'
 
 
 class ProdConfig(Config):
@@ -21,17 +24,12 @@ class DevelopmentConfig(Config):
 
     ENV = 'dev'
     DEBUG = True
-    SECRET_KEY = '123456'
-    REDIS_URL = "redis://:@localhost:6379/0"
-    SQLALCHEMY_DATABASE_URI = 'sqlite:////' + APP_DIR + '/../tmp/talkcode.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-
 
 class TestConfig(Config):
     """Test configuration."""
 
+    APP_VERSION = '0.0.1'
     TESTING = True
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite://'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    BCRYPT_LOG_ROUNDS = 4  # For faster tests; needs at least 4 to avoid "ValueError: Invalid rounds"
