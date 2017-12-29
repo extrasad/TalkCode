@@ -19,10 +19,13 @@ class BaseFactory(SQLAlchemyModelFactory):
 class UserFactory(BaseFactory):
     """User factory."""
 
-    username = Sequence(lambda n: 'user{0}'.format(n))
-    email = Sequence(lambda n: 'user{0}@example.com'.format(n))
-    password = Sequence(lambda n: '123456_{0}'.format(n))
-    # password = PostGenerationMethodCall('set_password', 'example') # TODO: Create set_password property
+    username = 'user'
+    email    = 'user@example.com'
+    password = '123456'
+
+    def __init__(self, username, email):
+        username = username
+        email    = email
 
     class Meta:
         """Factory configuration."""

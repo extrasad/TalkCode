@@ -1,8 +1,11 @@
 attrs==17.3.0
+bcrypt==3.1.4
+cffi==1.11.2
 click==6.7
 factory-boy==2.9.2
 Faker==0.8.8
 Flask==0.12.2
+flask-marshmallow==0.8.0
 Flask-Redis==0.3.0
 Flask-SocketIO==2.9.3
 Flask-SQLAlchemy==2.3.2
@@ -13,8 +16,12 @@ ipaddress==1.0.19
 itsdangerous==0.24
 Jinja2==2.10
 MarkupSafe==1.0
+marshmallow==2.15.0
+MySQL-python==1.2.5
+passlib==1.7.1
 pluggy==0.6.0
 py==1.5.2
+pycparser==2.18
 pytest==3.3.1
 python-dateutil==2.6.1
 python-engineio==2.0.1
@@ -22,5 +29,6 @@ python-socketio==1.8.4
 redis==2.10.6
 six==1.11.0
 SQLAlchemy==1.2.0
+SQLAlchemy-Utils==0.32.21
 text-unidecode==1.1
 Werkzeug==0.13
