@@ -9,7 +9,6 @@ class TestUser:
     """Test user model"""
 
     def test_created_defaults_to_datetime(self, db):
-        """Test creation date."""
         user = User(username='foo', email='foo@bar.com', password='123456')
         db.session.add(user)
         db.session.commit()
@@ -18,7 +17,6 @@ class TestUser:
         assert User.query.count() == 1
 
     def test_factory(self, db):
-        """Test user factory."""
         user = UserFactory()
         db.session.commit()
         assert bool(user.username)

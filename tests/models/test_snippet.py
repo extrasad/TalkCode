@@ -19,11 +19,11 @@ class TestSnippet:
     def test_validation_filename_raise_error(self, db, user):
       _user = user.get()
 
-      with pytest.raises(AssertionError) as excinfo:
+      with pytest.raises(AssertionError):
         snippet = Snippet(id_user=_user.id, filename="applicatio.",
                           body="lorem ipsum", description="lorem ipsum")
 
-      with pytest.raises(AssertionError) as excinfo:
+      with pytest.raises(AssertionError):
         snippet = Snippet(id_user=_user.id, filename="application.",
                           body="lorem ipsum", description="lorem ipsum")
 
@@ -53,7 +53,6 @@ class TestSnippet:
       assert snippet.star_count == 2
 
     def test_serialization_with_marshmallow(self, db, user):
-      pass
       _user = user.get()
       snippet = Snippet(id_user=_user.id, filename="application.rb",
                         body="lorem ipsum", description="lorem ipsum edsum")
@@ -75,3 +74,17 @@ class TestSnippet:
       assert snippet_serialized['filename'] == "application.rb"
       assert snippet_serialized['body'] == "lorem ipsum"
       assert snippet_serialized['star_count'] == 4
+
+    def test_create_snippet_without_description(self, db, user):
+      _user = user.get()
+      snippet = Snippet(id_user=_user.id, filename="application.rb",
+                        body="lorem ipsum")
+      db.session.add(snippet)
+      db.session.commit()
+      snippet_schema = SnippetSchema()
+      snippet_serialized = snippet_schema.dump(snippet).data
+      assert snippet_serialized['id_user'] == 1
+      assert snippet_serialized['description'] == "None"
+      assert snippet_serialized['filename'] == "application.rb"
+      assert snippet_serialized['body'] == "lorem ipsum"
+      assert snippet_serialized['star_count'] == 0
