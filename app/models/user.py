@@ -1,7 +1,11 @@
 from ..database import db, Model , Column, relationship
 from ..extensions import marshmallow
+from .user_information import UserInformationSchema
+from .notification import NotificationSchema
 
 from sqlalchemy_utils import PasswordType, EmailType, force_auto_coercion, Timestamp
+
+from marshmallow import fields
 
 import datetime, flask
 
@@ -23,12 +27,23 @@ class User(Model, Timestamp):
         unique=False,
         nullable=False,
     )
+    # Relationships
+    information  = relationship('UserInformation', uselist=False)
+    notification = relationship('Notification', backref='notifications')
     
     def __init__(self, username, email, password):
         self.username = username
         self.email    = unicode(email) # https://stackoverflow.com/questions/20091801/python-with-mysql-sawarning-unicode-type-received-non-unicode-bind-param-value
         self.password = password
 
+
 class UserSchema(marshmallow.Schema):
     class Meta:
-        fields = ('id', 'username', 'email', 'created', 'updated')
+        fields = ('id', 'username', 'email', 'created', 'updated', 'information')
+    
+    information = marshmallow.Nested(UserInformationSchema)
+
+
+class UserNotificationSchema(marshmallow.Schema):
+    id = fields.Str()
+    notification = fields.Nested(NotificationSchema, many=True, exclude=[u'updated'])

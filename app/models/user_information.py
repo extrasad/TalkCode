@@ -1,10 +1,15 @@
 from ..database import db, Model , Column
+from ..extensions import marshmallow
+
+from marshmallow import post_dump
 
 from sqlalchemy.orm import validates
 from sqlalchemy_utils import Timestamp
 
+import pycountry
 
-class UserInformation(Model):
+
+class UserInformation(Model, Timestamp):
   __tablename__ = 'user_information'
   id      = Column(db.Integer, primary_key=True)
   id_user = Column(db.Integer, db.ForeignKey('user.id'))
@@ -22,3 +27,14 @@ class UserInformation(Model):
     self.id_user = id_user
     self.country = country
     self.bio     = bio
+
+
+class UserInformationSchema(marshmallow.Schema):      
+  class Meta:
+    fields = ('country', 'bio')
+
+  @post_dump
+  def country_alpha_2_to_name(self, in_data):
+    """ Transform country alpha_2 to country name """
+    in_data['country'] = [x.name for x in pycountry.countries if x.alpha_2 == in_data['country']][0].capitalize()
+    return in_data

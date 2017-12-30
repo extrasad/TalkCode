@@ -1,6 +1,6 @@
 import pytest
 
-from ...app.models import UserInformation
+from ...app.models import UserInformation, UserInformationSchema
 
 
 @pytest.mark.usefixtures('db')
@@ -29,3 +29,14 @@ class TestUser:
       db.session.add(user_information)
       db.session.commit()
       assert user_information.bio == 'None'
+
+    def test_serialized_with_marshmallow(self, db, user):
+      _user = user.get()
+      db.session.commit()
+      user_information = UserInformation(id_user=_user.id, country="Canada", bio="Sadness")
+      db.session.add(user_information)
+      db.session.commit()
+      user_information_schema = UserInformationSchema()
+      user_information_serialized = user_information_schema.dump(user_information).data
+      assert user_information_serialized['country'] == "Canada"
+      assert user_information_serialized['bio'] == "Sadness"
