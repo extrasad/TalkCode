@@ -1,4 +1,4 @@
-import pytest, datetime
+import pytest
 
 from ...app.models import Question, QuestionSchema, User, Upvote, Downvote
 from ..factories import UserFactory
@@ -13,7 +13,7 @@ class TestQuestion:
       question = Question(id_user=_user.id, text="What is the life?")
       db.session.add(question)
       db.session.commit()
-      Question.query.count() == 1
+      assert Question.query.count() == 1
 
     def test_upvote(self, db, user):
         _user = user.get()

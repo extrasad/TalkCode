@@ -30,6 +30,8 @@ class User(Model, Timestamp):
     # Relationships
     information  = relationship('UserInformation', uselist=False)
     notification = relationship('Notification', backref='notifications')
+    comments     = relationship("Comment", back_populates="user")
+    answers      = relationship("Answer", back_populates="user")
     
     def __init__(self, username, email, password):
         self.username = username
@@ -41,6 +43,7 @@ class UserSchema(marshmallow.Schema):
     class Meta:
         fields = ('id', 'username', 'email', 'created', 'updated', 'information')
     
+    id = fields.Int()
     information = marshmallow.Nested(UserInformationSchema)
 
 

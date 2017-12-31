@@ -21,6 +21,8 @@ class Question(Model, Timestamp):
     id      = Column(db.Integer, primary_key=True)
     id_user = Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     text    = Column(UnicodeText(2048), nullable=False)
+    # Relationships
+    user    = relationship('User', backref='questions')
 
     @aggregated('upvote', db.Column(db.Integer, default=0))
     def upvote_count(self):
@@ -30,13 +32,8 @@ class Question(Model, Timestamp):
     def downvote_count(self):
         return func.count('1')
 
-    upvote = relationship('Upvote',
-        secondary=question_upvote,
-        backref=backref('users_upvote'))
-
-    downvote = relationship('Downvote',
-        secondary=question_downvote,
-        backref=backref('users_downvote'))
+    upvote   = relationship('Upvote', secondary=question_upvote)
+    downvote = relationship('Downvote', secondary=question_downvote)
     
 
     def __init__(self, id_user, text):

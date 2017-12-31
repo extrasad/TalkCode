@@ -1,6 +1,6 @@
 import pytest, datetime
 
-from ...app.models import Snippet, SnippetSchema, User, Star
+from ...app.models import Snippet, SnippetSchema, User, Star, SnippetCommentSchema, Comment
 from ..factories import UserFactory
 
 
@@ -88,3 +88,28 @@ class TestSnippet:
       assert snippet_serialized['filename'] == "application.rb"
       assert snippet_serialized['body'] == "lorem ipsum"
       assert snippet_serialized['star_count'] == 0
+
+    def test_serialized_with_marshmallow_with_comments(self, db, user):
+      _user = user.get()
+      UserFactory(username="the_comment_man_1")
+      UserFactory(username="the_comment_man_2")
+      UserFactory(username="the_comment_man_3")
+      UserFactory(username="the_comment_man_4")
+      snippet = Snippet(id_user=_user.id, filename="application.rb",
+                        body="lorem ipsum")
+      db.session.add(snippet)
+      db.session.commit()
+      [ db.session.add(Comment(x + 2, snippet.id, 'This is a comment {}'.format(x))) for x in range(0, 4) ]
+      db.session.commit()
+      assert len(snippet.comments) == 4
+      snippet_comment_schema = SnippetCommentSchema()
+      snippet_comment_serialized = snippet_comment_schema.dump(snippet).data
+      assert snippet_comment_serialized['id'] == 1
+      assert snippet_comment_serialized['comments'][0]['text'] == 'This is a comment 0'
+      assert snippet_comment_serialized['comments'][1]['text'] == 'This is a comment 1'
+      assert snippet_comment_serialized['comments'][2]['text'] == 'This is a comment 2'
+      assert snippet_comment_serialized['comments'][3]['text'] == 'This is a comment 3'
+      assert snippet_comment_serialized['comments'][0]['user']['username'] == 'the_comment_man_1'
+      assert snippet_comment_serialized['comments'][1]['user']['username'] == 'the_comment_man_2'
+      assert snippet_comment_serialized['comments'][2]['user']['username'] == 'the_comment_man_3'
+      assert snippet_comment_serialized['comments'][3]['user']['username'] == 'the_comment_man_4'

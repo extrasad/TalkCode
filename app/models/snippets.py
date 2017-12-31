@@ -1,6 +1,10 @@
 from ..database import db, Model , Column, relationship
 from ..extensions import marshmallow
 
+from .comment import CommentSchema
+
+from marshmallow import fields
+
 from sqlalchemy import UnicodeText, Table, func
 from sqlalchemy.orm import validates
 from sqlalchemy_utils import Timestamp, aggregated
@@ -19,6 +23,8 @@ class Snippet(Model, Timestamp):
     filename    = Column(db.String(60), nullable=False)
     body        = Column(UnicodeText, nullable=False)
     description = Column(db.String(100*24), nullable=True)
+    # Relationships
+    comments    = relationship('Comment', backref='snippets')
 
     @aggregated('star', db.Column(db.Integer, default=0))
     def star_count(self):
@@ -44,3 +50,8 @@ class Snippet(Model, Timestamp):
 class SnippetSchema(marshmallow.Schema):
     class Meta:
         fields = ('id', 'id_user', 'filename', 'body', 'description', 'star_count', 'created', 'updated')
+
+
+class SnippetCommentSchema(marshmallow.Schema):
+    id = fields.Int()
+    comments = fields.Nested(CommentSchema, many=True)
