@@ -1,6 +1,6 @@
 import pytest, datetime
 
-from ...app.models import Snippet, SnippetSchema, User, Star, SnippetCommentSchema, Comment
+from ...app.models import Snippet, SnippetSchema, User, Star, SnippetCommentSchema, Comment, Tag
 from ..factories import UserFactory
 
 
@@ -67,13 +67,34 @@ class TestSnippet:
       snippet.star.append(Star(id_user=user3.id))
       snippet.star.append(Star(id_user=user4.id))
       db.session.commit()
+      tag_1, tag_2 = Tag("python", "language"), Tag("php", "language")
+      db.session.add(tag_1)
+      db.session.add(tag_2)
+      db.session.commit()
+      snippet.tags.append(tag_1)
+      snippet.tags.append(tag_2)
       snippet_schema = SnippetSchema()
       snippet_serialized = snippet_schema.dump(snippet).data
+      assert len(snippet_serialized['tags']) == 2
       assert snippet_serialized['id_user'] == 1
       assert snippet_serialized['description'] == "lorem ipsum edsum"
       assert snippet_serialized['filename'] == "application.rb"
       assert snippet_serialized['body'] == "lorem ipsum"
       assert snippet_serialized['star_count'] == 4
+
+    def test_add_remove_tags_to_snippet(self, db, user):
+      _user = user.get()
+      snippet = Snippet(id_user=_user.id, filename="application.rb",
+                        body="lorem ipsum")
+      db.session.add(snippet)
+      db.session.commit()
+      tag = Tag("python", "language")
+      db.session.add(tag)
+      db.session.commit()
+      snippet.tags.append(tag)
+      assert len(snippet.tags) == 1
+      snippet.tags.remove(tag)
+      assert len(snippet.tags) == 0
 
     def test_create_snippet_without_description(self, db, user):
       _user = user.get()

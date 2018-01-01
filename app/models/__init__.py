@@ -8,3 +8,4 @@ from .user_information import UserInformation, UserInformationSchema
 from .notification import Notification, NotificationSchema
 from .comment import Comment, CommentSchema
 from .answer import Answer, AnswerSchema
+from .tag import Tag, TagSchema

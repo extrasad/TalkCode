@@ -4,7 +4,6 @@ from ..utils.schema_without_none import SchemaWithoutNoneFields
 
 from marshmallow import post_dump
 
-from sqlalchemy.orm import validates
 from sqlalchemy_utils import Timestamp, ChoiceType
 
 

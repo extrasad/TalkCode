@@ -45,7 +45,6 @@ class TestNotification:
     db.session.commit()
     comment_schema = CommentSchema()
     comment_serialized = comment_schema.dump(snippet_comment).data
-    print comment_serialized
     assert 'created' in comment_serialized
     assert 'updated' in comment_serialized
     assert comment_serialized['id'] == 1

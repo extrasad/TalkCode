@@ -1,7 +1,8 @@
-from ..database import db, Model , Column, relationship
+from ..database import db, Model , Column, relationship, metadata
 from ..extensions import marshmallow
 
 from .comment import CommentSchema
+from .tag import TagSchema
 
 from marshmallow import fields
 
@@ -11,9 +12,13 @@ from sqlalchemy_utils import Timestamp, aggregated
 
 # Many to Many Relationship betweeen Snippet and Star
 
-snippet_has_star = Table('snippet_has_star', db.metadata,
+snippet_has_star = Table('snippet_has_star', metadata,
                           db.Column('snippet.id', db.Integer, db.ForeignKey('snippet.id')),
                           db.Column('star.id', db.Integer, db.ForeignKey('star.id')))
+
+snippet_has_tag = Table('snippet_has_tag', metadata,
+                          db.Column('snippet.id', db.Integer, db.ForeignKey('snippet.id')),
+                          db.Column('tag.id', db.Integer, db.ForeignKey('tag.id')))
 
 
 class Snippet(Model, Timestamp):
@@ -25,6 +30,7 @@ class Snippet(Model, Timestamp):
     description = Column(db.String(100*24), nullable=True)
     # Relationships
     comments    = relationship('Comment', backref='snippets')
+    tags        = relationship("Tag", secondary=snippet_has_tag)
 
     @aggregated('star', db.Column(db.Integer, default=0))
     def star_count(self):
@@ -48,8 +54,10 @@ class Snippet(Model, Timestamp):
 
 
 class SnippetSchema(marshmallow.Schema):
-    class Meta:
-        fields = ('id', 'id_user', 'filename', 'body', 'description', 'star_count', 'created', 'updated')
+    class Meta: # TODO: Add user field like AnswerSchema
+        fields = ('id', 'id_user', 'filename', 'body', 'description', 'star_count', 'tags', 'created', 'updated')
+    
+    tags = fields.Nested(TagSchema, many=True)
 
 
 class SnippetCommentSchema(marshmallow.Schema):

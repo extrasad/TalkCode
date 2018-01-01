@@ -42,5 +42,5 @@ class Question(Model, Timestamp):
 
 
 class QuestionSchema(marshmallow.Schema):
-    class Meta:
+    class Meta: # TODO: Add user field like AnswerSchema
         fields = ('id', 'id_user', 'text', 'upvote_count', 'downvote_count', 'created', 'updated')
