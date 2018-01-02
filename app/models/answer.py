@@ -4,7 +4,7 @@ from ..utils.schema_without_none import SchemaWithoutNoneFields
 
 from .user import UserSchema
 
-from marshmallow import fields, post_dump
+from marshmallow import fields
 
 from sqlalchemy import UnicodeText, Table, func
 from sqlalchemy_utils import Timestamp, aggregated
@@ -52,4 +52,7 @@ class AnswerSchema(marshmallow.Schema):
                   'updated', 'upvote_count', 'downvote_count', 'user')
 
     id = fields.Int()
-    user = fields.Nested(UserSchema, exclude=[u'created', u'updated', u'information'])
+    upvote_count = fields.Int()
+    downvote_count = fields.Int()
+    user = fields.Nested(UserSchema, exclude=[u'created', u'updated', u'information',
+                                              u'followed_count', u'followers_count'])

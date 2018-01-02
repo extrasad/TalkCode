@@ -3,7 +3,7 @@ from ..extensions import marshmallow
 from .user_information import UserInformationSchema
 from .notification import NotificationSchema
 
-from sqlalchemy_utils import PasswordType, EmailType, force_auto_coercion, Timestamp, aggregated
+from sqlalchemy_utils import PasswordType, EmailType, force_auto_coercion, Timestamp
 from sqlalchemy.ext.hybrid import hybrid_property
 
 from marshmallow import fields
@@ -41,6 +41,8 @@ class User(Model, Timestamp):
     notification = relationship('Notification', backref='notifications')
     comments     = relationship("Comment", back_populates="user")
     answers      = relationship("Answer", back_populates="user")
+    snippets     = relationship("Snippet", back_populates="user")
+    questions    = relationship("Question", back_populates="user")
     followed     = relationship('User',
                                 secondary=followers,
                                 primaryjoin=(followers.c.follower_id == id),
@@ -81,7 +83,8 @@ class User(Model, Timestamp):
 
 class UserSchema(marshmallow.Schema):
     class Meta:
-        fields = ('id', 'username', 'email', 'created', 'updated', 'followed_count', 'followers_count', 'information')
+        fields = ('id', 'username', 'email', 'created', 'updated',
+                  'followed_count', 'followers_count', 'information')
     
     id = fields.Int()
     followed_count = fields.Int()

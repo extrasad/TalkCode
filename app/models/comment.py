@@ -30,4 +30,5 @@ class CommentSchema(marshmallow.Schema):
         fields = ('id', 'text', 'created', 'updated', 'user')
 
     id = fields.Int()
-    user = fields.Nested(UserSchema, exclude=[u'created', u'updated', u'information'])
+    user = fields.Nested(UserSchema, exclude=[u'created', u'updated', u'information',
+                                              u'followed_count', u'followers_count'])

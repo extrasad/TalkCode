@@ -1,6 +1,10 @@
 from ..database import db, Model, Column, relationship, backref, metadata
 from ..extensions import marshmallow
 
+from .user import UserSchema
+
+from marshmallow import fields
+
 from sqlalchemy_utils import Timestamp, aggregated
 from sqlalchemy import UnicodeText, Table, func
 
@@ -22,7 +26,7 @@ class Question(Model, Timestamp):
     id_user = Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     text    = Column(UnicodeText(2048), nullable=False)
     # Relationships
-    user    = relationship('User', backref='questions')
+    user    = relationship('User', back_populates='questions')
 
     @aggregated('upvote', db.Column(db.Integer, default=0))
     def upvote_count(self):
@@ -42,5 +46,11 @@ class Question(Model, Timestamp):
 
 
 class QuestionSchema(marshmallow.Schema):
-    class Meta: # TODO: Add user field like AnswerSchema
-        fields = ('id', 'id_user', 'text', 'upvote_count', 'downvote_count', 'created', 'updated')
+    class Meta:
+        fields = ('id', 'text', 'upvote_count', 'downvote_count', 'created', 'updated', 'user')
+    
+    id = fields.Int()
+    upvote_count = fields.Int()
+    downvote_count = fields.Int()
+    user = fields.Nested(UserSchema, exclude=[u'created', u'updated', u'information',
+                                              u'followed_count', u'followers_count'])

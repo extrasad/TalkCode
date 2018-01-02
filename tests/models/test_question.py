@@ -63,7 +63,8 @@ class TestQuestion:
         db.session.commit()
         question_schema = QuestionSchema()
         question_serialized = question_schema.dump(question).data
+        assert 'id_user' not in question_serialized
+        assert 'user' in question_serialized
         assert question_serialized['upvote_count'] == 2
         assert question_serialized['downvote_count'] == 4
-        assert question_serialized['id_user'] == 1
         assert question_serialized['text'] == "What is the life?"

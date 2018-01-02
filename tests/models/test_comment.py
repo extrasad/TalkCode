@@ -51,6 +51,7 @@ class TestNotification:
     assert comment_serialized['text'] == 'This is a comment'
     assert comment_serialized['user']['id'] == 2
     assert comment_serialized['user']['email'] == 'user@example.com'
+    assert comment_serialized['user']['username'] == 'the_comment_man'
     assert 'created' not in comment_serialized['user']
     assert 'updated' not in comment_serialized['user']
     assert 'information' not in comment_serialized['user']

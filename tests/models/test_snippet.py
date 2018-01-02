@@ -76,11 +76,12 @@ class TestSnippet:
       snippet_schema = SnippetSchema()
       snippet_serialized = snippet_schema.dump(snippet).data
       assert len(snippet_serialized['tags']) == 2
-      assert snippet_serialized['id_user'] == 1
+      assert 'id_user' not in snippet_serialized
       assert snippet_serialized['description'] == "lorem ipsum edsum"
       assert snippet_serialized['filename'] == "application.rb"
       assert snippet_serialized['body'] == "lorem ipsum"
       assert snippet_serialized['star_count'] == 4
+      assert 'user' in snippet_serialized
 
     def test_add_remove_tags_to_snippet(self, db, user):
       _user = user.get()
@@ -104,7 +105,6 @@ class TestSnippet:
       db.session.commit()
       snippet_schema = SnippetSchema()
       snippet_serialized = snippet_schema.dump(snippet).data
-      assert snippet_serialized['id_user'] == 1
       assert snippet_serialized['description'] == "None"
       assert snippet_serialized['filename'] == "application.rb"
       assert snippet_serialized['body'] == "lorem ipsum"

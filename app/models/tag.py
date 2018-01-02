@@ -1,6 +1,8 @@
 from ..database import db, Model , Column
 from ..extensions import marshmallow
 
+from marshmallow import fields
+
 from sqlalchemy_utils import Timestamp
 
 
@@ -18,3 +20,5 @@ class Tag(Model, Timestamp):
 class TagSchema(marshmallow.Schema):
   class Meta:
     fields = ('id', 'name', 'description')
+
+  id = fields.Int()

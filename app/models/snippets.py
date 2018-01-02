@@ -3,6 +3,7 @@ from ..extensions import marshmallow
 
 from .comment import CommentSchema
 from .tag import TagSchema
+from .user import UserSchema
 
 from marshmallow import fields
 
@@ -31,6 +32,7 @@ class Snippet(Model, Timestamp):
     # Relationships
     comments    = relationship('Comment', backref='snippets')
     tags        = relationship("Tag", secondary=snippet_has_tag)
+    user        = relationship("User", back_populates="snippets")
 
     @aggregated('star', Column(db.Integer, default=0))
     def star_count(self):
@@ -54,10 +56,15 @@ class Snippet(Model, Timestamp):
 
 
 class SnippetSchema(marshmallow.Schema):
-    class Meta: # TODO: Add user field like AnswerSchema
-        fields = ('id', 'id_user', 'filename', 'body', 'description', 'star_count', 'tags', 'created', 'updated')
+    class Meta:
+        fields = ('id', 'filename', 'body', 'description',
+                  'star_count', 'tags', 'created', 'updated', 'user')
     
+    id = fields.Int()
+    star_count = fields.Int()
     tags = fields.Nested(TagSchema, many=True)
+    user = fields.Nested(UserSchema, exclude=[u'created', u'updated', u'information',
+                                              u'followed_count', u'followers_count'])
 
 
 class SnippetCommentSchema(marshmallow.Schema):
