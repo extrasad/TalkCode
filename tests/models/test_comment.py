@@ -8,7 +8,7 @@ from ..factories import UserFactory
 class TestNotification:
   """Test comment snippet model"""
 
-  def test_create_comment(self, db, user):
+  def test_create_and_count(self, db, user):
     _user_snippet = user.get()
     _user_comment = UserFactory(username="the_comment_man")
     snippet = Snippet(id_user=_user_snippet.id, filename="application.rb",

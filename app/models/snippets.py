@@ -32,7 +32,7 @@ class Snippet(Model, Timestamp):
     comments    = relationship('Comment', backref='snippets')
     tags        = relationship("Tag", secondary=snippet_has_tag)
 
-    @aggregated('star', db.Column(db.Integer, default=0))
+    @aggregated('star', Column(db.Integer, default=0))
     def star_count(self):
         return func.count('1')
 

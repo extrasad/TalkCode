@@ -8,7 +8,7 @@ from ..factories import UserFactory
 class TestUser:
     """Test user model"""
 
-    def test_created_defaults_to_datetime(self, db):
+    def test_create_and_count(self, db):
         user = User(username='foo', email='foo@bar.com', password='123456')
         db.session.add(user)
         db.session.commit()
@@ -35,7 +35,7 @@ class TestUser:
         db.session.commit()
         user_schema = UserSchema()
         user_serialized = user_schema.dump(user).data
-        assert len(user_serialized) == 6
+        assert len(user_serialized) == 8
         assert user_serialized['id'] == 1
         assert user_serialized['username'] == 'user'
         assert user_serialized['email'] == 'user@example.com'
@@ -73,3 +73,21 @@ class TestUser:
         user_notification_serialized = user_notification_schema.dump(_user_should_ignore).data
         assert len(user_notification_serialized['notification']) == 1
         assert 'url' not in user_notification_serialized['notification'][0]
+
+    def test_serialized_with_marshmallow_with_follow_data(self, db, user):
+        _user = user.get()
+        user_followed_1  = UserFactory(username="user__1", email="user__1@gmail.com")
+        user_followed_2  = UserFactory(username="user__2", email="user__2@gmail.com")
+        user_followers_1 = UserFactory(username="user__3", email="user__3@gmail.com")
+        user_followers_2 = UserFactory(username="user__4", email="user__4@gmail.com")
+        user_followers_3 = UserFactory(username="user__5", email="user__5@gmail.com")
+        db.session.commit()
+        _user.followed.append(user_followed_1)
+        _user.followed.append(user_followed_2)
+        _user.followers.append(user_followers_1)
+        _user.followers.append(user_followers_2)
+        _user.followers.append(user_followers_3)
+        user_schema = UserSchema()
+        user_serialized = user_schema.dump(_user).data
+        assert user_serialized['followed_count'] == 2
+        assert user_serialized['followers_count'] == 3

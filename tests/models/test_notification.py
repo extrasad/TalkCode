@@ -8,7 +8,7 @@ from ..factories import UserFactory
 class TestNotification:
   """Test notification model"""
 
-  def test_created_notification_and_relation_with_user(self, db, user):
+  def test_create_notification_and_relation_with_user(self, db, user):
     _user = user.get()
     db.session.commit()
     notification = Notification(id_user=_user.id, description="Carl answered your question",

@@ -8,7 +8,7 @@ from ..factories import UserFactory
 class TestSnippet:
     """Test snippet model"""
 
-    def test_created_snippet_and_relation_with_user(self, db, user):
+    def test_create_and_count(self, db, user):
       _user = user.get()
       snippet = Snippet(id_user=_user.id, filename="application.rb",
                         body="lorem ipsum", description="lorem ipsum")
