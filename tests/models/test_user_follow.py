@@ -111,6 +111,3 @@ class TestUserFollow:
       _user.followed.append(user_followed_2)
       assert len(_user.followed_resource(Answer).all()) == 1
       assert _user.followed_resource(Answer).all()[0].id_user == user_followed_2.id
-
-    # def test_user_follow_serialize(self, db, user):
-        
