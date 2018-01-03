@@ -4,6 +4,8 @@ from ..app.config import TestConfig
 
 from factories import UserFactory
 
+from sqlalchemy_utils import drop_database as _drop_database
+
 import pytest
 
 @pytest.fixture
@@ -30,6 +32,7 @@ def db(app):
     # Explicitly close DB connection
     _db.session.close()
     _db.drop_all()
+    _drop_database(app.config['SQLALCHEMY_DATABASE_URI'])
 
 
 @pytest.fixture

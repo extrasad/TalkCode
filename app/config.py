@@ -1,13 +1,14 @@
 import os
 
 APP_DIR = os.path.abspath(os.path.dirname(__file__))
-
+STATIC_FOLDER = os.path.join('../', 'application/build')
 
 class Config(object):
     REDIS_URL = os.environ['REDIS_URL']
     SQLALCHEMY_DATABASE_URI = os.environ['SQLALCHEMY_DATABASE_URI']
     SECRET_KEY = os.environ['SECRET_KEY']
     PASSWORD_SCHEMES = 'pbkdf2_sha512'
+    STATIC_FOLDER = STATIC_FOLDER
 
 
 class ProdConfig(Config):

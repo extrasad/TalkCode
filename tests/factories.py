@@ -1,5 +1,5 @@
 """Factories to help in tests."""
-from factory import Sequence # PostGenerationMethodCall
+from factory import Sequence
 from factory.alchemy import SQLAlchemyModelFactory
 
 from ..app.database import db

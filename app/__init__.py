@@ -1,6 +1,6 @@
 from flask import Flask
 from extensions import *
-from config import DevelopmentConfig
+from config import DevelopmentConfig, STATIC_FOLDER
 from models import *
 from commands import test
 
@@ -9,7 +9,7 @@ from sqlalchemy_utils import database_exists, create_database
 
 
 def create_app(config=DevelopmentConfig):
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder = STATIC_FOLDER)
     app.config.from_object(config)
 
     register_extensions(app)
@@ -36,7 +36,8 @@ def register_extensions(app):
 
 def register_blueprints(app):
     """Register Flask blueprints."""
-    pass
+    from .controllers.web.web import app as application
+    app.register_blueprint(application)
 
 
 def register_commands(app):
