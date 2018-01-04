@@ -1,17 +1,20 @@
 import React, { Component } from 'react';
+import { Container, Row, Col } from 'react-grid-system';
+
+import Line from '../../components/UI/Line/Line';
 
 class ProfileContainer extends Component {
-  state = {
-
-  }
-
   render() { 
     return (
-      <div>
-        <h1>
-          ProfileContainer
-        </h1>
-      </div>
+      <React.Fragment>
+        <Container fluid>
+          <Row>
+            <Col>
+              Username
+            </Col>
+          </Row>
+        </Container>
+      </React.Fragment>
     )
   }
 }

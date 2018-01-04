@@ -1,4 +1,4 @@
-.ColEditor > div{
+.Card {
   color: rgba(0, 0, 0, 0.87);
   background-color: rgb(255, 255, 255);
   transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
@@ -7,5 +7,9 @@
   z-index: 1;
   box-sizing: border-box;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-  margin: 2px 0 2px 0;
+  margin: 5px;
+}
+
+.Card > div {
+  padding: 16px;
 }
