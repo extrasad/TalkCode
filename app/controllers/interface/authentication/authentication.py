@@ -3,6 +3,7 @@ import os
 from flask import Blueprint, request, jsonify
 
 from ....models.user import User, AuthorizedPayLoadSchema, db
+from ....utils.get_data_or_400 import get_data_or_400
 from descriptions import SIGN_UP_DESCRIPTIONS
 
 app = Blueprint('authentication', __name__)
@@ -15,16 +16,16 @@ def signup():
   email	    string  The email for the user to create.
   password  string  The password for the user to create.
   Response Payload:
-  idToken	      string	A Firebase Auth ID token for the newly created user.
+  idToken	      string	A Auth ID token for the newly created user.
   email	        string	The email for the newly created user.
-  refreshToken	string	A Firebase Auth refresh token for the newly created user.
+  refreshToken	string	A Auth refresh token for the newly created user.
   expiresIn	    string	The number of seconds in which the ID token expires.
   """
 
   data = request.get_json()
-  email = data['email']
-  password = data['password']
-  username = data['username']
+  email    = get_data_or_400(data, 'email', SIGN_UP_DESCRIPTIONS['MISS_EMAIL'])
+  password = get_data_or_400(data, 'password', SIGN_UP_DESCRIPTIONS['MISS_PASSWORD'])
+  username = get_data_or_400(data, 'username', SIGN_UP_DESCRIPTIONS['MISS_USERNAME'])
 
   # Search User by email or username
   query = db.session.query(User) \

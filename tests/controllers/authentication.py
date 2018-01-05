@@ -94,8 +94,35 @@ class TestAuthentication:
       assert json.loads(r.data)['status'] == 400
       assert json.loads(r.data)['description'] == SIGN_UP_DESCRIPTIONS['INVALID_EMAIL']
 
-  #def test_username_missing_format(self, db, user, app):
+  def test_username_missing_format(self, db, user, app):
+      r = app.test_client().post(self._ + 'signup', data=json.dumps({
+        'email':'',
+        'password':'123456'
+      }), content_type='application/json')
 
-  #def test_password_missing_format(self, db, user, app):
+      assert User.query.count() == 0
+      assert 'payload' not in r.data
+      assert json.loads(r.data)['status'] == 400
+      assert json.loads(r.data)['description'] == SIGN_UP_DESCRIPTIONS['MISS_USERNAME']
   
-  #def test_email_missing_format(self, db, user, app):
+  def test_password_missing_format(self, db, user, app):
+    r = app.test_client().post(self._ + 'signup', data=json.dumps({
+        'email':'',
+        'username':'charlyrock',
+    }), content_type='application/json')
+
+    assert User.query.count() == 0
+    assert 'payload' not in r.data
+    assert json.loads(r.data)['status'] == 400
+    assert json.loads(r.data)['description'] == SIGN_UP_DESCRIPTIONS['MISS_PASSWORD']
+  
+  def test_email_missing_format(self, db, user, app):
+    r = app.test_client().post(self._ + 'signup', data=json.dumps({
+        'password':'123456',
+        'username':'charlyrock',
+    }), content_type='application/json')
+
+    assert User.query.count() == 0
+    assert 'payload' not in r.data
+    assert json.loads(r.data)['status'] == 400
+    assert json.loads(r.data)['description'] == SIGN_UP_DESCRIPTIONS['MISS_EMAIL']
