@@ -1,6 +1,8 @@
 from ..database import db, Model , Column, relationship
 from ..extensions import marshmallow
 from ..utils.schema_without_none import SchemaWithoutNoneFields
+from ..utils.user_nested_exclude_list import USER_NESTED_FIELDS_EXCLUDES
+
 
 from .user import UserSchema
 
@@ -30,5 +32,4 @@ class CommentSchema(marshmallow.Schema):
         fields = ('id', 'text', 'created', 'updated', 'user')
 
     id = fields.Int()
-    user = fields.Nested(UserSchema, exclude=[u'created', u'updated', u'information',
-                                              u'followed_count', u'followers_count'])
+    user = fields.Nested(UserSchema, exclude=USER_NESTED_FIELDS_EXCLUDES)

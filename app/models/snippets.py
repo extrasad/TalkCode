@@ -1,5 +1,6 @@
 from ..database import db, Model , Column, relationship, metadata
 from ..extensions import marshmallow
+from ..utils.user_nested_exclude_list import USER_NESTED_FIELDS_EXCLUDES
 
 from .comment import CommentSchema
 from .tag import TagSchema
@@ -63,8 +64,7 @@ class SnippetSchema(marshmallow.Schema):
     id = fields.Int()
     star_count = fields.Int()
     tags = fields.Nested(TagSchema, many=True)
-    user = fields.Nested(UserSchema, exclude=[u'created', u'updated', u'information',
-                                              u'followed_count', u'followers_count'])
+    user = fields.Nested(UserSchema, exclude=USER_NESTED_FIELDS_EXCLUDES)
 
 
 class SnippetCommentSchema(marshmallow.Schema):

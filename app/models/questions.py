@@ -1,5 +1,6 @@
 from ..database import db, Model, Column, relationship, backref, metadata
 from ..extensions import marshmallow
+from ..utils.user_nested_exclude_list import USER_NESTED_FIELDS_EXCLUDES
 
 from .user import UserSchema
 
@@ -52,5 +53,4 @@ class QuestionSchema(marshmallow.Schema):
     id = fields.Int()
     upvote_count = fields.Int()
     downvote_count = fields.Int()
-    user = fields.Nested(UserSchema, exclude=[u'created', u'updated', u'information',
-                                              u'followed_count', u'followers_count'])
+    user = fields.Nested(UserSchema, exclude=USER_NESTED_FIELDS_EXCLUDES)
