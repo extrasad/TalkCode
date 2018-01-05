@@ -38,6 +38,8 @@ def register_blueprints(app):
     """Register Flask blueprints."""
     from .controllers.web.web import app as application
     app.register_blueprint(application)
+    from .controllers.interface.authentication.authentication import app as namespace
+    app.register_blueprint(namespace)
 
 
 def register_commands(app):

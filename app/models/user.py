@@ -5,6 +5,8 @@ from .notification import NotificationSchema
 
 from sqlalchemy_utils import PasswordType, EmailType, force_auto_coercion, Timestamp, aggregated, QueryChain
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.orm import validates
+
 
 from marshmallow import fields
 
@@ -36,6 +38,32 @@ class User(Model, Timestamp):
         unique=False,
         nullable=False,
     )
+
+    # Validations
+
+    @validates('username')
+    def validate_username(self, key, username):
+        from ..controllers.interface.authentication.descriptions import SIGN_UP_DESCRIPTIONS as _
+        if len(username) <= 2:
+            raise ValueError(_['INVALID_USERNAME'])
+        else:
+            return username
+
+    @validates('password')
+    def validate_password(self, key, password):
+        from ..controllers.interface.authentication.descriptions import SIGN_UP_DESCRIPTIONS as _
+        if len(password) <= 5:
+            raise ValueError(_['INVALID_PASSWORD'])
+        else:
+            return password
+
+    @validates('email')
+    def validate_email(self, key, address):
+        from ..controllers.interface.authentication.descriptions import SIGN_UP_DESCRIPTIONS as _
+        if len(address) < 3 or '@' not in address:
+            raise ValueError(_['INVALID_EMAIL'])
+        else:
+            return address
 
     # Aggregateds
     
@@ -73,17 +101,17 @@ class User(Model, Timestamp):
     @hybrid_property
     def stars_total_count(self):
         from ..models import Snippet
-        return db.session.query(db.func.sum(Snippet.star_count)).filter_by(id_user=self.id).scalar()
+        return db.session.query(db.func.sum(Snippet.star_count)).filter_by(id_user=self.id).scalar() or 0
 
     @hybrid_property
     def upvotes_total_count(self):
         from ..models import Question
-        return db.session.query(db.func.sum(Question.upvote_count)).filter_by(id_user=self.id).scalar()
+        return db.session.query(db.func.sum(Question.upvote_count)).filter_by(id_user=self.id).scalar() or 0
 
     @hybrid_property
     def downvotes_total_count(self):
         from ..models import Question
-        return db.session.query(db.func.sum(Question.downvote_count)).filter_by(id_user=self.id).scalar()
+        return db.session.query(db.func.sum(Question.downvote_count)).filter_by(id_user=self.id).scalar() or 0
 
     @hybrid_property
     def followed_count(self):
@@ -140,3 +168,13 @@ class UserSchema(marshmallow.Schema):
 class UserNotificationSchema(marshmallow.Schema):
     id = fields.Str()
     notification = fields.Nested(NotificationSchema, many=True, exclude=[u'updated'])
+
+
+class AuthorizedPayLoadSchema(marshmallow.Schema):
+    class Meta:
+        fields = ('idToken', 'refreshToken', 'expiresIn', 'user')
+        
+    idToken = fields.Str()
+    refreshToken = fields.Str()
+    expiresIn = fields.Str()
+    user = marshmallow.Nested(UserSchema)
