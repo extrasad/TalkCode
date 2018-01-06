@@ -10,3 +10,12 @@ SIGN_UP_DESCRIPTIONS = {
   'INVALID_EMAIL': 'Missing email',
   'EMAIL_NO_VALID_FORMAT': 'Mail has an incorrect format'
 }
+
+SIGN_IN_DESCRIPTIONS = {
+  'MISS_PASSWORD': 'Missing password',
+  'MISS_EMAIL': 'Missing email',
+  'INVALID_PASSWORD': 'Invalid password',
+  'INVALID_EMAIL': 'Missing email',
+  'NOT_MATCH': 'Some not match',
+  'SUCCESS': 'Successful authentication'
+}

@@ -143,6 +143,19 @@ class User(Model, Timestamp):
         return cls.query.join(followers, (followers.c.followed_id == cls.id_user)).filter(
             followers.c.follower_id == self.id).order_by(cls.created.desc())
 
+    def encode_auth_token(self):
+        import jwt
+        try:
+            exp = datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=5)
+            payload = {
+                'exp': exp,
+                'iat': datetime.datetime.utcnow(),
+                'sub': self.id
+            }
+            return jwt.encode(payload, flask.current_app.config['SIGNING_KEY'], algorithm='RS256'), exp
+        except Exception as e:
+            return e
+
 
 class UserSchema(marshmallow.Schema):
     class Meta:
