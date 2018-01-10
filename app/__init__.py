@@ -40,6 +40,8 @@ def register_blueprints(app):
     app.register_blueprint(application)
     from .controllers.interface.authentication.authentication import app as namespace
     app.register_blueprint(namespace)
+    from .controllers.interface.user.user import app as namespace
+    app.register_blueprint(namespace)
 
 
 def register_commands(app):

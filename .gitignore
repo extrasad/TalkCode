@@ -12,8 +12,9 @@
 *.map
 # *.png
 *.jpg
-package-lock.json
 *.db
+
+package-lock.json
 
 .idea/
 .cache/

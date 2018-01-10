@@ -185,9 +185,8 @@ class UserNotificationSchema(marshmallow.Schema):
 
 class AuthorizedPayLoadSchema(marshmallow.Schema):
     class Meta:
-        fields = ('idToken', 'refreshToken', 'expiresIn', 'user')
+        fields = ('idToken', 'expiresIn', 'user')
         
     idToken = fields.Str()
-    refreshToken = fields.Str()
     expiresIn = fields.Str()
     user = marshmallow.Nested(UserSchema)
