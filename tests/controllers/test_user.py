@@ -3,8 +3,8 @@ import pytest, jwt
 from flask import json
 
 from ..factories import UserFactory
-from ...app.models import User
-from ...app.controllers.interface.user.descriptions import GET_USER_DESCRIPTIONS
+from ...app.models import User, Notification
+from ...app.controllers.interface.user.descriptions import GET_USER_DESCRIPTIONS, GET_USER_NOTIFICATIONS_DESCRIPTIONS
 
 
 @pytest.mark.usefixtures('db', 'user', 'app')
@@ -33,4 +33,59 @@ class TestGetUser:
     assert 'description' in r.data
     assert 'status' in r.data
     assert json.loads(r.data)['description'] == GET_USER_DESCRIPTIONS['NOT_FOUND']
+    assert json.loads(r.data)['status'] == 404
+
+
+@pytest.mark.usefixtures('db', 'user', 'app')
+class TestGetUserNotifications:
+  """ Test GetUserNotifications route"""
+
+  _ = 'api/users/'
+
+  def test_get_user_notifications(self, db, user, app):
+    user = UserFactory()
+    db.session.commit()
+    notification_1 = Notification(id_user=user.id, 
+                                  description="Carl answered your question",
+                                  url="/questions/1")
+    notification_2 = Notification(id_user=user.id,
+                                  description="Max answered your question",
+                                  url="/questions/1")
+    db.session.add(notification_1)
+    db.session.add(notification_2)
+    db.session.commit()
+
+    r = app.test_client().get(self._ + str(user.id) + '/notifications')
+
+    assert r.status_code == 200
+    assert len(json.loads(r.data)['payload']) == 2
+    assert 'description' in r.data
+    assert 'status' in r.data
+    assert json.loads(r.data)['description'] == GET_USER_NOTIFICATIONS_DESCRIPTIONS['SUCCESS']
+    assert json.loads(r.data)['status'] == 200
+  
+  def test_get_user_notifications_with_incorrect_user_id(self, db, user, app):
+    id = 1
+    
+    r = app.test_client().get(self._ + str(id) + '/notifications')
+
+    assert r.status_code == 404
+    assert 'payload' not in r.data
+    assert 'description' in r.data
+    assert 'status' in r.data
+    assert json.loads(r.data)['description'] == 'The resource {} with the id: {}'.format(User.__tablename__, id)
+    assert json.loads(r.data)['status'] == 404
+  
+  def test_get_user_notifications_without_notifications(self, db, user, app):
+    user = UserFactory()
+    db.session.commit()
+
+    r = app.test_client().get(self._ + str(user.id) + '/notifications')
+
+    assert r.status_code == 404
+    assert 'payload' not in r.data
+    assert 'description' in r.data
+    assert 'status' in r.data
+    assert json.loads(r.data)['description'] != GET_USER_NOTIFICATIONS_DESCRIPTIONS['SUCCESS']
+    assert json.loads(r.data)['description'] == GET_USER_NOTIFICATIONS_DESCRIPTIONS['NOT_FOUND']
     assert json.loads(r.data)['status'] == 404
