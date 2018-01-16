@@ -2,6 +2,9 @@ import pytest, datetime
 
 from ...app.models import *
 from ...app.schemas.user import UserSchema
+from ...app.schemas.user_question import UserQuestionSchema
+from ...app.schemas.user_answer import UserAnswerSchema
+from ...app.schemas.user_snippet import UserSnippetSchema
 from ...app.schemas.user_notification import UserNotificationSchema
 
 from ..factories import UserFactory
@@ -193,3 +196,54 @@ class TestUser:
         user_serialized = user_schema.dump(_user).data
         assert user_serialized['followed_count'] == 2
         assert user_serialized['followers_count'] == 3
+
+    def test_serialize_user_questions(self, db, user):
+        _user = user.get()
+        question_1 = Question(_user.id, 'Wat')
+        question_2 = Question(_user.id, 'Wat')
+        db.session.add(question_1)
+        db.session.add(question_2)
+        db.session.commit()
+        schema = UserQuestionSchema()
+        user_questions_serialized = schema.dump(_user).data
+
+        assert len(user_questions_serialized['questions']) == 2
+
+    def test_serialize_user_answer(self, db, user):
+        _user = user.get()
+        question_1 = Question(_user.id, 'Wat')
+        question_2 = Question(_user.id, 'Wat')
+        db.session.add(question_1)
+        db.session.add(question_2)
+        db.session.commit()
+        answer_1 = Answer(_user.id, question_1.id, 'Wow')
+        answer_2 = Answer(_user.id, question_2.id, 'Wow')
+        db.session.add(answer_1)
+        db.session.add(answer_2)
+        db.session.commit()
+        schema = UserAnswerSchema()
+        user_answers_serialized = schema.dump(_user).data
+
+        assert len(user_answers_serialized['answers']) == 2
+
+    def test_serialize_user_snippet(self, db, user):
+        _user = user.get()
+        snippet_1 = Snippet(_user.id, 'filename.py', 'lorem ipsum')
+        snippet_2 = Snippet(_user.id, 'filename.py', 'lorem ipsum')
+        db.session.add(snippet_1)
+        db.session.add(snippet_2)
+        db.session.commit()
+        tag_1, tag_2 = Tag("python", "language"), Tag("php", "language")
+        db.session.add(tag_1)
+        db.session.add(tag_2)
+        db.session.commit()
+        snippet_1.tags.append(tag_1)
+        snippet_1.tags.append(tag_2)
+        schema = UserSnippetSchema()
+        user_snippets_serialized = schema.dump(_user).data
+        
+        assert len(user_snippets_serialized['snippets']) == 2
+        assert len(user_snippets_serialized['snippets'][0]['tags']) == 2
+        assert len(user_snippets_serialized['snippets'][1]['tags']) == 0
+        assert user_snippets_serialized['snippets'][0]['tags'][0]['name'] == tag_1.name
+        assert user_snippets_serialized['snippets'][0]['tags'][1]['name'] == tag_2.name
