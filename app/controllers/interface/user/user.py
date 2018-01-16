@@ -3,9 +3,10 @@ from flask import Blueprint, request, jsonify, current_app
 from ....models.user import User
 from ....schemas.user import UserSchema
 from ....schemas.user_notification import UserNotificationSchema
+from ....schemas.user_question import UserQuestionSchema
 from ....utils.get_model_or_404 import get_model_or_404
 
-from descriptions import GET_USER_DESCRIPTIONS, GET_USER_NOTIFICATIONS_DESCRIPTIONS
+from descriptions import GET_USER_DESCRIPTIONS, GET_USER_NOTIFICATIONS_DESCRIPTIONS, GET_USER_QUESTIONS_DESCRIPTIONS
 
 app = Blueprint('user', __name__)
 
@@ -49,3 +50,23 @@ def get_user_notifications(id):
     'status': 404,
     'description': GET_USER_NOTIFICATIONS_DESCRIPTIONS['NOT_FOUND']
   }), 404
+@app.route('/api/users/<int:id>/questions')
+def get_user_questions(id):
+  query = get_model_or_404(User, id)
+
+  schema = UserQuestionSchema()
+  questions_serialized = schema.dump(query)
+
+  if (len(questions_serialized.data['questions']) > 0):
+    return jsonify({
+      'status': 200,
+      'description': GET_USER_QUESTIONS_DESCRIPTIONS['SUCCESS'],
+      'payload': questions_serialized.data
+    }), 200
+
+  else:
+    return jsonify({
+    'status': 404,
+    'description': GET_USER_QUESTIONS_DESCRIPTIONS['NOT_FOUND']
+  }), 404
+
