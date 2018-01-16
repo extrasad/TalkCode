@@ -1,12 +1,4 @@
 from ..database import db, Model , Column, relationship, metadata
-from ..extensions import marshmallow
-from ..utils.user_nested_exclude_list import USER_NESTED_FIELDS_EXCLUDES
-
-from .comment import CommentSchema
-from .tag import TagSchema
-from .user import UserSchema
-
-from marshmallow import fields
 
 from sqlalchemy import UnicodeText, Table, func
 from sqlalchemy.orm import validates
@@ -54,19 +46,3 @@ class Snippet(Model, Timestamp):
         self.filename    = filename
         self.body        = unicode(body)
         self.description = unicode(description)
-
-
-class SnippetSchema(marshmallow.Schema):
-    class Meta:
-        fields = ('id', 'filename', 'body', 'description',
-                  'star_count', 'tags', 'created', 'updated', 'user')
-    
-    id = fields.Int()
-    star_count = fields.Int()
-    tags = fields.Nested(TagSchema, many=True)
-    user = fields.Nested(UserSchema, exclude=USER_NESTED_FIELDS_EXCLUDES)
-
-
-class SnippetCommentSchema(marshmallow.Schema):
-    id = fields.Int()
-    comments = fields.Nested(CommentSchema, many=True)

@@ -1,6 +1,9 @@
 import pytest, datetime
 
-from ...app.models import Snippet, SnippetSchema, User, Star, SnippetCommentSchema, Comment, Tag
+from ...app.models import Snippet, User, Star, Comment, Tag
+from ...app.schemas.snippet import SnippetSchema
+from ...app.schemas.snippet_comment import SnippetCommentSchema
+
 from ..factories import UserFactory
 
 

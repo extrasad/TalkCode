@@ -15,10 +15,3 @@ class Tag(Model, Timestamp):
   def __init__(self, name, description):
     self.name = name
     self.description = description
-    
-
-class TagSchema(marshmallow.Schema):
-  class Meta:
-    fields = ('id', 'name', 'description')
-
-  id = fields.Int()

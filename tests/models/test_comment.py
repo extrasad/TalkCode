@@ -1,6 +1,8 @@
 import pytest
 
-from ...app.models import Snippet, Comment, CommentSchema
+from ...app.models import Snippet, Comment
+from ...app.schemas.comment import CommentSchema
+
 from ..factories import UserFactory
 
 

@@ -2,7 +2,8 @@ import os, jwt, datetime
 
 from flask import Blueprint, request, jsonify, current_app
 
-from ....models.user import User, AuthorizedPayLoadSchema, db
+from ....models.user import User, db
+from ....schemas.authorized_payload import AuthorizedPayLoadSchema
 from ....utils.get_data_or_400 import get_data_or_400
 from descriptions import SIGN_UP_DESCRIPTIONS, SIGN_IN_DESCRIPTIONS
 

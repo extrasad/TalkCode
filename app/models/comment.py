@@ -1,12 +1,4 @@
 from ..database import db, Model , Column, relationship
-from ..extensions import marshmallow
-from ..utils.schema_without_none import SchemaWithoutNoneFields
-from ..utils.user_nested_exclude_list import USER_NESTED_FIELDS_EXCLUDES
-
-
-from .user import UserSchema
-
-from marshmallow import fields, post_dump
 
 from sqlalchemy_utils import Timestamp
 
@@ -25,11 +17,3 @@ class Comment(Model, Timestamp):
         self.id_user     = id_user
         self.id_snippet  = id_snippet
         self.text        = unicode(text)
-
-
-class CommentSchema(marshmallow.Schema):
-    class Meta:
-        fields = ('id', 'text', 'created', 'updated', 'user')
-
-    id = fields.Int()
-    user = fields.Nested(UserSchema, exclude=USER_NESTED_FIELDS_EXCLUDES)

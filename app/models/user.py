@@ -1,7 +1,5 @@
 from ..database import db, Model , Column, relationship
 from ..extensions import marshmallow
-from .user_information import UserInformationSchema
-from .notification import NotificationSchema
 
 from sqlalchemy_utils import PasswordType, EmailType, force_auto_coercion, Timestamp, aggregated, QueryChain
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -156,38 +154,3 @@ class User(Model, Timestamp):
             return jwt.encode(payload, flask.current_app.config['SIGNING_KEY'], algorithm='RS256'), exp
         except Exception as e:
             return e
-
-
-class UserSchema(marshmallow.Schema):
-    class Meta:
-        fields = ('id', 'username', 'email', 'created', 'updated',
-                  'followed_count', 'followers_count', 'information',
-                  'comments_count', 'snippets_count', 'questions_count',
-                  'answers_count', 'stars_total_count', 'upvotes_total_count',
-                  'downvotes_total_count')
-    
-    id = fields.Int()
-    followed_count = fields.Int()
-    followers_count = fields.Int()
-    comments_count = fields.Int()
-    snippets_count = fields.Int()
-    questions_count = fields.Int()
-    answers_count = fields.Int()
-    stars_total_count = fields.Int()
-    upvotes_total_count = fields.Int()
-    downvotes_total_count = fields.Int()
-    information = marshmallow.Nested(UserInformationSchema)
-
-
-class UserNotificationSchema(marshmallow.Schema):
-    id = fields.Str()
-    notification = fields.Nested(NotificationSchema, many=True, exclude=[u'updated'])
-
-
-class AuthorizedPayLoadSchema(marshmallow.Schema):
-    class Meta:
-        fields = ('idToken', 'expiresIn', 'user')
-        
-    idToken = fields.Str()
-    expiresIn = fields.Str()
-    user = marshmallow.Nested(UserSchema)

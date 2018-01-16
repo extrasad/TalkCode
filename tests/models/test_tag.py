@@ -1,6 +1,8 @@
 import pytest
 
-from ...app.models import Tag, TagSchema
+from ...app.models import Tag
+from ...app.schemas.tag import TagSchema
+
 from ..factories import UserFactory
 
 

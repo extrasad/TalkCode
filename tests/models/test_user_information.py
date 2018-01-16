@@ -1,6 +1,7 @@
 import pytest
 
-from ...app.models import UserInformation, UserInformationSchema
+from ...app.models import UserInformation
+from ...app.schemas.user_information import UserInformationSchema
 
 
 @pytest.mark.usefixtures('db')

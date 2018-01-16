@@ -1,6 +1,8 @@
 import pytest, datetime
 
-from ...app.models import Notification, NotificationSchema
+from ...app.models import Notification
+from ...app.schemas.notification import NotificationSchema
+
 from ..factories import UserFactory
 
 

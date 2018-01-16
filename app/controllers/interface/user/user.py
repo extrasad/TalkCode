@@ -1,6 +1,8 @@
 from flask import Blueprint, request, jsonify, current_app
 
-from ....models.user import User, UserSchema, UserNotificationSchema
+from ....models.user import User
+from ....schemas.user import UserSchema
+from ....schemas.user_notification import UserNotificationSchema
 from ....utils.get_model_or_404 import get_model_or_404
 
 from descriptions import GET_USER_DESCRIPTIONS, GET_USER_NOTIFICATIONS_DESCRIPTIONS

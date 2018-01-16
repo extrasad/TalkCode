@@ -1,6 +1,8 @@
 import pytest
 
-from ...app.models import Question, QuestionSchema, User, Upvote, Downvote
+from ...app.models import Question, User, Upvote, Downvote
+from ...app.schemas.question import QuestionSchema
+
 from ..factories import UserFactory
 
 

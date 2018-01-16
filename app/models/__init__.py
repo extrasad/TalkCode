@@ -1,11 +1,11 @@
-from .user import User, UserSchema, UserNotificationSchema
+from .user import User
 from .upvote import Upvote
 from .downvote import Downvote
-from .questions import Question, QuestionSchema
+from .questions import Question
 from .star import Star
-from .snippets import Snippet, SnippetSchema, SnippetCommentSchema
-from .user_information import UserInformation, UserInformationSchema
-from .notification import Notification, NotificationSchema
-from .comment import Comment, CommentSchema
-from .answer import Answer, AnswerSchema
-from .tag import Tag, TagSchema
+from .snippets import Snippet
+from .user_information import UserInformation
+from .notification import Notification
+from .comment import Comment
+from .answer import Answer
+from .tag import Tag
