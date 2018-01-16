@@ -1,7 +1,8 @@
 # Compiled source #
 
 ###################
-
+*.rsa
+*.rsa.pub
 *.com
 *.class
 *.dll

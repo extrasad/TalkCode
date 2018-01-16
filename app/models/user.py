@@ -140,6 +140,7 @@ class User(Model, Timestamp):
             return self
 
     def followed_resource(self, cls):
+        # TODO: Add limit parameter
         return cls.query.join(followers, (followers.c.followed_id == cls.id_user)).filter(
             followers.c.follower_id == self.id).order_by(cls.created.desc())
 
