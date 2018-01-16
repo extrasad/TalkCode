@@ -7,3 +7,8 @@ GET_USER_NOTIFICATIONS_DESCRIPTIONS = {
   'SUCCESS': 'Notifications successfully founded.',
   'NOT_FOUND': 'Notifications not found'
 }
+
+GET_USER_QUESTIONS_DESCRIPTIONS = {
+  'SUCCESS': 'Questions successfully founded.',
+  'NOT_FOUND': 'Questions not found'
+}
