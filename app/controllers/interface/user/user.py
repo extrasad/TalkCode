@@ -9,7 +9,7 @@ from ....schemas.user_snippet import UserSnippetSchema
 from ....utils.get_model_or_404 import get_model_or_404
 
 from descriptions import GET_USER_DESCRIPTIONS, GET_USER_NOTIFICATIONS_DESCRIPTIONS, GET_USER_QUESTIONS_DESCRIPTIONS, \
-GET_USER_ANSWERS_DESCRIPTIONS
+GET_USER_ANSWERS_DESCRIPTIONS, GET_USER_SNIPPETS_DESCRIPTIONS
 
 
 app = Blueprint('user', __name__)
