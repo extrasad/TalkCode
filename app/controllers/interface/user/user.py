@@ -5,10 +5,11 @@ from ....schemas.user import UserSchema
 from ....schemas.user_notification import UserNotificationSchema
 from ....schemas.user_question import UserQuestionSchema
 from ....schemas.user_answer import UserAnswerSchema
+from ....schemas.user_snippet import UserSnippetSchema
 from ....utils.get_model_or_404 import get_model_or_404
 
 from descriptions import GET_USER_DESCRIPTIONS, GET_USER_NOTIFICATIONS_DESCRIPTIONS, GET_USER_QUESTIONS_DESCRIPTIONS, \
-GET_USER_ANSWERS_DESCRIPTIONS
+GET_USER_ANSWERS_DESCRIPTIONS, GET_USER_SNIPPETS_DESCRIPTIONS
 
 app = Blueprint('user', __name__)
 
@@ -91,4 +92,25 @@ def get_user_answers(id):
     return jsonify({
     'status': 404,
     'description': GET_USER_ANSWERS_DESCRIPTIONS['NOT_FOUND']
+  }), 404
+
+
+@app.route('/api/users/<int:id>/snippets')
+def get_user_snippets(id):
+  query = get_model_or_404(User, id)
+
+  schema = UserSnippetSchema()
+  snippets_serialized = schema.dump(query)
+
+  if (len(snippets_serialized.data['snippets']) > 0):
+    return jsonify({
+      'status': 200,
+      'description': GET_USER_SNIPPETS_DESCRIPTIONS['SUCCESS'],
+      'payload': snippets_serialized.data
+    }), 200
+
+  else:
+    return jsonify({
+    'status': 404,
+    'description': GET_USER_SNIPPETS_DESCRIPTIONS['NOT_FOUND']
   }), 404

@@ -17,3 +17,8 @@ GET_USER_ANSWERS_DESCRIPTIONS = {
   'SUCCESS': 'Answers successfully founded.',
   'NOT_FOUND': 'Answers not found'
 }
+
+GET_USER_SNIPPETS_DESCRIPTIONS = {
+  'SUCCESS': 'Snippets successfully founded.',
+  'NOT_FOUND': 'Snippets not found'
+}
