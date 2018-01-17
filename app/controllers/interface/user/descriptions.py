@@ -12,3 +12,8 @@ GET_USER_QUESTIONS_DESCRIPTIONS = {
   'SUCCESS': 'Questions successfully founded.',
   'NOT_FOUND': 'Questions not found'
 }
+
+GET_USER_ANSWERS_DESCRIPTIONS = {
+  'SUCCESS': 'Answers successfully founded.',
+  'NOT_FOUND': 'Answers not found'
+}

@@ -4,9 +4,11 @@ from ....models.user import User
 from ....schemas.user import UserSchema
 from ....schemas.user_notification import UserNotificationSchema
 from ....schemas.user_question import UserQuestionSchema
+from ....schemas.user_answer import UserAnswerSchema
 from ....utils.get_model_or_404 import get_model_or_404
 
-from descriptions import GET_USER_DESCRIPTIONS, GET_USER_NOTIFICATIONS_DESCRIPTIONS, GET_USER_QUESTIONS_DESCRIPTIONS
+from descriptions import GET_USER_DESCRIPTIONS, GET_USER_NOTIFICATIONS_DESCRIPTIONS, GET_USER_QUESTIONS_DESCRIPTIONS, \
+GET_USER_ANSWERS_DESCRIPTIONS
 
 app = Blueprint('user', __name__)
 
@@ -70,3 +72,23 @@ def get_user_questions(id):
     'description': GET_USER_QUESTIONS_DESCRIPTIONS['NOT_FOUND']
   }), 404
 
+
+@app.route('/api/users/<int:id>/answers')
+def get_user_answers(id):
+  query = get_model_or_404(User, id)
+
+  schema = UserAnswerSchema()
+  answers_serialized = schema.dump(query)
+
+  if (len(answers_serialized.data['answers']) > 0):
+    return jsonify({
+      'status': 200,
+      'description': GET_USER_ANSWERS_DESCRIPTIONS['SUCCESS'],
+      'payload': answers_serialized.data
+    }), 200
+
+  else:
+    return jsonify({
+    'status': 404,
+    'description': GET_USER_ANSWERS_DESCRIPTIONS['NOT_FOUND']
+  }), 404
